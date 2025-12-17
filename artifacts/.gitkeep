@@ -1,0 +1,7 @@
+# This directory stores generated artifacts
+# - PRDs: prd_[feature].md
+# - Architecture Decision Records: adr_[topic].md
+# - Design Specs: design_spec_[component].md
+# - Roadmaps: roadmap_[project].md
+# - Implementation Plans: plan_[task].md
+# - Security Audits: security_audit_[date].md

@@ -1,0 +1,13 @@
+{
+  "name": "claude-hooks",
+  "version": "1.0.0",
+  "description": "Claude Code hooks for skill activation and file tracking",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"No tests specified\""
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

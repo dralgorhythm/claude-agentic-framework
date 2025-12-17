@@ -1,0 +1,57 @@
+# Serena MCP Server Configuration
+# Documentation: https://oraios.github.io/serena/02-usage/050_configuration.html
+
+# =============================================================================
+# LANGUAGE SERVERS
+# =============================================================================
+# Add languages your project uses. First language is the default/fallback.
+# For C use 'cpp', for JavaScript use 'typescript'.
+#
+# Available: al, bash, clojure, cpp, csharp, dart, elixir, elm, erlang,
+#            fortran, go, haskell, java, julia, kotlin, lua, markdown,
+#            nix, perl, php, python, r, rego, ruby, rust, scala, swift,
+#            terraform, typescript, yaml, zig
+
+languages:
+  # Golden Path languages (see .claude/rules/tech-strategy.md)
+  - typescript  # Web/Node.js (also handles JavaScript)
+  - python      # AI/Data
+  - go          # Systems
+  - rust        # Performance
+  - swift       # iOS
+  - kotlin      # Android
+  - bash        # Scripts
+  - terraform   # IaC
+
+# =============================================================================
+# FILE HANDLING
+# =============================================================================
+
+encoding: "utf-8"
+
+# Use .gitignore for exclusions (recommended)
+ignore_all_files_in_gitignore: true
+
+# Additional paths to ignore (supplements .gitignore)
+ignored_paths: []
+
+# =============================================================================
+# TOOL CONFIGURATION
+# =============================================================================
+
+read_only: false
+
+# Exclude shell execution (Claude Code's Bash tool handles this)
+excluded_tools:
+  - "execute_shell_command"
+
+included_optional_tools: []
+
+# =============================================================================
+# PROJECT IDENTITY
+# =============================================================================
+
+# Update this when creating a new project from this template
+project_name: "my-project"
+
+initial_prompt: ""

@@ -1,0 +1,25 @@
+# Beads Configuration
+# Documentation: https://github.com/steveyegge/beads/blob/main/docs/CONFIG.md
+
+# Auto-start daemon for seamless operation
+auto-start-daemon: true
+
+# Debounce interval for auto-flush (balances responsiveness and performance)
+flush-debounce: "5s"
+
+# =============================================================================
+# TEAM CONFIGURATION (uncomment as needed)
+# =============================================================================
+
+# For protected main branches, set a dedicated sync branch:
+# sync-branch: "beads-metadata"
+
+# =============================================================================
+# ADDITIONAL OPTIONS (see documentation)
+# =============================================================================
+# no-db: false           # Use JSONL instead of SQLite
+# no-daemon: false       # Disable daemon (not recommended)
+# no-auto-flush: false   # Disable auto-export to JSONL
+# no-auto-import: false  # Disable auto-import from JSONL
+# json: false            # Enable JSON output by default
+# actor: ""              # Default actor for audit trails
