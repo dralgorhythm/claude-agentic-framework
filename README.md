@@ -422,8 +422,6 @@ Customize the tech strategy for your organization's needs.
 
 This framework integrates with [Beads](https://github.com/steveyegge/beads) for AI-native issue tracking.
 
-**IMPORTANT**: Use CLI commands, not MCP - saves 98% tokens.
-
 ### Installation
 
 ```bash
@@ -473,7 +471,3 @@ Agents coordinate via status transitions:
 5. Sync: `bd sync`
 
 Hooks automatically sync with Beads for swarm coordination.
-
-## License
-
-MIT
