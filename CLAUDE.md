@@ -27,17 +27,17 @@ Drop-in framework for optimized Claude Code workflows with specialized personas 
 
 ## Personas
 
-| Command                 | Role                 | Use                         |
-| ----------------------- | -------------------- | --------------------------- |
-| `/architect`            | Principal Architect  | System design, ADRs         |
-| `/builder`              | Software Engineer    | Implementation, debugging   |
-| `/product-manager`      | Product Manager      | PR-FAQs, PRDs, requirements |
-| `/qa-engineer`          | QA Engineer          | Test strategy               |
-| `/reviewer`             | Code Reviewer        | Code review, security       |
-| `/refactoring-engineer` | Refactoring Engineer | Code cleanup, optimization  |
-| `/sre`                  | SRE                  | Infrastructure, DevOps      |
-| `/security-auditor`     | Security Auditor     | Threat modeling, audits     |
-| `/ui-ux-designer`       | UI/UX Designer       | Interface design, a11y      |
+| Command | Role | Use |
+|---------|------|-----|
+| `/architect` | Principal Architect | System design, ADRs |
+| `/builder` | Software Engineer | Implementation, debugging |
+| `/product-manager` | Product Manager | PR-FAQs, PRDs, requirements |
+| `/qa-engineer` | QA Engineer | Test strategy |
+| `/reviewer` | Code Reviewer | Code review, security |
+| `/refactoring-engineer` | Refactoring Engineer | Code cleanup, optimization |
+| `/sre` | SRE | Infrastructure, DevOps |
+| `/security-auditor` | Security Auditor | Threat modeling, audits |
+| `/ui-ux-designer` | UI/UX Designer | Interface design, a11y |
 
 ## Planning Flow
 
@@ -49,15 +49,17 @@ PR-FAQ → PRD → ADR → Design Spec → Plan → Implementation
 
 All planning docs in `./artifacts/`:
 
-- PR-FAQs: `pr_faq_[feature].md` (vision, start here)
-- PRDs: `prd_[feature].md` (after PR-FAQ approved)
-- ADRs: `adr_[topic].md`
-- System Design: `system_design_[component].md`
-- Design Specs: `design_spec_[component].md`
-- Roadmaps: `roadmap_[project].md`
-- Plans: `plan_[task].md`
-- Security: `security_audit_[date].md`
-- Post-mortems: `postmortem_[incident-id].md`
+| Type | Pattern |
+|------|---------|
+| Vision | `pr_faq_[feature].md` |
+| Requirements | `prd_[feature].md` |
+| Architecture | `adr_[topic].md` |
+| System Design | `system_design_[component].md` |
+| Design Specs | `design_spec_[component].md` |
+| Roadmaps | `roadmap_[project].md` |
+| Plans | `plan_[task].md` |
+| Security | `security_audit_[date].md` |
+| Post-mortems | `postmortem_[incident-id].md` |
 
 ## Skills
 
@@ -68,23 +70,10 @@ Check `.claude/skills/` before ad-hoc generation. Skills are auto-suggested base
 Use **CLI commands** for Beads - saves 98% tokens vs MCP.
 
 ```bash
-# Create issues
-bd create "Task description"
-
-# Find ready work
-bd ready
-
-# Claim work
-bd update <id> --status in_progress
-
-# Complete work
-bd update <id> --status done
-
-# Sync with team
-bd sync
-
-# Health check
-bd doctor
+bd create "Task"     # Create
+bd ready             # Find work
+bd update <id> --status in_progress  # Claim
+bd update <id> --status done         # Complete
+bd sync              # Sync
+bd doctor            # Health check
 ```
-
-**Workflow**: `bd ready` → claim → work → complete → `bd sync`
