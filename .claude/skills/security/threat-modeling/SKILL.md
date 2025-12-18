@@ -1,10 +1,24 @@
 ---
 name: threat-modeling
 description: Identify and analyze security threats. Use when designing systems, reviewing architecture, or assessing risk. Covers STRIDE methodology.
-allowed-tools: Read, Write, Glob, Grep
+allowed-tools: Read, Write, Glob, Grep, mcp__serena__*, mcp__sequential-thinking__*
 ---
 
 # Threat Modeling
+
+## MCP Tools
+
+**Sequential Thinking** (systematic analysis):
+Use for structured STRIDE analysis:
+1. Enumerate each threat category systematically
+2. Consider attack vectors step-by-step
+3. Evaluate mitigations with pros/cons
+4. Document reasoning for risk acceptance
+
+**Serena** (attack surface mapping):
+- `get_symbols_overview` — Map entry points and APIs
+- `find_symbol` — Locate security-critical functions
+- `find_referencing_symbols` — Trace data flow from inputs
 
 ## Why Threat Model?
 
@@ -15,6 +29,8 @@ allowed-tools: Read, Write, Glob, Grep
 
 ## STRIDE Methodology
 
+Use **Sequential Thinking** to work through each category:
+
 ### S - Spoofing
 Pretending to be someone else.
 - **Example**: Forged authentication tokens
@@ -24,6 +40,7 @@ Pretending to be someone else.
 Modifying data without authorization.
 - **Example**: Changing request parameters
 - **Mitigation**: Integrity checks, signatures
+- **Trace with Serena**: Find all input handlers
 
 ### R - Repudiation
 Denying an action occurred.
@@ -34,6 +51,7 @@ Denying an action occurred.
 Exposing confidential data.
 - **Example**: API returns sensitive fields
 - **Mitigation**: Encryption, access controls
+- **Trace with Serena**: Find data return points
 
 ### D - Denial of Service
 Making system unavailable.
@@ -44,19 +62,25 @@ Making system unavailable.
 Gaining unauthorized access.
 - **Example**: User becomes admin
 - **Mitigation**: Least privilege, input validation
+- **Trace with Serena**: Find authorization checks
 
 ## Threat Modeling Process
 
 ### 1. Decompose System
-- Identify assets
+- Use `get_symbols_overview` to identify entry points
 - Draw data flow diagrams
-- Identify entry points
 - Identify trust boundaries
 
 ### 2. Identify Threats
-For each component, ask STRIDE questions.
+Use **Sequential Thinking** to systematically ask STRIDE questions for each component.
 
-### 3. Rate Threats
+### 3. Trace Data Flow
+Use `find_referencing_symbols` to trace:
+- User input → processing → storage
+- Authentication token flow
+- Sensitive data paths
+
+### 4. Rate Threats
 Use DREAD or CVSS scoring:
 - **D**amage potential
 - **R**eproducibility
@@ -64,20 +88,11 @@ Use DREAD or CVSS scoring:
 - **A**ffected users
 - **D**iscoverability
 
-### 4. Mitigate
+### 5. Mitigate
 - Avoid: Remove the feature
 - Transfer: Use third-party
 - Mitigate: Add controls
-- Accept: Document risk
-
-## Data Flow Diagram
-
-```
-[User] --HTTPS--> [API Gateway] --Internal--> [Service]
-                        |                         |
-                        v                         v
-                   [Auth DB]                 [Data DB]
-```
+- Accept: Document risk (use Sequential Thinking to justify)
 
 ## Threat Model Document
 

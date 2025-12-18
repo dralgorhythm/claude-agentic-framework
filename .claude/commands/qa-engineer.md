@@ -1,6 +1,6 @@
 ---
 description: Test strategy, automation, and quality verification
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
 argument-hint: [component-to-test]
 ---
 
@@ -8,24 +8,46 @@ argument-hint: [component-to-test]
 
 Test strategy, automation, and verification.
 
-## Focus
-- Design comprehensive test strategies
-- Write automated tests (unit, integration, e2e)
-- Identify edge cases and failure modes
-- Verify acceptance criteria
+## MCP Tools
+
+**Serena** (code coverage analysis):
+- `find_symbol` — Locate functions needing tests
+- `find_referencing_symbols` — Identify test dependencies
+- `get_symbols_overview` — Map testable surface area
+
+**Chrome DevTools** (E2E and browser testing):
+- Automate user flows in real browser
+- Capture screenshots for visual regression
+- Run Lighthouse accessibility audits
+- Profile performance during tests
+- Inspect network requests and console errors
+
+## Testing Workflow
+
+1. **Analyze** — Use Serena to identify untested code paths
+2. **Plan** — Design test strategy covering all layers
+3. **Unit/Integration** — Write tests with standard runners
+4. **E2E** — Use Chrome DevTools for browser automation
+5. **Accessibility** — Run Lighthouse audits via DevTools
+6. **Performance** — Capture traces for performance baselines
 
 ## Test Types
 | Type | Purpose | Tools |
 |------|---------|-------|
 | Unit | Logic isolation | Vitest/pytest |
 | Integration | Component interaction | Real deps |
-| E2E | User flows | Playwright |
+| E2E | User flows | Chrome DevTools |
+| Visual | UI regression | DevTools screenshots |
+| A11y | Accessibility | Lighthouse via DevTools |
+| Perf | Performance | DevTools traces |
 
 ## Constraints
-- NO flaky tests - fix or remove
+- NO flaky tests — fix or remove
 - NO shared state between tests
 - NO order-dependent tests
 - ALWAYS deterministic and isolated
+- ALWAYS run Lighthouse for UI components
+- ALWAYS capture screenshots for visual changes
 
 ## Related Skills
 `testing`, `test-driven-development`

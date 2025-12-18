@@ -1,7 +1,7 @@
 ---
 name: beads-workflow
 description: AI-native issue tracking with Beads. Use when managing work items, tracking issues, or coordinating tasks in multi-agent workflows. Covers bd commands, dependencies, and sync patterns.
-allowed-tools: Read, Bash, Glob, Grep
+allowed-tools: Read, Bash, Glob, Grep, mcp__github__*
 ---
 
 # Beads Workflow
@@ -9,6 +9,14 @@ allowed-tools: Read, Bash, Glob, Grep
 ## Overview
 
 Beads is an AI-native issue tracker designed for agent workflows. Issues live in your repo, sync via git, and require no web UI.
+
+## MCP Tools
+
+**GitHub** (remote collaboration):
+- Link Beads issues to GitHub PRs
+- Create GitHub issues for team visibility
+- Track PR status for blocked work
+- Auto-close Beads issues when PRs merge
 
 ## Core Commands
 
@@ -68,27 +76,55 @@ bd sync
 bd flush
 ```
 
+## GitHub Integration Patterns
+
+### Linking Issues to PRs
+
+1. Create Beads issue: `bd create "Feature X"`
+2. Implement and create PR via GitHub MCP
+3. Reference Beads ID in PR description
+4. When PR merges, close Beads issue: `bd close <id>`
+
+### Syncing Status
+
+```bash
+# Check if related PR is merged (use GitHub MCP)
+# Then update Beads status accordingly
+bd update <id> --status done
+```
+
+### Team Visibility
+
+For issues that need team visibility:
+1. Create in Beads for local tracking
+2. Use GitHub MCP to create corresponding GitHub issue
+3. Link both in descriptions
+4. Keep Beads as source of truth for agents
+
 ## Workflow Patterns
 
 ### Starting a Session
 
 1. **Check ready work**: `bd ready --sort hybrid`
-2. **Claim an issue**: `bd update <id> --status in_progress`
-3. **Review dependencies**: `bd dep tree <id>`
-4. **Begin implementation**
+2. **Check GitHub**: Use GitHub MCP to verify no blocking PRs
+3. **Claim an issue**: `bd update <id> --status in_progress`
+4. **Review dependencies**: `bd dep tree <id>`
+5. **Begin implementation**
 
 ### During Implementation
 
 1. **Track sub-tasks**: `bd create "Sub-task" --parent <id>`
 2. **Add blockers**: `bd dep add <new-blocker> <id> --type blocks`
 3. **Update progress**: `bd comment <id> "Progress update"`
+4. **Create PR**: Use GitHub MCP when ready
 
 ### Completing Work
 
 1. **Verify completion**: All acceptance criteria met
-2. **Close issue**: `bd close <id> --reason "Implemented X"`
-3. **Sync**: `bd sync`
-4. **Check next**: `bd ready`
+2. **PR status**: Use GitHub MCP to check CI/review status
+3. **Close issue**: `bd close <id> --reason "Implemented X, PR #123"`
+4. **Sync**: `bd sync`
+5. **Check next**: `bd ready`
 
 ### Multi-Agent Coordination
 
@@ -131,21 +167,6 @@ open -> in_progress -> done
          |-> blocked -> in_progress
 ```
 
-## JSON Output
-
-All commands support `--json` for programmatic use:
-
-```bash
-# Get ready items as JSON
-bd ready --json
-
-# Parse with jq
-bd list --status open --json | jq '.[0].id'
-
-# Count open issues
-bd list --status open --json | jq 'length'
-```
-
 ## Best Practices
 
 1. **One issue per logical unit**: Don't combine unrelated work
@@ -153,6 +174,7 @@ bd list --status open --json | jq 'length'
 3. **Use dependencies**: Makes ready work visible
 4. **Sync frequently**: Keep other agents informed
 5. **Close promptly**: Don't leave stale in_progress issues
+6. **Link to GitHub**: Create GitHub issues for team-visible work
 
 ## Integration with Swarm
 
@@ -163,6 +185,7 @@ When working in a swarm:
 3. **Document blockers**: Create issues for discovered blockers
 4. **Handoff cleanly**: Update assignee and add context
 5. **Sync before ending**: `bd sync` to share state
+6. **Create PRs**: Use GitHub MCP for review visibility
 
 ## Troubleshooting
 

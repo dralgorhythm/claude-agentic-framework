@@ -1,22 +1,37 @@
 ---
 name: testing
 description: Write effective tests for code quality and reliability. Use when implementing features, fixing bugs, or improving coverage. Covers unit, integration, and E2E testing.
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
 ---
 
 # Testing Software
+
+## MCP Tools
+
+**Serena** (coverage analysis):
+- `find_symbol` — Locate functions needing tests
+- `find_referencing_symbols` — Identify test dependencies
+- `get_symbols_overview` — Map testable surface area
+
+**Chrome DevTools** (E2E testing):
+- Automate user flows in real browser
+- Capture screenshots for visual regression
+- Run Lighthouse for accessibility testing
+- Profile performance during test runs
 
 ## Testing Pyramid
 
 1. **Unit Tests** (Many): Fast, isolated, test single units
 2. **Integration Tests** (Some): Test component interactions
-3. **E2E Tests** (Few): Test complete user flows
+3. **E2E Tests** (Few): Test complete user flows — use Chrome DevTools
 
 ## Workflows
 
+- [ ] **Analyze**: Use Serena to identify untested code
 - [ ] **Unit Tests**: Cover all public functions
 - [ ] **Edge Cases**: Test boundaries and error conditions
 - [ ] **Integration**: Test external dependencies
+- [ ] **E2E**: Use Chrome DevTools for browser automation
 - [ ] **Regression**: Add test for each bug fix
 
 ## Test Quality Standards
@@ -24,41 +39,11 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 ### Deterministic
 Tests must produce the same result every time.
 
-```typescript
-// BAD: Depends on current time
-expect(getGreeting()).toBe("Good morning");
-
-// GOOD: Inject time dependency
-expect(getGreeting(new Date("2024-01-01T09:00:00"))).toBe("Good morning");
-```
-
 ### Isolated
 Tests should not depend on each other or shared state.
 
-```typescript
-// BAD: Shared state
-let counter = 0;
-test("increment", () => { counter++; expect(counter).toBe(1); });
-test("increment again", () => { counter++; expect(counter).toBe(2); });
-
-// GOOD: Fresh state per test
-test("increment", () => {
-  const counter = new Counter();
-  counter.increment();
-  expect(counter.value).toBe(1);
-});
-```
-
 ### Clear
 Test names should describe the behavior being tested.
-
-```typescript
-// BAD
-test("test1", () => { ... });
-
-// GOOD
-test("returns empty array when no users match filter", () => { ... });
-```
 
 ## Test Patterns
 
@@ -81,20 +66,15 @@ test("user registration sends welcome email", async () => {
 });
 ```
 
-### Given-When-Then (BDD)
+## E2E Testing with Chrome DevTools
 
-```typescript
-describe("Shopping Cart", () => {
-  describe("given an empty cart", () => {
-    describe("when adding a product", () => {
-      it("then cart contains one item", () => {
-        const cart = new Cart();
-        cart.add(product);
-        expect(cart.items).toHaveLength(1);
-      });
-    });
-  });
-});
+```javascript
+// Use Chrome DevTools MCP for browser automation
+// - Navigate to pages
+// - Fill forms and click buttons
+// - Capture screenshots for visual regression
+// - Run Lighthouse accessibility audits
+// - Check console for errors
 ```
 
 ## Commands
@@ -110,3 +90,10 @@ npm test -- --coverage
 pytest --cov=src
 go test -cover ./...
 ```
+
+## Finding Untested Code
+
+Use Serena to identify gaps:
+1. `get_symbols_overview` — List all functions in module
+2. Check which have corresponding test files
+3. Use `find_referencing_symbols` to see if function is tested

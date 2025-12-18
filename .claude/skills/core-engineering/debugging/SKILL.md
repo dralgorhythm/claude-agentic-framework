@@ -1,15 +1,29 @@
 ---
 name: debugging
 description: Troubleshoot and fix bugs systematically. Use when errors occur, tests fail, or unexpected behavior is observed. Covers root cause analysis and debugging strategies.
-allowed-tools: Read, Bash, Glob, Grep
+allowed-tools: Read, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
 ---
 
 # Debugging and Troubleshooting
+
+## MCP Tools
+
+**Serena** (code tracing):
+- `find_referencing_symbols` — Trace call chains to failure point
+- `find_symbol` — Locate function definitions quickly
+- `get_symbols_overview` — Understand module structure
+
+**Chrome DevTools** (frontend debugging):
+- Capture console errors and network failures
+- Set breakpoints and inspect state
+- Profile performance bottlenecks
+- Capture screenshots of error states
 
 ## Workflows
 
 - [ ] **Reproduce**: Can you reliably reproduce the issue?
 - [ ] **Isolate**: What is the minimal code that exhibits the bug?
+- [ ] **Trace**: Use Serena to follow the call chain
 - [ ] **Hypothesize**: What could cause this behavior?
 - [ ] **Test**: Verify or disprove your hypothesis
 - [ ] **Fix**: Implement the solution
@@ -21,16 +35,17 @@ allowed-tools: Read, Bash, Glob, Grep
 - Read error messages and stack traces carefully
 - Check logs for context around the error
 - Identify when the issue started (recent changes?)
+- **Use Serena** to understand code structure around error
 
-### 2. Reproduce Consistently
+### 2. Trace the Flow
+- Use `find_referencing_symbols` to trace data flow
+- Map the call chain from entry point to error
+- Identify where data transforms unexpectedly
+
+### 3. Reproduce Consistently
 - Create a minimal test case
 - Document exact steps to reproduce
-- Note any environment differences
-
-### 3. Binary Search
-- If the bug is in a large codebase, use binary search
-- Comment out half the code, check if bug persists
-- Narrow down to the exact location
+- For frontend bugs, use Chrome DevTools to record network/console
 
 ### 4. Common Causes
 - **Null/undefined**: Check for missing null checks
@@ -55,9 +70,16 @@ node --inspect-brk app.js
 python -m pdb script.py
 ```
 
+## Frontend Debugging with Chrome DevTools
+
+- Open DevTools → Console for errors
+- Network tab for failed requests
+- Sources tab for breakpoints
+- Performance tab for slow operations
+
 ## Post-Fix Checklist
 
 - [ ] Root cause identified and documented
 - [ ] Regression test added
-- [ ] Similar code checked for same issue
+- [ ] Similar code checked (use `find_symbol` to locate)
 - [ ] Fix reviewed by another developer

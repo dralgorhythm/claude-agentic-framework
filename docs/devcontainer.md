@@ -37,6 +37,7 @@ A sandboxed, consistent development environment with all tools pre-installed.
 ### Pre-installed Tools
 - **Claude Code** — Latest version
 - **Beads** — Issue tracking (auto-initialized)
+- **MCP Servers** — Serena, Sequential Thinking, Chrome DevTools, GitHub
 - **Trivy** — Security scanner
 - **git-delta** — Better git diffs
 - **GitHub CLI** — `gh` commands

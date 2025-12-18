@@ -59,6 +59,8 @@ designing-systems, debugging, threat-modeling, ...
 
 **Swarm Workers** — Parallel agents for big jobs
 
+**MCP Servers** — Semantic code nav, browser debugging, GitHub integration
+
 **Dev Container** — Sandboxed environment with network firewall
 
 ## Sandboxed Environment (Recommended)
@@ -90,6 +92,7 @@ See [docs/devcontainer.md](docs/devcontainer.md) for details.
 
 - [Installation details](docs/getting-started.md)
 - [Dev container setup](docs/devcontainer.md)
+- [MCP servers](docs/mcp-servers.md)
 - [All personas](docs/personas.md)
 - [Skills reference](docs/skills.md)
 - [Multi-agent swarms](docs/swarm.md)
