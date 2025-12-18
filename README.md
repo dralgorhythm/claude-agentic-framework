@@ -6,7 +6,7 @@ Specialized personas and reusable workflows for Claude Code.
 
 ```bash
 cd your-project
-curl -sSL https://raw.githubusercontent.com/anthropics/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
+curl -sSL https://raw.githubusercontent.com/dralgorhythm/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
 ```
 
 Then start Claude Code: `claude`
