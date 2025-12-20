@@ -88,6 +88,7 @@ This is the **SINGLE SOURCE OF TRUTH** for technology choices.
 | Production | AWS (ECS/Fargate/Lambda) |
 | Mobile Distribution | TestFlight (iOS), Google Play (Android) |
 | IaC | Terraform |
+| Edge/CDN | Cloudflare |
 | Secrets | GitHub Secrets / AWS Secrets Manager |
 
 ## Data
