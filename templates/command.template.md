@@ -1,1 +1,0 @@
-claude_mechanisms/command.template.md
