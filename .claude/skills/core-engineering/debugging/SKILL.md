@@ -1,17 +1,12 @@
 ---
 name: debugging
 description: Troubleshoot and fix bugs systematically. Use when errors occur, tests fail, or unexpected behavior is observed. Covers root cause analysis and debugging strategies.
-allowed-tools: Read, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
+allowed-tools: Read, Bash, Glob, Grep, mcp__chrome-devtools__*
 ---
 
 # Debugging and Troubleshooting
 
 ## MCP Tools
-
-**Serena** (code tracing):
-- `find_referencing_symbols` — Trace call chains to failure point
-- `find_symbol` — Locate function definitions quickly
-- `get_symbols_overview` — Understand module structure
 
 **Chrome DevTools** (frontend debugging):
 - Capture console errors and network failures
@@ -23,7 +18,7 @@ allowed-tools: Read, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
 
 - [ ] **Reproduce**: Can you reliably reproduce the issue?
 - [ ] **Isolate**: What is the minimal code that exhibits the bug?
-- [ ] **Trace**: Use Serena to follow the call chain
+- [ ] **Trace**: Use Grep to follow the call chain
 - [ ] **Hypothesize**: What could cause this behavior?
 - [ ] **Test**: Verify or disprove your hypothesis
 - [ ] **Fix**: Implement the solution
@@ -35,10 +30,10 @@ allowed-tools: Read, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
 - Read error messages and stack traces carefully
 - Check logs for context around the error
 - Identify when the issue started (recent changes?)
-- **Use Serena** to understand code structure around error
+- **Use Grep** to locate related code around the error
 
 ### 2. Trace the Flow
-- Use `find_referencing_symbols` to trace data flow
+- Use Grep to trace data flow through function calls
 - Map the call chain from entry point to error
 - Identify where data transforms unexpectedly
 
@@ -54,7 +49,7 @@ allowed-tools: Read, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
 - **State mutation**: Look for unexpected side effects
 - **Type coercion**: Verify type handling (especially in JS/TS)
 
-## Tools
+## Tools (Examples by Language)
 
 ```bash
 # Check logs
@@ -81,5 +76,5 @@ python -m pdb script.py
 
 - [ ] Root cause identified and documented
 - [ ] Regression test added
-- [ ] Similar code checked (use `find_symbol` to locate)
+- [ ] Similar code checked (use Grep to locate)
 - [ ] Fix reviewed by another developer

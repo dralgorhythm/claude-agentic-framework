@@ -1,6 +1,6 @@
 ---
 description: Test strategy, automation, and quality verification
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__chrome-devtools__*
 argument-hint: [component-to-test]
 ---
 
@@ -9,11 +9,6 @@ argument-hint: [component-to-test]
 Test strategy, automation, and verification.
 
 ## MCP Tools
-
-**Serena** (code coverage analysis):
-- `find_symbol` — Locate functions needing tests
-- `find_referencing_symbols` — Identify test dependencies
-- `get_symbols_overview` — Map testable surface area
 
 **Chrome DevTools** (E2E and browser testing):
 - Automate user flows in real browser
@@ -24,7 +19,7 @@ Test strategy, automation, and verification.
 
 ## Testing Workflow
 
-1. **Analyze** — Use Serena to identify untested code paths
+1. **Analyze** — Use Glob to find source files without corresponding tests
 2. **Plan** — Design test strategy covering all layers
 3. **Unit/Integration** — Write tests with standard runners
 4. **E2E** — Use Chrome DevTools for browser automation
@@ -34,7 +29,7 @@ Test strategy, automation, and verification.
 ## Test Types
 | Type | Purpose | Tools |
 |------|---------|-------|
-| Unit | Logic isolation | Vitest/pytest |
+| Unit | Logic isolation | Project test runner |
 | Integration | Component interaction | Real deps |
 | E2E | User flows | Chrome DevTools |
 | Visual | UI regression | DevTools screenshots |

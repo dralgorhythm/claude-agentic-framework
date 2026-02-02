@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "metadata": {
     "description": "Skill activation rules for Claude Code with swarm coordination support",
-    "updated": "2025-12-16",
+    "updated": "2026-02-02",
     "swarm_aware": true
   },
   "skills": [
@@ -466,7 +466,7 @@
         "intent_patterns": ["ios.*app", "swift.*code", "apple.*development", "write.*swift"],
         "file_patterns": ["*.swift", "*.xcodeproj", "Package.swift", "*.xcworkspace"]
       },
-      "priority": "high"
+      "priority": "low"
     },
     {
       "name": "kotlin",
@@ -477,7 +477,7 @@
         "intent_patterns": ["android.*app", "kotlin.*code", "kotlin.*multiplatform", "write.*kotlin"],
         "file_patterns": ["*.kt", "*.kts", "build.gradle.kts", "settings.gradle.kts", "AndroidManifest.xml"]
       },
-      "priority": "high"
+      "priority": "low"
     },
     {
       "name": "chaos-engineering",
@@ -555,6 +555,171 @@
         "file_patterns": []
       },
       "priority": "low"
+    },
+    {
+      "name": "react-patterns",
+      "path": ".claude/skills/languages/react-patterns/SKILL.md",
+      "description": "React hooks, context, composition, and component patterns for web and mobile",
+      "triggers": {
+        "keywords": ["react", "hooks", "context", "component", "useState", "useEffect", "composition"],
+        "intent_patterns": ["react.*pattern", "component.*composition", "custom.*hook", "react.*context"],
+        "file_patterns": ["*.tsx", "*.jsx"]
+      },
+      "priority": "high"
+    },
+    {
+      "name": "biome",
+      "path": ".claude/skills/languages/biome/SKILL.md",
+      "description": "Biome 2.x linting and formatting configuration and usage",
+      "triggers": {
+        "keywords": ["biome", "lint", "format", "linter", "formatter"],
+        "intent_patterns": ["setup.*biome", "configure.*linter", "fix.*lint", "format.*code"],
+        "file_patterns": ["biome.json", "biome.jsonc"]
+      },
+      "priority": "high"
+    },
+    {
+      "name": "hono",
+      "path": ".claude/skills/languages/hono/SKILL.md",
+      "description": "Hono 4.x API framework patterns and middleware",
+      "triggers": {
+        "keywords": ["hono", "api framework", "edge api"],
+        "intent_patterns": ["hono.*route", "hono.*middleware", "create.*api.*hono"],
+        "file_patterns": []
+      },
+      "priority": "medium"
+    },
+    {
+      "name": "tailwind-css",
+      "path": ".claude/skills/languages/tailwind-css/SKILL.md",
+      "description": "Tailwind CSS 4.x web styling patterns and configuration",
+      "triggers": {
+        "keywords": ["tailwind", "tailwindcss", "utility css", "css utility"],
+        "intent_patterns": ["tailwind.*style", "add.*tailwind", "configure.*tailwind"],
+        "file_patterns": ["tailwind.config.*", "*.css"]
+      },
+      "priority": "medium"
+    },
+    {
+      "name": "framer-motion",
+      "path": ".claude/skills/languages/framer-motion/SKILL.md",
+      "description": "Framer Motion 12.x web animation patterns",
+      "triggers": {
+        "keywords": ["framer", "motion", "animation", "animate", "transition"],
+        "intent_patterns": ["animate.*component", "add.*animation", "framer.*motion"],
+        "file_patterns": []
+      },
+      "priority": "medium"
+    },
+    {
+      "name": "radix-ui",
+      "path": ".claude/skills/languages/radix-ui/SKILL.md",
+      "description": "Radix UI accessible component primitives for web",
+      "triggers": {
+        "keywords": ["radix", "radix-ui", "dialog", "popover", "dropdown"],
+        "intent_patterns": ["radix.*component", "accessible.*primitive", "add.*radix"],
+        "file_patterns": []
+      },
+      "priority": "medium"
+    },
+    {
+      "name": "vite",
+      "path": ".claude/skills/languages/vite/SKILL.md",
+      "description": "Vite 7.x build tool configuration and optimization",
+      "triggers": {
+        "keywords": ["vite", "build tool", "hmr", "dev server"],
+        "intent_patterns": ["configure.*vite", "vite.*plugin", "vite.*build"],
+        "file_patterns": ["vite.config.*"]
+      },
+      "priority": "medium"
+    },
+    {
+      "name": "expo-router",
+      "path": ".claude/skills/languages/expo-router/SKILL.md",
+      "description": "Expo Router file-based routing for React Native",
+      "triggers": {
+        "keywords": ["expo router", "expo routing", "file-based routing", "react native navigation"],
+        "intent_patterns": ["expo.*route", "react.*native.*navigation", "file.*routing"],
+        "file_patterns": ["app/_layout.tsx", "app/(*)/**"]
+      },
+      "priority": "low"
+    },
+    {
+      "name": "expo-sdk",
+      "path": ".claude/skills/languages/expo-sdk/SKILL.md",
+      "description": "Expo SDK platform APIs and configuration",
+      "triggers": {
+        "keywords": ["expo", "expo-image", "expo-haptics", "expo sdk"],
+        "intent_patterns": ["expo.*setup", "expo.*config", "expo.*api"],
+        "file_patterns": ["app.json", "app.config.*"]
+      },
+      "priority": "low"
+    },
+    {
+      "name": "react-native-patterns",
+      "path": ".claude/skills/languages/react-native-patterns/SKILL.md",
+      "description": "React Native component patterns, Pressable, ScrollView, accessibility",
+      "triggers": {
+        "keywords": ["react native", "pressable", "scrollview", "flatlist", "flashlist"],
+        "intent_patterns": ["react.*native.*component", "mobile.*ui", "native.*pattern"],
+        "file_patterns": []
+      },
+      "priority": "low"
+    },
+    {
+      "name": "nativewind",
+      "path": ".claude/skills/languages/nativewind/SKILL.md",
+      "description": "NativeWind (Tailwind for React Native) styling patterns",
+      "triggers": {
+        "keywords": ["nativewind", "tailwind native", "react native tailwind"],
+        "intent_patterns": ["nativewind.*style", "tailwind.*react.*native"],
+        "file_patterns": ["tailwind.config.js", "global.css", "nativewind-env.d.ts"]
+      },
+      "priority": "low"
+    },
+    {
+      "name": "reanimated",
+      "path": ".claude/skills/languages/reanimated/SKILL.md",
+      "description": "React Native Reanimated UI-thread animations",
+      "triggers": {
+        "keywords": ["reanimated", "react native animation", "shared value", "worklet"],
+        "intent_patterns": ["animate.*react.*native", "reanimated.*animation", "ui.*thread.*animation"],
+        "file_patterns": []
+      },
+      "priority": "low"
+    },
+    {
+      "name": "component-recipes",
+      "path": ".claude/skills/design/component-recipes/SKILL.md",
+      "description": "Tailwind component patterns and recipes for web UI",
+      "triggers": {
+        "keywords": ["component recipe", "tailwind component", "ui recipe"],
+        "intent_patterns": ["tailwind.*component", "build.*card", "build.*badge"],
+        "file_patterns": []
+      },
+      "priority": "low"
+    },
+    {
+      "name": "demo-design-tokens",
+      "path": ".claude/skills/design/demo-design-tokens/SKILL.md",
+      "description": "Default design tokens for demo applications without a formal design system",
+      "triggers": {
+        "keywords": ["design tokens", "color system", "typography scale", "demo design"],
+        "intent_patterns": ["design.*token", "color.*system", "demo.*style"],
+        "file_patterns": []
+      },
+      "priority": "low"
+    },
+    {
+      "name": "data-to-ui",
+      "path": ".claude/skills/core-engineering/data-to-ui/SKILL.md",
+      "description": "Data-to-UI pipeline patterns for transforming JSON into React components",
+      "triggers": {
+        "keywords": ["data pipeline", "json to react", "color map", "data transform"],
+        "intent_patterns": ["transform.*data.*ui", "json.*react", "create.*color.*map", "data.*component"],
+        "file_patterns": []
+      },
+      "priority": "high"
     }
   ]
 }

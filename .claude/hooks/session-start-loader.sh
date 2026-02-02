@@ -2,7 +2,7 @@
 # Session start hook for swarm context loading
 # Loads project context, beads status, and swarm state
 
-set -e
+set -eo pipefail
 
 INPUT=$(cat)
 SOURCE=$(echo "$INPUT" | jq -r '.source // "startup"')
@@ -11,6 +11,9 @@ SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 STATE_DIR="$PROJECT_DIR/.claude/hooks/.state"
 mkdir -p "$STATE_DIR"
+
+# Clean up session files older than 24 hours
+find "$STATE_DIR" -name "session_*.json" -type f -mtime +1 -delete 2>/dev/null || true
 
 # Initialize session tracking
 SESSION_SHORT=$(echo "$SESSION_ID" | cut -c1-8)

@@ -1,6 +1,6 @@
 ---
 description: Security compliance, threat modeling, and audits
-allowed-tools: Read, Glob, Grep, Bash, mcp__serena__*, mcp__sequential-thinking__*, mcp__github__*
+allowed-tools: Read, Glob, Grep, Bash, mcp__sequential-thinking__*, mcp__github__*
 argument-hint: [scope-or-component]
 ---
 
@@ -19,11 +19,6 @@ Use STRIDE analysis systematically:
 5. **Denial of Service** — Resource exhaustion vectors
 6. **Elevation of Privilege** — Authorization flaws
 
-**Serena** (vulnerability tracing):
-- `find_referencing_symbols` — Trace tainted data flow
-- `find_symbol` — Locate security-critical functions
-- `get_symbols_overview` — Map attack surface
-
 **GitHub** (findings management):
 - Create security issues for findings
 - Link vulnerabilities to specific commits
@@ -31,15 +26,15 @@ Use STRIDE analysis systematically:
 
 ## Audit Workflow
 
-1. **Map surface** — Use Serena to identify entry points
+1. **Map surface** — Use Grep and Glob to identify entry points
 2. **Enumerate threats** — Use Sequential Thinking for STRIDE
-3. **Trace data** — Use `find_referencing_symbols` for flow analysis
+3. **Trace data** — Use Grep to trace data flow through handlers
 4. **Document** — Create findings with severity ratings
 5. **Track** — Use GitHub MCP to create issues for remediation
 
 ## Audit Checklist
 - [ ] Authentication/Authorization
-- [ ] Input validation (trace with Serena)
+- [ ] Input validation (trace with Grep)
 - [ ] Secrets management
 - [ ] Dependency vulnerabilities (`trivy` scan)
 - [ ] Data encryption
@@ -49,7 +44,7 @@ Use STRIDE analysis systematically:
 - NO approving code with critical vulnerabilities
 - NO custom crypto implementations
 - NO skipping threat analysis — use Sequential Thinking
-- ALWAYS trace data flow with Serena for injection risks
+- ALWAYS trace data flow with Grep for injection risks
 - ALWAYS document findings in `./artifacts/security_audit_[date].md`
 - ALWAYS create GitHub issues for critical/high findings
 

@@ -4,7 +4,7 @@
 
 ```bash
 cd your-project
-curl -sSL https://raw.githubusercontent.com/anthropics/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
+curl -sSL https://raw.githubusercontent.com/dralgorhythm/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
 ```
 
 The script prompts before overwriting existing files.
@@ -12,7 +12,7 @@ The script prompts before overwriting existing files.
 ## Manual Install
 
 ```bash
-git clone https://github.com/anthropics/claude-agentic-framework.git
+git clone https://github.com/dralgorhythm/claude-agentic-framework.git
 cp -r claude-agentic-framework/.claude your-project/
 cp -r claude-agentic-framework/templates your-project/
 cp claude-agentic-framework/CLAUDE.md your-project/
@@ -56,21 +56,6 @@ bd init
 ```
 
 See [beads.md](beads.md).
-
-## Recommended: Dev Container
-
-For a sandboxed environment with all tools pre-installed:
-
-**VS Code:**
-1. Install [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-2. Open project → "Reopen in Container"
-
-**GitHub Codespaces:**
-Click Code → Codespaces → New codespace
-
-The container includes a network firewall that only allows approved domains (GitHub, npm, PyPI, etc.).
-
-See [devcontainer.md](devcontainer.md) for full details.
 
 ---
 

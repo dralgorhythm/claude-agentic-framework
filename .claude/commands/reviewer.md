@@ -1,6 +1,6 @@
 ---
 description: Code review, security audit, and quality verification
-allowed-tools: Read, Glob, Grep, Bash, mcp__serena__*, mcp__github__*
+allowed-tools: Read, Glob, Grep, Bash, mcp__github__*
 argument-hint: [file-or-pr]
 ---
 
@@ -9,11 +9,6 @@ argument-hint: [file-or-pr]
 Quality, security, and performance review before deployment.
 
 ## MCP Tools
-
-**Serena** (semantic code analysis):
-- `find_symbol` — Locate classes, functions, methods
-- `find_referencing_symbols` — Track all usages of a symbol
-- `get_symbols_overview` — Understand file structure
 
 **GitHub** (PR workflow):
 - Fetch PR diffs and commit history
@@ -24,9 +19,9 @@ Quality, security, and performance review before deployment.
 ## Review Workflow
 
 1. **Fetch PR** — Use GitHub MCP to get diff and context
-2. **Analyze structure** — Use Serena to map symbol dependencies
-3. **Check security** — Trace data flow with `find_referencing_symbols`
-4. **Verify patterns** — Use `get_symbols_overview` for architecture compliance
+2. **Analyze structure** — Use Grep to trace references and dependencies
+3. **Check security** — Use Grep to trace data flow through handlers
+4. **Verify patterns** — Use Glob and Grep to check architecture compliance
 5. **Post feedback** — Use GitHub MCP to comment and approve/reject
 
 ## Review Checklist
@@ -44,7 +39,7 @@ Quality, security, and performance review before deployment.
 ## Constraints
 - NO approving critical security issues
 - NO vague feedback — be specific with line references
-- ALWAYS use Serena to verify symbol usage before suggesting removals
+- ALWAYS verify symbol usage with Grep before suggesting removals
 - ALWAYS trace data flow for security-sensitive code
 
 ## Related Skills

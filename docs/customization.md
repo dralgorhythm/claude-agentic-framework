@@ -15,7 +15,7 @@ allowed-tools: Read, Write, Edit, Bash
 
 Add persona instructions below the frontmatter.
 
-See `templates/command.template.md` for the full format.
+See `templates/claude_mechanisms/command.template.md` for the full format.
 
 ## Adding a Skill
 
@@ -42,7 +42,7 @@ allowed-tools: Read, Write, Edit
 }
 ```
 
-See `templates/skill.template.md` for the full format.
+See `templates/claude_mechanisms/skill.template.md` for the full format.
 
 ## Adding a Rule
 
@@ -81,9 +81,11 @@ model: haiku
 
 Models: `haiku` (fast), `sonnet` (capable), `opus` (complex reasoning)
 
-## Changing Tech Choices
+## Required: Configure Your Tech Stack
 
-Edit `.claude/rules/tech-strategy.md`:
+**IMPORTANT**: The framework will not align with your project without this step.
+
+Edit `.claude/rules/tech-strategy.md` to match your actual technology choices:
 
 ```markdown
 ### TypeScript
@@ -93,7 +95,7 @@ Edit `.claude/rules/tech-strategy.md`:
 | Build | esbuild |       # your choice
 ```
 
-The framework enforces these across all personas.
+The framework enforces these across all personas. Claude will use the technologies you specify here, not generic defaults.
 
 ---
 

@@ -15,7 +15,7 @@ bd init
 bd create "Task description"          # create
 bd ready                              # find work
 bd update <id> --status in_progress   # claim
-bd update <id> --status done          # complete
+bd close <id> --reason "Done"         # complete
 bd sync                               # sync with team
 bd doctor                             # health check
 ```

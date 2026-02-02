@@ -52,50 +52,34 @@ Each step builds on the previous. Artifacts pass between personas automatically.
 /sre             /security-auditor /ui-ux-designer
 ```
 
-**50+ Skills** — Auto-suggested based on what you ask
+**4 Swarm Commands** — Orchestrate parallel agents
 ```
-designing-systems, debugging, threat-modeling, ...
+/swarm-plan      /swarm-execute    /swarm-review    /code-check
+```
+
+**65+ Skills** — Auto-suggested based on what you ask
+```
+designing-systems, debugging, react-patterns, data-to-ui, ...
 ```
 
 **Swarm Workers** — Parallel agents for big jobs
 
-**MCP Servers** — Semantic code nav, browser debugging, GitHub integration
-
-**Dev Container** — Sandboxed environment with network firewall
-
-## Sandboxed Environment (Recommended)
-
-For safety and consistency, use the included dev container:
-
-```bash
-# VS Code: Install "Dev Containers" extension, then:
-# Cmd/Ctrl+Shift+P → "Reopen in Container"
-
-# GitHub Codespaces: Click Code → Codespaces → New
-```
-
-The container includes:
-- All languages (Node, Python, Go, Rust, Terraform)
-- Network firewall — only approved domains (GitHub, npm, PyPI, etc.)
-- Pre-configured linters and formatters
-- Claude Code and Beads pre-installed
-
-See [docs/devcontainer.md](docs/devcontainer.md) for details.
+**MCP Servers** — Browser debugging, GitHub integration, structured reasoning, library docs
 
 ## After Install
 
 1. Open `CLAUDE.md` and add your build/test commands
 2. Check `artifacts/` after using personas — that's where docs land
-3. Edit `.claude/rules/tech-strategy.md` if you use different tech
+3. **Required**: Edit `.claude/rules/tech-strategy.md` to match your tech stack
 
 ## Docs
 
 - [Installation details](docs/getting-started.md)
-- [Dev container setup](docs/devcontainer.md)
 - [MCP servers](docs/mcp-servers.md)
 - [All personas](docs/personas.md)
 - [Skills reference](docs/skills.md)
 - [Multi-agent swarms](docs/swarm.md)
 - [Customization](docs/customization.md)
 - [Hooks](docs/hooks.md)
+- [Handoffs](docs/handoffs.md)
 - [Beads issue tracking](docs/beads.md)
