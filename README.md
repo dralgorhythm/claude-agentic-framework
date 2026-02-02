@@ -29,9 +29,6 @@ This produces artifacts (PR-FAQs, PRDs, ADRs) that feed the next step.
 ### 2. Plan — Parallel exploration
 
 ```
-/architect user notifications
-```
-Claude designs the system and writes an ADR in `artifacts/`.
 /swarm-plan implement user notifications per the PRD
 ```
 
@@ -56,9 +53,6 @@ Each pass launches 5 parallel reviewers covering different perspectives: securit
 ### Full cycle
 
 ```
-/swarm-review
-```
-Claude reviews for bugs, security, and performance issues.
 /product-manager <feature>  →  /swarm-plan  →  /swarm-execute  →  /swarm-review (2-3x)  →  PR
 ```
 
@@ -87,15 +81,6 @@ For single-agent work, ideation, and research:
 /architect       /builder          /qa-engineer
 /security-auditor /ui-ux-designer  /code-check
 /swarm-plan      /swarm-execute    /swarm-review
-```
-
-**65+ Skills** — Auto-suggested based on what you ask
-```
-designing-systems, debugging, react-patterns, data-to-ui, ...
-```
-/architect       /builder          /product-manager
-/reviewer        /qa-engineer      /refactoring-engineer
-/sre             /security-auditor /ui-ux-designer
 ```
 
 Personas produce artifacts in `artifacts/` that chain naturally into swarm workflows.
