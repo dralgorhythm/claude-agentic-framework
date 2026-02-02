@@ -3,7 +3,7 @@
 <!--
 Incident Post-Mortem Report
 Filename: artifacts/postmortem_[incident-id].md
-Owner: SRE (/sre)
+Owner: Architect (/architect)
 Handoff to: Architect (/architect) for design changes, Builder (/builder) for fixes
 Related Skills: incident-management, observability, infrastructure
 

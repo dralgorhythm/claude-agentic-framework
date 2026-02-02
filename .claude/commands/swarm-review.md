@@ -33,35 +33,11 @@ Multi-perspective code review with root cause analysis and security focus.
 ## Parallel Review Perspectives
 
 Launch worker-reviewer agents for each perspective:
-- Security review (OWASP Top 10 2021)
-- Performance review
-- Architecture review
+- Security review — See `security.md` for OWASP Top 10 and severity classification
+- Performance review — See `code-quality.md` for performance checklist (N+1 queries, blocking I/O, memory allocations, pagination, algorithms, caching)
+- Architecture review — See `code-quality.md` for SOLID principles
 - Test coverage review
 - Code quality review
-
-## Security Checklist (OWASP 2021)
-
-| Check | Look For |
-|-------|----------|
-| Broken Access Control | Missing authorization checks |
-| Cryptographic Failures | Unencrypted sensitive data |
-| Injection | SQL, Command, XSS vulnerabilities |
-| Insecure Design | Missing threat modeling |
-| Security Misconfiguration | Default credentials, debug enabled |
-| Vulnerable Components | Outdated/CVE-affected packages |
-| Auth Failures | Weak passwords, session issues |
-| Integrity Failures | Unsigned updates, untrusted deserialization |
-| Logging Failures | Missing audit trails |
-| SSRF | Unvalidated URLs in server requests |
-
-## Performance Checklist
-
-- N+1 query patterns (look for loops with DB calls)
-- Blocking I/O in async paths (`readFileSync`, `execSync`)
-- Excessive memory allocations
-- Missing pagination
-- Inefficient algorithms (O(n²) when O(n) possible)
-- Cache opportunities missed
 
 ## Adversarial Questions
 
@@ -95,15 +71,6 @@ Apply until reaching systemic cause (may be 3-7 whys):
 
 **Systemic Fix**: [What prevents recurrence]
 ```
-
-## Severity Classification
-
-| Severity | Definition | Action |
-|----------|------------|--------|
-| Critical | Security vulnerability, data loss risk | MUST fix before merge |
-| High | Breaking change, major bug | MUST fix before merge |
-| Medium | Performance issue, code smell | SHOULD fix, can negotiate |
-| Low | Style, minor improvement | COULD fix, optional |
 
 ## Verdict Framework
 

@@ -22,3 +22,31 @@ Deep-dive reference for SOLID principles and type safety. See Core Principles in
 - Avoid `any` types in TypeScript (if applicable)
 - Use type narrowing and discriminated unions
 - Leverage compile-time type checking
+
+## Performance Checklist
+
+- N+1 query patterns (loops with DB calls)
+- Blocking I/O in async paths (readFileSync, execSync)
+- Excessive memory allocations
+- Missing pagination
+- Inefficient algorithms (O(n²) when O(n) possible)
+- Cache opportunities missed
+
+## Quality Gates
+
+All of these must pass before committing:
+
+- Tests pass
+- Linter passes
+- Type checker passes (if applicable)
+- Build succeeds
+- Security audit passes
+
+## Refactoring Discipline
+
+**Two Hats Rule**: Never mix refactoring and optimization in the same session.
+
+- **Hat 1: Refactoring** - Change structure, NOT behavior. Tests must pass unchanged.
+- **Hat 2: Optimization** - Improve performance, NOT behavior. Benchmarks required.
+
+When switching hats, commit first, then switch context.

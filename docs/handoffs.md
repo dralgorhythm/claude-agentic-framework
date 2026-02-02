@@ -5,13 +5,11 @@ How work flows between personas and agents.
 ## Persona Handoff Chain
 
 ```
-/product-manager  →  artifacts/pr_faq_*.md, prd_*.md
-       ↓
 /architect        →  artifacts/adr_*.md, system_design_*.md
        ↓
 /builder          →  Code + tests
        ↓
-/reviewer         →  Feedback → back to /builder if needed
+/swarm-review     →  Feedback → back to /builder if needed
 ```
 
 Each persona reads the previous artifacts and builds on them.

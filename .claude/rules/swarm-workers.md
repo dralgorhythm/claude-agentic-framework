@@ -14,13 +14,24 @@ Rules for efficient multi-agent swarm execution.
 | Worker | Model | Tools | Use |
 |--------|-------|-------|-----|
 | `worker-explorer` | haiku | Read, Glob, Grep | Fast codebase search |
-| `worker-builder` | sonnet | Read, Write, Edit, Bash, Glob, Grep | Implementation |
-| `worker-reviewer` | sonnet | Read, Glob, Grep, Bash | Code review |
-| `worker-tester` | sonnet | Read, Write, Edit, Bash, Glob, Grep | Test writing |
+| `worker-builder` | sonnet | Read, Write, Edit, Bash, Glob, Grep | Implementation/testing/refactoring |
+| `worker-reviewer` | sonnet | Read, Glob, Grep, Bash | Code review/security analysis |
 | `worker-researcher` | sonnet | Read, Glob, Grep, WebFetch, WebSearch | External research |
 | `worker-architect` | opus | Read, Write, Edit, Glob, Grep | Complex design decisions |
-| `worker-security` | sonnet | Read, Glob, Grep, Bash | Security analysis |
-| `worker-refactor` | sonnet | Read, Write, Edit, Bash, Glob, Grep | Code cleanup |
+
+## Worker Focus Modes
+
+Orchestrators specialize workers by specifying a focus mode in the prompt.
+
+**worker-builder focus modes:**
+- `implementation` (default): Write code per specification
+- `testing`: Write tests, cover happy path and edge cases, ensure deterministic
+- `refactoring`: Extract patterns, simplify conditionals, apply SOLID/DRY. Follow Two Hats Rule (see code-quality.md)
+
+**worker-reviewer focus modes:**
+- `quality` (default): Code review checklist — naming, style, tests, patterns
+- `security`: OWASP Top 10 scan, hardcoded secrets, auth/authz flows, input validation. Reference CWE IDs. See security.md
+- `performance`: N+1 queries, blocking I/O, allocations, pagination, caching. See code-quality.md
 
 ## Swarm Patterns
 
@@ -42,7 +53,7 @@ Results aggregated for next phase
 
 ### Security Sweep
 ```
-worker-security scans all components in parallel
+worker-reviewer (focus: security) scans all components in parallel
 Findings aggregated and prioritized
 worker-builder fixes critical/high issues
 ```

@@ -46,7 +46,7 @@ Decompose features into actionable plans using parallel exploration swarms.
 **Large Feature (2+ weeks)**
 - `pr_faq_[feature].md` — Vision and customer value
 - `prd_[feature].md` — Detailed requirements
-- `adr_[key-decision].md` — Architectural decisions
+- `adr_[key-decision].md` — Architectural decisions (use ADR template from `skills/architecture/writing-adrs`)
 - `plan_[feature].md` — Implementation steps
 
 ## Parallel Exploration Pattern
@@ -72,28 +72,6 @@ bd create --title="[Task 2: Core Logic]" --type=task
 
 # Link dependencies (Task 2 depends on Task 1)
 bd dep add <task2-id> <task1-id>
-```
-
-## ADR Template (Nygard Format)
-
-```markdown
-# ADR-NNN: [Decision Title]
-
-## Status
-Proposed | Accepted | Deprecated | Superseded
-
-## Context
-[Facts influencing this decision - value-neutral]
-
-## Decision
-[The chosen approach and implementation details]
-
-## Consequences
-### Positive
-- [What becomes easier]
-
-### Negative
-- [What becomes harder]
 ```
 
 ## Constraints
@@ -122,6 +100,5 @@ Every planning session MUST produce:
 
 - To Builder: Plan artifact + Beads ready for `bd ready`
 - To Architect: Complex decisions requiring ADR review
-- To Product Manager: When requirements need clarification
 
 $ARGUMENTS

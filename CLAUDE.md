@@ -83,12 +83,8 @@ See `beads-workflow` skill for complete command reference.
 | Command | Role | Use |
 |---------|------|-----|
 | `/architect` | Principal Architect | System design, ADRs |
-| `/builder` | Software Engineer | Implementation, debugging |
-| `/product-manager` | Product Manager | PR-FAQs, PRDs, requirements |
-| `/qa-engineer` | QA Engineer | Test strategy |
-| `/reviewer` | Code Reviewer | Code review, security |
-| `/refactoring-engineer` | Refactoring Engineer | Code cleanup, optimization |
-| `/sre` | SRE | Infrastructure, DevOps |
+| `/builder` | Software Engineer | Implementation, debugging, testing |
+| `/qa-engineer` | QA Engineer | Test strategy, E2E, accessibility |
 | `/security-auditor` | Security Auditor | Threat modeling, audits |
 | `/ui-ux-designer` | UI/UX Designer | Interface design, a11y |
 | `/code-check` | Codebase Auditor | SOLID, DRY, consistency audits |

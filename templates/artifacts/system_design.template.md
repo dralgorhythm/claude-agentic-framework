@@ -4,7 +4,7 @@
 System Design Document (Technical Architecture)
 Filename: artifacts/system_design_[system].md
 Owner: Architect (/architect)
-Handoff to: Builder (/builder), Security Auditor (/security-auditor), SRE (/sre)
+Handoff to: Builder (/builder), Security Auditor (/security-auditor)
 Related Skills: designing-systems, designing-apis, cloud-native-patterns, domain-driven-design
 
 This document covers TECHNICAL architecture. For UI/visual design, use design_spec.template.md
@@ -435,7 +435,6 @@ graph LR
 | Architect | | | Pending |
 | Engineering Lead | | | Pending |
 | Security | | | Pending |
-| SRE | | | Pending |
 
 ---
 

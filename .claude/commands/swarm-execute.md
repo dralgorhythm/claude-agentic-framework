@@ -30,52 +30,34 @@ Execute plans using parallel worker swarms with quality gates and Beads tracking
 6. **Close** — Mark complete: `bd close <id> --reason "..."`
 7. **Push** — Push to remote (MANDATORY)
 
-## Worker Types
+## Worker Assignment
 
-| Task Type | Worker | Model | Parallelism |
-|-----------|--------|-------|-------------|
-| Implementation | worker-builder | sonnet | Up to 4 |
-| Test Writing | worker-tester | sonnet | Up to 4 |
-| Research/Spike | worker-explorer | haiku | Up to 8 |
-| Security Check | worker-security | sonnet | 1-2 |
-| Refactoring | worker-refactor | sonnet | Up to 4 |
+See `swarm-workers.md` for worker types and focus modes:
+- worker-builder (implementation, testing, refactoring)
+- worker-reviewer (code review, security analysis, performance review)
+- worker-explorer (research/spike)
+- worker-researcher (external documentation/API research)
+- worker-architect (complex design decisions)
 
 ## Quality Gates
 
-**Before closing ANY task:**
+Run quality gates per `code-quality.md` — all must pass:
+- Test suite passes
+- Linter passes
+- Type checker passes (if applicable)
+- Build succeeds
+- Security audit passes
 
-```bash
-# Run project test suite (npm test, pytest, cargo test, go test, etc.)
-# Run linter (biome, ruff, clippy, golangci-lint, etc.)
-# Run type checker if applicable (tsc, mypy, etc.)
-# Verify build succeeds
-# Run security audit (npm audit, trivy, cargo audit, etc.)
-```
+No exceptions.
 
-All gates MUST pass. No exceptions.
+## Git Push Protocol
 
-## Git Push Protocol (MANDATORY)
-
-Work is NOT complete until pushed to remote:
-
-```bash
-# Stage and commit
-git add -A
-git commit -m "feat(scope): description
-
-- Change 1
-- Change 2
-
-Closes: beads-xxx"
-
-# Pull, sync beads, and push
-git pull --rebase
-bd sync
-git push
-
-# Verify
-git status  # MUST show "up to date with origin"
-```
+Follow git push protocol in `swarm-workers.md` — work is NOT complete until pushed:
+1. Stage and commit with descriptive message
+2. Pull with rebase
+3. Sync beads: `bd sync`
+4. Push to remote
+5. Verify: `git status` must show "up to date with origin"
 
 ## Checkpointing
 
@@ -99,17 +81,9 @@ bd create --title="Fix: [description]" --type=bug --priority=1
 bd dep add <new-id> <blocked-id>
 ```
 
-## Rollback Protocol
+## Rollback
 
-```bash
-# Revert changes if quality gates fail
-git stash
-git checkout -- .
-
-# Mark task as blocked
-bd update <id> --status blocked
-bd comments add <id> "Rolled back: [reason]"
-```
+If quality gates fail: stash changes, mark task as blocked, add comment with reason.
 
 ## Constraints
 
@@ -140,7 +114,7 @@ bd comments add <id> "Rolled back: [reason]"
 
 ## Handoff
 
-- To Reviewer: After implementation complete, create PR
+- To Swarm Review: After implementation complete, create PR
 - To QA Engineer: For acceptance testing
 - To Planner: When scope changes discovered
 

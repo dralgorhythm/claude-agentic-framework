@@ -45,8 +45,8 @@ You should see Claude adopt the Architect persona.
 ## Next Steps
 
 1. **Edit CLAUDE.md** — Add your build commands (`npm test`, etc.)
-2. **Try the workflow** — `/product-manager my-feature` then `/architect` then `/builder`
-3. **Check artifacts/** — Your PRDs and ADRs appear here
+2. **Try the workflow** — `/architect my-feature` then `/builder` then `/swarm-review`
+3. **Check artifacts/** — Your ADRs and design docs appear here
 
 ## Optional: Beads Issue Tracking
 

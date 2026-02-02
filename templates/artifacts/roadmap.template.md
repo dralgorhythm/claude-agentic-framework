@@ -3,7 +3,7 @@
 <!--
 Project Roadmap
 Filename: artifacts/roadmap_[project].md
-Owner: Product Manager (/product-manager)
+Owner: Architect (/architect)
 Handoff to: All personas as needed
 Related Skills: execution-roadmaps, decomposing-tasks, estimating-work, agile-methodology
 -->

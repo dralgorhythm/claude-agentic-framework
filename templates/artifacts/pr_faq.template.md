@@ -3,7 +3,7 @@
 <!--
 Press Release / Frequently Asked Questions
 Filename: artifacts/pr_faq_[feature].md
-Owner: Product Manager (/product-manager)
+Owner: Architect (/architect)
 Handoff to: Architect (/architect) for feasibility, then PRD creation
 Related Skills: writing-pr-faqs, brainstorming, requirements-analysis
 

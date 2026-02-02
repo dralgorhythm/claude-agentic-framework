@@ -32,125 +32,56 @@ Launch workers for different audit aspects:
 - Security anti-pattern detection
 - Dead code and unused export detection
 
-## SOLID Principle Audit
+## Audit Dimensions
 
-### Single Responsibility (SRP)
+### SOLID Principles
+Apply SOLID principles from `code-quality.md`:
+- Single Responsibility (SRP) — One reason to change
+- Open/Closed (OCP) — Open for extension, closed for modification
+- Liskov Substitution (LSP) — Subtypes substitutable for base types
+- Interface Segregation (ISP) — Small, specific interfaces
+- Dependency Inversion (DIP) — Depend on abstractions
 
-**Signals** (evaluate in context, not absolute):
-- Classes with multiple unrelated methods
-- Methods doing multiple distinct operations
-- Files importing from many unrelated modules
-- "And" in class names (UserAndNotificationService)
+### DRY Violations
+Detect DRY violations per `code-quality.md`:
+- Knowledge duplication (MUST fix) — Same business logic in multiple places
+- Incidental duplication (evaluate carefully) — Similar code that may evolve differently
+- Use AST-based tools (jscpd) not just grep patterns
 
-### Open/Closed (OCP)
+### Code Smells
+Identify common code smells (context-dependent thresholds):
+- Long methods/functions
+- Large classes
+- Feature envy
+- Data clumps
+- Primitive obsession
+- Message chains
+- Language-specific anti-patterns (type assertions, any propagation, promise anti-patterns)
 
-**Signals**:
-- Frequent modifications to existing classes for new features
-- Missing extension points (no strategy/plugin pattern)
-- Hardcoded type checks (`instanceof`, `typeof` chains) without polymorphism
+### Consistency
+Check pattern consistency:
+- Error handling patterns
+- Async/await usage
+- Naming conventions
+- Import strategies
+- Type vs interface usage
+- Validation approach
 
-Note: TypeScript discriminated unions with switch statements are VALID OCP when types are co-located.
+### Complexity
+Evaluate cyclomatic complexity and function/class sizes. Use language-appropriate tools:
+- TypeScript: ts-complexity-report, eslint-plugin-sonarjs
+- Python: radon cc, radon mi
+- Go: gocyclo, gocognit
+- Rust: cargo-geiger, cargo-bloat
 
-### Liskov Substitution (LSP)
+### Dead Code
+Use language-appropriate detection tools:
+- TypeScript: knip, depcheck
+- Python: vulture, pip-audit
+- Go: go mod tidy, staticcheck
+- Rust: cargo-udeps, cargo-machete
 
-**Signals**:
-- Overridden methods that throw "not implemented"
-- Subtypes with stricter preconditions
-- Type checks before method calls
-
-### Interface Segregation (ISP)
-
-**Signals**:
-- Interfaces with > 5 methods (evaluate context)
-- Classes implementing methods as no-ops
-- Optional method implementations
-
-### Dependency Inversion (DIP)
-
-**Signals**:
-- Direct instantiation of dependencies in constructors
-- Concrete class imports in business logic
-- Missing dependency injection (constructor or context)
-
-## DRY Violation Detection
-
-### Knowledge Duplication (MUST fix)
-
-Same business logic in multiple places:
-
-```typescript
-// ❌ Knowledge duplication
-// file1.ts
-const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-// file2.ts
-const validateEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-```
-
-### Incidental Duplication (evaluate carefully)
-
-Similar code that may evolve differently — NOT always a violation.
-
-**Detection**: Use `jscpd` or AST-based tools, not just grep patterns.
-
-## Code Smell Detection
-
-| Smell | Description | Threshold |
-|-------|-------------|-----------|
-| Long Method | Functions too large | > 50 lines (context-dependent) |
-| Large Class | Classes too large | > 500 lines (context-dependent) |
-| Feature Envy | Method uses another class's data excessively | Manual review |
-| Data Clumps | Same data groups passed together | 3+ parameters repeating |
-| Primitive Obsession | Using primitives instead of domain types | Manual review |
-| Message Chains | a.b().c().d() patterns | > 3 chained calls |
-
-### TypeScript/React-Specific Smells
-
-- Type Assertions Abuse (excessive `as` casts)
-- Any Propagation (`any` spreading through codebase)
-- Promise Anti-patterns (unhandled rejections, missing `await`)
-- Barrel File Bloat (index files creating circular deps)
-- Prop Drilling (passing props through many levels)
-
-## Consistency Audit
-
-| Area | What to Check |
-|------|---------------|
-| Error Handling | Same pattern across modules (Result types, try-catch) |
-| Async Patterns | Consistent Promise/async-await usage |
-| Naming | camelCase, PascalCase, snake_case conventions |
-| Imports | Absolute vs relative, barrel files |
-| Types | Type vs Interface usage |
-| Validation | Zod schemas, manual validation, or mixed |
-
-## Complexity Metrics
-
-| Metric | Green | Yellow | Red |
-|--------|-------|--------|-----|
-| Cyclomatic Complexity | < 10 | 10-15 | > 15 |
-| Function Length | < 30 | 30-50 | > 50 |
-| Class Length | < 300 | 300-500 | > 500 |
-
-**Tools**:
-- For TypeScript: `npx ts-complexity-report`, `eslint-plugin-sonarjs` for cognitive complexity
-- For Python: `radon cc`, `radon mi` for maintainability index
-- For Go: `gocyclo`, `gocognit`
-- For Rust: `cargo-geiger`, `cargo-bloat`
-
-## Dead Code Detection
-
-**For JavaScript/TypeScript projects:**
-```bash
-npx knip          # Find unused exports (verify before removing)
-npx depcheck      # Find unused dependencies
-```
-
-**For other languages**, use appropriate unused code/dependency detectors:
-- Python: `vulture` (dead code), `pip-audit` (dependencies)
-- Go: `go mod tidy`, `staticcheck`
-- Rust: `cargo-udeps`, `cargo-machete`
-
-**Warning**: Verify findings before deletion — tools have false positives with dynamic imports and external consumers.
+Verify findings before deletion (false positives with dynamic imports).
 
 ## Output Format
 
@@ -199,8 +130,7 @@ npx depcheck      # Find unused dependencies
 
 ## Handoff
 
-- To Builder: With Beads for specific fixes
-- To Refactoring Engineer: For large-scale cleanups
+- To Builder: With Beads for specific fixes and refactoring
 - To Architect: For systemic architectural issues
 
 $ARGUMENTS
