@@ -262,7 +262,6 @@ echo ""
 
 # Copy core directories with diff support
 copy_dir_with_diff "$FRAMEWORK_DIR/.claude" "$TARGET_DIR/.claude" ".claude"
-copy_dir_with_diff "$FRAMEWORK_DIR/.devcontainer" "$TARGET_DIR/.devcontainer" ".devcontainer"
 copy_dir_with_diff "$FRAMEWORK_DIR/templates" "$TARGET_DIR/templates" "templates"
 
 # Create artifacts directory if it doesn't exist
@@ -312,53 +311,9 @@ if [ -d "$FRAMEWORK_DIR/.beads" ]; then
     fi
 fi
 
-# Copy .serena configuration template (optional) with diff support
-if [ -d "$FRAMEWORK_DIR/.serena" ]; then
-    # Create temp version with updated project name for comparison
-    SERENA_TEMP=""
-    if [ -f "$FRAMEWORK_DIR/.serena/project.yml" ]; then
-        SERENA_TEMP="$(mktemp -d)"
-        cp -r "$FRAMEWORK_DIR/.serena"/* "$SERENA_TEMP/" 2>/dev/null || true
-        if command -v sed &>/dev/null; then
-            sed -i.bak "s/^project_name:.*/project_name: \"$PROJECT_NAME\"/" "$SERENA_TEMP/project.yml"
-            rm -f "$SERENA_TEMP/project.yml.bak"
-        fi
-    fi
-
-    if [ ! -d "$TARGET_DIR/.serena" ]; then
-        print_warning ".serena directory not found"
-        if confirm "  Copy Serena MCP server configuration template?"; then
-            mkdir -p "$TARGET_DIR/.serena"
-            if [ -n "$SERENA_TEMP" ]; then
-                cp -r "$SERENA_TEMP"/* "$TARGET_DIR/.serena/"
-            fi
-            print_success ".serena configuration installed (project_name: $PROJECT_NAME)"
-        else
-            print_info "Skipped .serena configuration"
-        fi
-        echo ""
-    else
-        # Show diff for existing .serena directory
-        if [ -n "$SERENA_TEMP" ] && ! diff -rq "$TARGET_DIR/.serena" "$SERENA_TEMP" &>/dev/null; then
-            print_warning ".serena/ already exists with differences"
-            show_dir_diff "$TARGET_DIR/.serena" "$SERENA_TEMP" ".serena"
-            if confirm "  Update .serena configuration?"; then
-                cp -r "$SERENA_TEMP"/* "$TARGET_DIR/.serena/"
-                print_success ".serena configuration updated (project_name: $PROJECT_NAME)"
-            else
-                print_info "Skipped .serena/"
-            fi
-        else
-            print_info ".serena/ is already up to date"
-        fi
-    fi
-
-    # Cleanup temp
-    [ -n "$SERENA_TEMP" ] && rm -rf "$SERENA_TEMP"
-fi
-
-# Copy CLAUDE.md with diff support
+# Copy CLAUDE.md and AGENTS.md with diff support
 copy_file_with_diff "$FRAMEWORK_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md" "CLAUDE.md"
+copy_file_with_diff "$FRAMEWORK_DIR/AGENTS.md" "$TARGET_DIR/AGENTS.md" "AGENTS.md"
 
 # Copy README.md with diff support (optional for existing projects)
 if [ ! -f "$TARGET_DIR/README.md" ]; then
@@ -480,6 +435,16 @@ echo ""
 print_success "Framework initialization complete!"
 echo ""
 
+# Create hook runtime directories
+mkdir -p "$TARGET_DIR/.claude/hooks/.state" "$TARGET_DIR/.claude/hooks/.locks"
+print_success "Hook runtime directories created (.state, .locks)"
+
+# Make hook scripts executable
+if [ -d "$TARGET_DIR/.claude/hooks" ]; then
+    chmod +x "$TARGET_DIR/.claude/hooks"/*.sh 2>/dev/null || true
+    print_success "Hook scripts made executable"
+fi
+
 # Install hook dependencies if needed
 if [ -f "$TARGET_DIR/.claude/hooks/package.json" ]; then
     print_info "Installing hook dependencies..."
@@ -517,6 +482,12 @@ echo "3. Start using personas via slash commands:"
 echo "   /architect    - System design and ADRs"
 echo "   /builder      - Code implementation"
 echo "   /product-manager - PRDs and requirements"
+echo ""
+echo "   Swarm orchestration commands:"
+echo "   /swarm-plan    - Plan with parallel exploration"
+echo "   /swarm-execute - Execute with parallel workers"
+echo "   /swarm-review  - Adversarial multi-perspective review"
+echo "   /code-check    - SOLID, DRY, consistency audit"
 echo ""
 echo "4. Optional: Install Beads for AI-native issue tracking:"
 echo "   curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash"

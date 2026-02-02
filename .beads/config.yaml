@@ -12,7 +12,7 @@ flush-debounce: "5s"
 # =============================================================================
 
 # For protected main branches, set a dedicated sync branch:
-# sync-branch: "beads-metadata"
+sync-branch: "beads-sync"
 
 # =============================================================================
 # ADDITIONAL OPTIONS (see documentation)

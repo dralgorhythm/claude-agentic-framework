@@ -4,11 +4,6 @@ Model Context Protocol servers extend Claude's capabilities. The framework inclu
 
 ## Included Servers
 
-### Serena
-Semantic code navigation using language servers. Understands symbols, references, and code structure.
-
-**Best for:** Complex refactoring, understanding large codebases
-
 ### Sequential Thinking
 Structured workspace for multi-step reasoning. Makes Claude's thought process visible and auditable.
 
@@ -25,6 +20,11 @@ Direct integration with repositories — PRs, issues, commits, code search.
 **Best for:** Code review workflows, issue management
 
 **Requires:** `GITHUB_TOKEN` environment variable
+
+### Context7
+Up-to-date documentation and code examples for any library via Context7.
+
+**Best for:** Researching library APIs, finding code examples, validating implementation patterns
 
 ## Setup
 
@@ -86,10 +86,6 @@ Edit `.mcp.json`:
 | Memory | Redundant with claude-mem plugin |
 | Puppeteer | Chrome DevTools is superior |
 | Filesystem | Claude Code has built-in file tools |
-
-## Firewall Considerations
-
-If using the dev container, MCP servers that make external requests need their domains in the firewall allowlist. Edit `.devcontainer/init-firewall.sh` to add domains.
 
 ## Troubleshooting
 

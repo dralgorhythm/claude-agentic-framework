@@ -25,7 +25,7 @@
 ## Type Safety
 
 - Use strict typing where available
-- Avoid `any` types in TypeScript
+- Avoid `any` types in TypeScript (if applicable)
 - Use type narrowing and discriminated unions
 - Leverage compile-time type checking
 

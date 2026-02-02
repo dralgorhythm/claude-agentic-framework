@@ -1,17 +1,12 @@
 ---
 name: testing
 description: Write effective tests for code quality and reliability. Use when implementing features, fixing bugs, or improving coverage. Covers unit, integration, and E2E testing.
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-devtools__*
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__chrome-devtools__*
 ---
 
 # Testing Software
 
 ## MCP Tools
-
-**Serena** (coverage analysis):
-- `find_symbol` — Locate functions needing tests
-- `find_referencing_symbols` — Identify test dependencies
-- `get_symbols_overview` — Map testable surface area
 
 **Chrome DevTools** (E2E testing):
 - Automate user flows in real browser
@@ -27,7 +22,7 @@ allowed-tools: Read, Write, Edit, Bash, Glob, Grep, mcp__serena__*, mcp__chrome-
 
 ## Workflows
 
-- [ ] **Analyze**: Use Serena to identify untested code
+- [ ] **Analyze**: Use Glob and Grep to identify untested code
 - [ ] **Unit Tests**: Cover all public functions
 - [ ] **Edge Cases**: Test boundaries and error conditions
 - [ ] **Integration**: Test external dependencies
@@ -47,7 +42,7 @@ Test names should describe the behavior being tested.
 
 ## Test Patterns
 
-### Arrange-Act-Assert (AAA)
+### Arrange-Act-Assert (AAA) (TypeScript Example)
 
 ```typescript
 test("user registration sends welcome email", async () => {
@@ -77,7 +72,7 @@ test("user registration sends welcome email", async () => {
 // - Check console for errors
 ```
 
-## Commands
+## Commands (Examples by Language)
 
 ```bash
 # Run tests
@@ -93,7 +88,7 @@ go test -cover ./...
 
 ## Finding Untested Code
 
-Use Serena to identify gaps:
-1. `get_symbols_overview` — List all functions in module
-2. Check which have corresponding test files
-3. Use `find_referencing_symbols` to see if function is tested
+Use Glob and Grep to identify gaps:
+1. Use Glob to find all source files and test files
+2. Check which source files have corresponding test files
+3. Use Grep to see if functions are referenced in tests

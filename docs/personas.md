@@ -15,6 +15,10 @@ Personas are expert modes. Use a slash command to switch.
 | `/sre` | Infrastructure | Runbooks, monitoring |
 | `/security-auditor` | Security | Audits, threat models |
 | `/ui-ux-designer` | Interface design | Design specs, wireframes |
+| `/code-check` | Codebase audit | SOLID/DRY violations, health report |
+| `/swarm-plan` | Planning orchestrator | Parallel exploration, task decomposition |
+| `/swarm-execute` | Execution orchestrator | Parallel workers, quality gates |
+| `/swarm-review` | Adversarial reviewer | Multi-perspective code review |
 
 ## Usage
 

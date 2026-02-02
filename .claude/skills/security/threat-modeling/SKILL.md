@@ -1,7 +1,7 @@
 ---
 name: threat-modeling
 description: Identify and analyze security threats. Use when designing systems, reviewing architecture, or assessing risk. Covers STRIDE methodology.
-allowed-tools: Read, Write, Glob, Grep, mcp__serena__*, mcp__sequential-thinking__*
+allowed-tools: Read, Write, Glob, Grep, mcp__sequential-thinking__*
 ---
 
 # Threat Modeling
@@ -14,11 +14,6 @@ Use for structured STRIDE analysis:
 2. Consider attack vectors step-by-step
 3. Evaluate mitigations with pros/cons
 4. Document reasoning for risk acceptance
-
-**Serena** (attack surface mapping):
-- `get_symbols_overview` — Map entry points and APIs
-- `find_symbol` — Locate security-critical functions
-- `find_referencing_symbols` — Trace data flow from inputs
 
 ## Why Threat Model?
 
@@ -40,7 +35,7 @@ Pretending to be someone else.
 Modifying data without authorization.
 - **Example**: Changing request parameters
 - **Mitigation**: Integrity checks, signatures
-- **Trace with Serena**: Find all input handlers
+- **Trace with Grep**: Find all input handlers
 
 ### R - Repudiation
 Denying an action occurred.
@@ -51,7 +46,7 @@ Denying an action occurred.
 Exposing confidential data.
 - **Example**: API returns sensitive fields
 - **Mitigation**: Encryption, access controls
-- **Trace with Serena**: Find data return points
+- **Trace with Grep**: Find data return points
 
 ### D - Denial of Service
 Making system unavailable.
@@ -62,12 +57,12 @@ Making system unavailable.
 Gaining unauthorized access.
 - **Example**: User becomes admin
 - **Mitigation**: Least privilege, input validation
-- **Trace with Serena**: Find authorization checks
+- **Trace with Grep**: Find authorization checks
 
 ## Threat Modeling Process
 
 ### 1. Decompose System
-- Use `get_symbols_overview` to identify entry points
+- Use Grep and Glob to identify entry points
 - Draw data flow diagrams
 - Identify trust boundaries
 
@@ -75,7 +70,7 @@ Gaining unauthorized access.
 Use **Sequential Thinking** to systematically ask STRIDE questions for each component.
 
 ### 3. Trace Data Flow
-Use `find_referencing_symbols` to trace:
+Use Grep to trace:
 - User input → processing → storage
 - Authentication token flow
 - Sensitive data paths

@@ -15,7 +15,7 @@ Focused testing agent for swarm execution.
 - Ensure tests are deterministic
 
 ## Test Types
-- Unit: Vitest/pytest for logic
+- Unit: Project test framework for logic
 - Integration: Real dependencies
 
 ## On Completion
