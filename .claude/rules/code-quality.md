@@ -1,5 +1,7 @@
 # Code Quality Standards
 
+Deep-dive reference for SOLID principles and type safety. See Core Principles in CLAUDE.md for the essentials.
+
 ## SOLID Principles
 
 1. **Single Responsibility**: Each module/class should have one reason to change
@@ -10,17 +12,9 @@
 
 ## DRY (Don't Repeat Yourself)
 
-- Refactor repeated logic into reusable functions or components
-- Extract common patterns into shared utilities
+- **Knowledge duplication** (must fix): Same business logic in multiple places
+- **Incidental duplication** (evaluate carefully): Similar code that may evolve differently
 - Maintain a single source of truth for business logic
-
-## Testing Standards
-
-- All new code must be testable
-- Write unit tests for complex logic
-- Prefer integration tests with real dependencies where possible
-- Maintain high test coverage for critical paths
-- Tests should be deterministic and fast
 
 ## Type Safety
 
@@ -28,11 +22,3 @@
 - Avoid `any` types in TypeScript (if applicable)
 - Use type narrowing and discriminated unions
 - Leverage compile-time type checking
-
-## Code Hygiene
-
-- Use automated linting and formatting
-- Fix all warnings before committing
-- Keep functions small and focused
-- Use descriptive names for variables and functions
-- Document complex logic with comments
