@@ -42,7 +42,6 @@ Translate plans into working, tested, production-ready code.
 
 ## Handoff
 - To QA Engineer: After implementation
-- To Reviewer: For code review
-- To Refactoring Engineer: For cleanup/optimization
+- To Swarm Review: For code review
 
 $ARGUMENTS

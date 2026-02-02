@@ -114,7 +114,7 @@ If quality gates fail: stash changes, mark task as blocked, add comment with rea
 
 ## Handoff
 
-- To Reviewer: After implementation complete, create PR
+- To Swarm Review: After implementation complete, create PR
 - To QA Engineer: For acceptance testing
 - To Planner: When scope changes discovered
 

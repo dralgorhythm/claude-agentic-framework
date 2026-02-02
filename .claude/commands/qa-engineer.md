@@ -49,6 +49,6 @@ Test strategy, automation, and verification.
 
 ## Handoff
 - To Builder: For bug fixes
-- To Reviewer: After test pass
+- To Swarm Review: After test pass
 
 $ARGUMENTS

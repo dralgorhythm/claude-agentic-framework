@@ -4,7 +4,7 @@
 Implementation Plan
 Filename: artifacts/plan_[task].md
 Owner: Builder (/builder) or Architect (/architect)
-Handoff to: Builder (/builder), QA Engineer (/qa-engineer), Reviewer (/reviewer)
+Handoff to: Builder (/builder), QA Engineer (/qa-engineer)
 Related Skills: implementing-code, debugging, testing, test-driven-development
 -->
 

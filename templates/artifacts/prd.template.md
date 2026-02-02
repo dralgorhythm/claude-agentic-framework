@@ -3,7 +3,7 @@
 <!--
 Product Requirements Document
 Filename: artifacts/prd_[feature].md
-Owner: Product Manager (/product-manager)
+Owner: Architect (/architect)
 Handoff to: Architect (/architect), UI/UX Designer (/ui-ux-designer)
 Related Skills: writing-prds, decomposing-tasks, requirements-analysis
 -->
