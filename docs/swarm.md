@@ -22,13 +22,10 @@ Lightweight agents that work in parallel. Use them for big tasks.
 | Worker | Model | Best For |
 |--------|-------|----------|
 | `worker-explorer` | Haiku | Fast codebase search |
-| `worker-builder` | Sonnet | Implementation |
-| `worker-reviewer` | Sonnet | Code review |
-| `worker-tester` | Sonnet | Test writing |
+| `worker-builder` | Sonnet | Implementation, testing, refactoring |
+| `worker-reviewer` | Sonnet | Code review, security analysis |
 | `worker-researcher` | Sonnet | Web research |
 | `worker-architect` | Opus | Complex design |
-| `worker-security` | Sonnet | Security analysis |
-| `worker-refactor` | Sonnet | Code cleanup |
 
 ## When to Use
 

@@ -8,11 +8,7 @@ Personas are expert modes. Use a slash command to switch.
 |---------|------|---------|
 | `/architect` | System design | ADRs, system design docs |
 | `/builder` | Implementation | Code, tests |
-| `/product-manager` | Requirements | PR-FAQs, PRDs |
 | `/qa-engineer` | Testing | Test plans, test suites |
-| `/reviewer` | Code review | Review feedback |
-| `/refactoring-engineer` | Code cleanup | Refactored code |
-| `/sre` | Infrastructure | Runbooks, monitoring |
 | `/security-auditor` | Security | Audits, threat models |
 | `/ui-ux-designer` | Interface design | Design specs, wireframes |
 | `/code-check` | Codebase audit | SOLID/DRY violations, health report |
@@ -27,27 +23,25 @@ Just use the command with your task:
 ```
 /builder fix the caching bug
 /architect design the payment system
-/product-manager mobile app notifications
+/security-auditor payment system
 ```
 
 Or use without arguments to continue from the previous persona's work:
 
 ```
-/product-manager user auth     # writes PRD
-/architect                     # reads PRD, writes design
+/architect user auth           # writes design
 /builder                       # reads design, implements
+/swarm-review                  # reviews code
 ```
 
 ## How Handoffs Work
 
 ```
-/product-manager  →  artifacts/pr_faq_*.md, prd_*.md
-       ↓
 /architect        →  artifacts/adr_*.md, system_design_*.md
        ↓
 /builder          →  Code + tests
        ↓
-/reviewer         →  Feedback
+/swarm-review     →  Feedback
 ```
 
 Each persona reads the previous artifacts and builds on them.

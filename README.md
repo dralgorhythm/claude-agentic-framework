@@ -22,14 +22,9 @@ That's it. Claude adopts the Builder persona and works on your task.
 ## Example: Feature from Idea to Code
 
 ```
-/product-manager user notifications
+/architect user notifications
 ```
-Claude writes a PR-FAQ and PRD in `artifacts/`.
-
-```
-/architect
-```
-Claude reads the PRD, designs the system, writes an ADR.
+Claude designs the system and writes an ADR in `artifacts/`.
 
 ```
 /builder
@@ -37,9 +32,9 @@ Claude reads the PRD, designs the system, writes an ADR.
 Claude implements it with tests.
 
 ```
-/reviewer
+/swarm-review
 ```
-Claude reviews for bugs and security issues.
+Claude reviews for bugs, security, and performance issues.
 
 Each step builds on the previous. Artifacts pass between personas automatically.
 
@@ -47,14 +42,9 @@ Each step builds on the previous. Artifacts pass between personas automatically.
 
 **9 Personas** — Switch expertise with slash commands
 ```
-/architect       /builder          /product-manager
-/reviewer        /qa-engineer      /refactoring-engineer
-/sre             /security-auditor /ui-ux-designer
-```
-
-**4 Swarm Commands** — Orchestrate parallel agents
-```
-/swarm-plan      /swarm-execute    /swarm-review    /code-check
+/architect       /builder          /qa-engineer
+/security-auditor /ui-ux-designer  /code-check
+/swarm-plan      /swarm-execute    /swarm-review
 ```
 
 **65+ Skills** — Auto-suggested based on what you ask
