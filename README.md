@@ -20,7 +20,6 @@ The fastest way to go from idea to shipped code. One agent thinks, then many age
 Use a persona to explore the problem space and draft your planning prompt:
 
 ```
-/product-manager user notifications
 /architect redesign the auth system
 ```
 
@@ -53,7 +52,7 @@ Each pass launches 5 parallel reviewers covering different perspectives: securit
 ### Full cycle
 
 ```
-/product-manager <feature>  →  /swarm-plan  →  /swarm-execute  →  /swarm-review (2-3x)  →  PR
+/architect <feature>  →  /swarm-plan  →  /swarm-execute  →  /swarm-review (2-3x)  →  PR
 ```
 
 ## Swarm Workers
