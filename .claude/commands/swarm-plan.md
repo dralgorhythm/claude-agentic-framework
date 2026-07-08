@@ -24,7 +24,7 @@ Decompose features into actionable plans using parallel exploration swarms.
 2. **Classify** — Determine decision reversibility (Two-Way Door vs One-Way Door)
 3. **Document** — Create appropriate artifacts based on scope
 4. **Decompose** — Break into right-sized tasks (1-2 days each)
-5. **Track** — Create Beads for implementation tracking
+5. **Track** — Record tasks in the native task list for implementation tracking
 
 ## Decision Framework
 
@@ -98,19 +98,15 @@ worker-builder fixes critical/high issues
 # - Related ADRs and design specs
 ```
 
-## Beads Creation
+## Task Creation
 
-```bash
-# Create epic
-bd create --title="Implement [feature]" --type=feature --priority=2
+Use `TaskCreate` to record implementation tasks, each with clear acceptance criteria:
 
-# Create implementation tasks
-bd create --title="[Task 1: Foundation]" --type=task
-bd create --title="[Task 2: Core Logic]" --type=task
+- `TaskCreate` — "Implement [feature]" (epic-level task)
+- `TaskCreate` — "[Task 1: Foundation]" with acceptance criteria
+- `TaskCreate` — "[Task 2: Core Logic]" with acceptance criteria
 
-# Link dependencies (Task 2 depends on Task 1)
-bd dep add <task2-id> <task1-id>
-```
+Link dependencies with `TaskUpdate` (addBlockedBy): Task 2 gets Task 1 added to its `blockedBy` list so it can't start until Task 1 completes.
 
 ## Performance Tips
 
@@ -126,15 +122,15 @@ bd dep add <task2-id> <task1-id>
 - NO assuming context — explore codebase first
 - ALWAYS use parallel workers for research phase
 - ALWAYS store artifacts in `./artifacts/`
-- ALWAYS create Beads before declaring planning complete
+- ALWAYS record implementation tasks with acceptance criteria before declaring planning complete
 - ALWAYS validate arguments before using in commands
 
 ## Output
 
 Every planning session MUST produce:
 1. Artifact(s) in `./artifacts/` following naming conventions
-2. Beads for all implementation tasks
-3. Dependency graph showing task order
+2. Tasks (via `TaskCreate`) for all implementation work, each with acceptance criteria
+3. Dependency graph showing task order (via `blockedBy`)
 4. Handoff summary for /execute command
 
 ## Product Planning
@@ -157,11 +153,11 @@ Use `writing-prds` skill for structure and template.
 
 ## Related Skills
 
-`decomposing-tasks`, `beads-workflow`, `swarm-coordination`, `writing-adrs`, `designing-systems`, `designing-apis`, `writing-pr-faqs`, `writing-prds`, `requirements-analysis`
+`decomposing-tasks`, `swarm-coordination`, `writing-adrs`, `designing-systems`, `designing-apis`, `writing-pr-faqs`, `writing-prds`, `requirements-analysis`
 
 ## Handoff
 
-- To `/swarm-execute`: Plan artifact + Beads ready for `bd ready`
+- To `/swarm-execute`: Plan artifact + task list ready
 - To `/architect`: Complex decisions requiring ADR review
 
 $ARGUMENTS

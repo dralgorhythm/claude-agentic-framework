@@ -32,7 +32,7 @@ Check `.claude/skills/` before generating ad-hoc solutions; maintain a single so
 Work on a branch, commit iteratively, and push to remote — work isn't done until `git push` succeeds.
 
 ### 7. Leave a Trail
-Artifacts in `./artifacts/`, track work with Beads (`bd` CLI), document decisions in ADRs, name things clearly.
+Artifacts in `./artifacts/`, track work with the native task list and issues, document decisions in ADRs, name things clearly.
 
 Full details in `.claude/rules/` (auto-loaded).
 
@@ -44,7 +44,7 @@ Defined in `.claude/rules/tech-strategy.md` — auto-loaded for every session.
 
 **Branching**: Always branch from `main`. Never commit directly to `main`.
 
-**Planning flow**: PR-FAQ → PRD → ADR → Design Spec → Plan → Implementation Beads
+**Planning flow**: PR-FAQ → PRD → ADR → Design Spec → Plan → Implementation Tasks
 
 **Artifacts**: All planning docs stored in `./artifacts/`:
 
@@ -60,18 +60,13 @@ Defined in `.claude/rules/tech-strategy.md` — auto-loaded for every session.
 | Security Audit | `security_audit_[date].md` | `security_audit_2025-01.md` |
 | Post-Mortem | `postmortem_[incident-id].md` | `postmortem_inc-2025-001.md` |
 
-**Beads** (issue tracking — CLI saves 98% tokens vs MCP):
+## Task Tracking
 
-```bash
-bd create "Task"                        # Create
-bd ready                                # Find unblocked work
-bd show <id>                            # View details
-bd update <id> --status in_progress     # Claim
-bd close <id>                           # Complete
-bd sync                                 # Sync with git
-```
+Two-tier convention:
 
-See `beads-workflow` skill for complete command reference.
+1. **Durable record**: GitHub Issues (or a committed `ISSUES.md` for repos without a tracker).
+2. **In-flight work**: Claude Code's native task list, owned by the orchestrator — workers receive focused prompts and return results; they do not share mutable state.
+3. **Handoffs**: artifact references under `./artifacts/`.
 
 ## Working Directories
 

@@ -18,17 +18,6 @@ The script will:
 - Create an `artifacts/` directory for planning documents
 - Set up `.gitignore` entries
 - Install hook dependencies
-- Initialize [Beads](https://github.com/steveyegge/beads) issue tracking (required for swarm coordination)
-
-### Beads Setup
-
-Beads is the issue tracker that coordinates swarm workers — it's how agents claim tasks, track progress, and avoid conflicts. Install it before running the init script:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash
-```
-
-The init script will then run `bd init` in your project automatically.
 
 The script prompts before overwriting any existing files. Re-run it to pull in framework updates.
 
@@ -98,7 +87,7 @@ Covers everything from `designing-systems` and `debugging` to `react-patterns`, 
 Pre-configured hooks that run automatically:
 
 - **Secret detection** — blocks commits containing API keys, tokens, private keys
-- **Protected files** — prevents accidental modification of `.env`, `.mcp.json`, `.beads/`
+- **Protected files** — prevents accidental modification of `.env`, `.mcp.json`
 - **Push blocking** — stops direct pushes to `main`/`master`
 - **Dangerous command guard** — warns on `rm -rf`, force push, `terraform destroy`
 - **File locking** — prevents concurrent edits in multi-agent swarms
@@ -137,5 +126,5 @@ See [docs/customization.md](docs/customization.md) for details.
 - [MCP servers](docs/mcp-servers.md)
 - [Hooks](docs/hooks.md)
 - [Handoffs](docs/handoffs.md)
-- [Beads setup & usage](docs/beads.md)
+- [Task tracking](CLAUDE.md#task-tracking)
 - [Customization](docs/customization.md)

@@ -13,7 +13,7 @@ Related Skills: execution-roadmaps, decomposing-tasks, estimating-work, agile-me
 **Status:** Active | Planning | Completed
 **Owner:** [Name]
 **Last Updated:** [YYYY-MM-DD]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 **Timeline:** [Start Date] - [End Date]
 
 ## Vision

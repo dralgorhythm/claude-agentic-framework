@@ -17,15 +17,6 @@
       "priority": "high"
     },
     {
-      "name": "beads-workflow",
-      "path": ".claude/skills/operations/beads-workflow/SKILL.md",
-      "description": "AI-native issue tracking with Beads for work management and coordination",
-      "triggers": {
-        "keywords": ["beads", "bd", "issue", "task", "ticket", "backlog", "ready", "work item"]
-      },
-      "priority": "high"
-    },
-    {
       "name": "swarm-coordination",
       "path": ".claude/skills/operations/swarm-coordination/SKILL.md",
       "description": "Coordinate multi-agent swarm workflows, prevent conflicts, manage handoffs",

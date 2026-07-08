@@ -276,24 +276,6 @@ fi
 copy_file_with_diff "$FRAMEWORK_DIR/.gitattributes" "$TARGET_DIR/.gitattributes" ".gitattributes"
 copy_file_with_diff "$FRAMEWORK_DIR/.mcp.json" "$TARGET_DIR/.mcp.json" ".mcp.json"
 
-# Initialize Beads issue tracking (required for swarm coordination)
-if [ ! -d "$TARGET_DIR/.beads" ]; then
-    if command -v bd &>/dev/null; then
-        print_info "Initializing Beads issue tracking..."
-        if (cd "$TARGET_DIR" && bd init 2>/dev/null); then
-            print_success "Beads initialized"
-        else
-            print_warning "Beads initialization failed. Run 'bd init' manually for swarm coordination."
-        fi
-    else
-        print_warning "Beads CLI not found — required for swarm coordination"
-        print_info "  Install: curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash"
-        print_info "  Then: cd $TARGET_DIR && bd init"
-    fi
-else
-    print_info ".beads/ already initialized"
-fi
-
 # Copy CLAUDE.md and AGENTS.md with diff support
 copy_file_with_diff "$FRAMEWORK_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md" "CLAUDE.md"
 copy_file_with_diff "$FRAMEWORK_DIR/AGENTS.md" "$TARGET_DIR/AGENTS.md" "AGENTS.md"
@@ -475,10 +457,6 @@ echo "   /swarm-execute   - Execute with parallel workers"
 echo "   /swarm-review    - Adversarial multi-perspective review"
 echo "   /swarm-research  - Deep investigation"
 echo "   /code-check      - SOLID, DRY, consistency audit"
-echo ""
-echo "4. If Beads was not initialized above, install it for swarm coordination:"
-echo "   curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash"
-echo "   cd $TARGET_DIR && bd init"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""

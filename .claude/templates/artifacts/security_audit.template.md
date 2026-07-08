@@ -25,7 +25,7 @@ For cloud-native systems, also consider:
 
 **Audit Date:** [YYYY-MM-DD]
 **Auditor:** [Name]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 **Scope:** [What was audited]
 **Overall Risk Level:** Critical | High | Medium | Low
 
@@ -276,10 +276,10 @@ Pre-audit security checklist requirements:
 
 ## Remediation Tracking
 
-| Finding | Owner | Due Date | Beads Issue | Status |
+| Finding | Owner | Due Date | Tracking Issue | Status |
 |---------|-------|----------|-------------|--------|
-| FINDING-001 | [Name] | [Date] | [bd://issue-xxx] | Open |
-| FINDING-002 | [Name] | [Date] | [bd://issue-yyy] | In Progress |
+| FINDING-001 | [Name] | [Date] | [issue link] | Open |
+| FINDING-002 | [Name] | [Date] | [issue link] | In Progress |
 
 ## MITRE ATT&CK Mapping
 

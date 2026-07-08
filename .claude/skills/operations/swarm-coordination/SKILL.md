@@ -1,6 +1,6 @@
 ---
 name: swarm-coordination
-description: Coordinate multi-agent swarm workflows. Use when working in parallel with other agents, managing shared resources, or orchestrating distributed tasks. Covers conflict prevention, handoffs, and state synchronization.
+description: Coordinate multi-agent swarm workflows. Use when working in parallel with other agents, managing shared resources, or orchestrating distributed tasks. Covers conflict prevention, handoffs, and two-tier task tracking (native task list + artifacts).
 ---
 
 # Swarm Coordination
@@ -9,10 +9,16 @@ Protocols and patterns for consistent, conflict-free multi-agent development. Fo
 
 ## Core Principles
 
-1. **Beads as Source of Truth**: All work items tracked via `bd` commands
+1. **Two-Tier Task Tracking**: Durable work items live in GitHub Issues (or a committed `ISSUES.md`); in-flight work lives in the orchestrator's native task list (TaskCreate/TaskUpdate/TaskList)
 2. **File Locking**: Hooks automatically manage file locks - respect them
 3. **Session Isolation**: Each agent has a unique session ID for tracking
-4. **Clean Handoffs**: Always leave state that another agent can continue
+4. **Clean Handoffs**: Always leave state — and an artifact reference — that another agent can continue from
+
+## Two-Tier Task Tracking
+
+- **Tier 1 — Durable record**: GitHub Issues (or `ISSUES.md` for repos without a tracker) hold the permanent history of work items: what was requested, why, and its final disposition.
+- **Tier 2 — In-flight work**: The orchestrator owns a native task list (TaskCreate/TaskUpdate/TaskList). One task per work item, each with explicit acceptance criteria. Workers are stateless — they receive a focused prompt, do the work, and return a result. They do not read or write shared mutable state, and they do not maintain their own task lists.
+- **Handoffs**: Always reference a concrete artifact under `./artifacts/` (file path + one-line description). The receiving agent/command must be able to verify the artifact exists before proceeding.
 
 ## File-Based Output
 
@@ -22,23 +28,23 @@ Workers write results to `scratchpad/<task-id>.md`, not direct context. Only dur
 
 ### Starting Work
 
-- [ ] **Check Beads**: Run `bd ready` to find unblocked issues
-- [ ] **Claim Work**: Update issue status: `bd update <id> --status in_progress`
+- [ ] **Check the Task List**: Orchestrator reviews TaskList for unblocked, unclaimed items
+- [ ] **Create Tasks**: One task per work item, each with explicit acceptance criteria
 - [ ] **Check Conflicts**: Review `.claude/hooks/.file-tracker.log` for recent edits
-- [ ] **Coordinate**: If another agent is active, coordinate via Beads comments
+- [ ] **Dispatch**: Send workers a focused, self-contained prompt — no shared mutable state
 
 ### During Work
 
 - [ ] **Atomic Changes**: Make small, complete changes that don't leave broken state
 - [ ] **Frequent Commits**: Commit often to reduce merge conflicts
-- [ ] **Update Progress**: Add comments to Beads issues for visibility
+- [ ] **Update Task Status**: Orchestrator updates TaskUpdate as workers report back
 - [ ] **Respect Locks**: If a file is locked, wait or work on something else
 
 ### Completing Work
 
 - [ ] **Run Tests**: Verify changes don't break existing functionality
-- [ ] **Close Issue**: `bd close <id> --reason "Completed: <description>"`
-- [ ] **Sync Beads**: `bd sync` to share updates with other agents
+- [ ] **Mark Task Done**: Orchestrator closes the task in the native task list with the result
+- [ ] **Update Durable Record**: Reflect completion in the GitHub Issue / `ISSUES.md`
 - [ ] **Clean State**: Commit all changes, leave no uncommitted work
 
 ## Conflict Prevention
@@ -52,50 +58,42 @@ Hooks automatically acquire/release locks. If you encounter a lock:
 cat .claude/hooks/.locks/<filename>.lock
 
 # Lock automatically expires after 60 seconds
-# If urgent, coordinate via Beads or wait
+# If urgent, wait or pick a different task from the task list
 ```
 
 ### Merge Conflict Strategy
 
 1. Pull frequently: Keep your branch up to date
 2. Small PRs: Easier to merge than large changes
-3. Coordinate: Use Beads to claim files/features before editing
+3. Coordinate: Claim a task (and its files) in the orchestrator's task list before editing
 4. Resolve quickly: Address conflicts immediately when detected
 
 ## Communication Patterns
 
 ### Handoff Message
 
-When ending a session with incomplete work:
+When ending a session with incomplete work, leave a handoff pointing at a concrete artifact:
 
 ```bash
-# Create handoff for next agent
-echo '{"message": "Continue implementing auth middleware. Tests passing but needs error handling in src/auth.ts:45"}' > .claude/hooks/.state/handoff.json
-```
-
-### Issue Comments (via Beads)
-
-```bash
-# Add context for other agents
-bd comment <issue-id> "Implemented base class. Needs: validation, tests, docs"
+echo '{"message": "Continue implementing auth middleware. Tests passing but needs error handling in src/auth.ts:45", "artifact": "artifacts/plan_auth_middleware.md"}' > .claude/hooks/.state/handoff.json
 ```
 
 ## Multi-Agent Patterns
 
-### Queen-Worker Pattern
+### Orchestrator-Worker Pattern
 
 For complex tasks, one agent orchestrates while others execute:
 
-1. **Queen**: Plans, decomposes, assigns via Beads
-2. **Workers**: Claim issues, implement, report completion
-3. **Sync Point**: All workers sync before final integration
+1. **Orchestrator**: Plans, decomposes work into tasks on the native task list, dispatches workers
+2. **Workers**: Receive a focused prompt, implement, return results — stateless, no worker-to-worker state sharing
+3. **Sync Point**: Orchestrator collects all worker results and reconciles before final integration
 
 ### Parallel Streams
 
 For independent features:
 
-1. Create separate Beads issues for each stream
-2. Each agent claims one stream
+1. Create a separate task (with acceptance criteria) for each stream
+2. Each worker claims one stream via its assigned task
 3. Avoid editing same files across streams
 4. Merge streams at defined integration points
 
@@ -112,9 +110,9 @@ For independent features:
 
 1. **Check Before Edit**: Always verify no active locks on target files
 2. **Complete Units**: Finish logical units of work before switching
-3. **Document Intent**: Use Beads issues to declare what you're working on
+3. **Document Intent**: Use the task list to declare what you're working on and its acceptance criteria
 4. **Test Locally**: Run tests before pushing to catch issues early
-5. **Sync Often**: Keep Beads and git in sync with other agents
+5. **Sync Often**: Keep the task list, durable issues, and git in sync with other agents
 
 ## Emergency Procedures
 
@@ -138,27 +136,5 @@ find .claude/hooks/.locks -mmin +5 -delete
 1. Save current work to a new branch
 2. Sync with main: `git fetch && git rebase origin/main`
 3. Resolve conflicts file by file
-4. Update Beads: `bd sync`
+4. Update the native task list and durable issue record to reflect current state
 5. Continue work
-
-## Integration with Beads
-
-```bash
-# View all open work
-bd list --status open
-
-# Get ready (unblocked) items
-bd ready --sort hybrid
-
-# Claim an issue
-bd update <id> --status in_progress --assignee claude
-
-# Add dependency
-bd dep add <blocking-id> <blocked-id> --type blocks
-
-# Complete work
-bd close <id> --reason "Implemented feature X"
-
-# Sync state
-bd sync
-```

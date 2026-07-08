@@ -1,11 +1,11 @@
 ---
-description: Execute implementation plans with parallel worker swarm and beads tracking
-argument-hint: [plan-artifact-or-bead-id]
+description: Execute implementation plans with parallel worker swarm and native task tracking
+argument-hint: [plan-artifact-or-task-id]
 ---
 
 # Execution Orchestrator
 
-Execute plans using parallel worker swarms with quality gates and Beads tracking.
+Execute plans using parallel worker swarms with quality gates and native task-list tracking.
 
 ## MCP Tools
 
@@ -22,12 +22,12 @@ Execute plans using parallel worker swarms with quality gates and Beads tracking
 
 ## Execution Workflow
 
-1. **Discover** — Find available work via `bd ready --sort hybrid`
-2. **Claim** — Update status: `bd update <id> --status in_progress`
-3. **Analyze** — Check dependency graph: `bd dep tree <id>`
+1. **Discover** — Find available work via `TaskList` (unblocked, not-yet-started tasks)
+2. **Claim** — Mark the task in progress via `TaskUpdate` (status: in_progress)
+3. **Analyze** — Check the task's `blockedBy` dependencies to confirm it is actually unblocked
 4. **Execute** — Launch parallel workers for independent tasks
-5. **Gate** — Run quality gates before closing tasks
-6. **Close** — Mark complete: `bd close <id> --reason "..."`
+5. **Gate** — Run quality gates before marking tasks complete
+6. **Close** — Mark complete via `TaskUpdate` (status: completed)
 7. **Push** — Push to remote (MANDATORY)
 
 ## Context Efficiency
@@ -77,23 +77,22 @@ No exceptions.
 
 ## Coordination Protocol
 
-1. **Orchestrator** decomposes task via Beads
-2. **Workers** claim issues: `bd update <id> --status in_progress`
-3. **Workers** complete task following AGENTS.md "Landing the Plane" workflow
-4. **Workers** report completion to orchestrator
-5. **Orchestrator** integrates and verifies
+1. **Orchestrator** decomposes work into tasks via `TaskCreate`, with acceptance criteria and `blockedBy` dependencies
+2. **Orchestrator** claims a task on behalf of a worker: `TaskUpdate` (status: in_progress)
+3. **Workers** execute their assigned task following AGENTS.md "Landing the Plane" workflow — workers do NOT touch the task list themselves
+4. **Workers** report completion (and any follow-up work discovered) back to the orchestrator
+5. **Orchestrator** integrates, verifies, and updates the task list based on worker reports
 
 ### Worker Completion Requirements
 
-When a worker completes its assigned task, it MUST follow the full completion protocol from AGENTS.md:
+Workers do not have direct access to the native task list — the orchestrator owns it. When a worker completes its assigned task, it MUST follow the full completion protocol from AGENTS.md:
 
-1. File issues for remaining work
+1. Report any remaining or follow-up work to the orchestrator (orchestrator files it via `TaskCreate`)
 2. Run quality gates (if code changed)
-3. Update issue status: `bd close <id>`
+3. Report completion status back to the orchestrator (orchestrator marks the task completed via `TaskUpdate`)
 4. **PUSH TO REMOTE** (mandatory):
    ```bash
    git pull --rebase
-   bd sync
    git push
    ```
 5. Report completion to orchestrator
@@ -105,35 +104,28 @@ When a worker completes its assigned task, it MUST follow the full completion pr
 Work is NOT complete until pushed:
 1. Stage and commit with descriptive message
 2. Pull with rebase
-3. Sync beads: `bd sync`
-4. Push to remote
-5. Verify: `git status` must show "up to date with origin"
+3. Push to remote
+4. Verify: `git status` must show "up to date with origin"
 
 ## Checkpointing
 
-For long-running tasks, add progress updates:
+For long-running tasks, the orchestrator records progress on the task via `TaskUpdate` (metadata/comments), e.g.:
 
-```bash
-bd comments add <id> "Completed step 1: schema migration"
-bd comments add <id> "Completed step 2: API endpoints"
-bd comments add <id> "In progress: integration tests"
-```
+- "Completed step 1: schema migration"
+- "Completed step 2: API endpoints"
+- "In progress: integration tests"
 
 ## Error Handling
 
-```bash
-# If worker fails, update bead
-bd update <id> --status blocked
-bd comments add <id> "Blocked: [safe error description without secrets]"
+If a worker fails:
 
-# Create follow-up task if needed
-bd create --title="Fix: [description]" --type=bug --priority=1
-bd dep add <new-id> <blocked-id>
-```
+1. Orchestrator marks the task blocked via `TaskUpdate` (status: blocked), with a comment: "Blocked: [safe error description without secrets]"
+2. Orchestrator creates a new blocker task via `TaskCreate` describing the fix needed
+3. Orchestrator sets the original task's `blockedBy` to reference the new blocker task
 
 ## Rollback
 
-If quality gates fail: stash changes, mark task as blocked, add comment with reason.
+If quality gates fail: stash changes, mark the task as blocked via `TaskUpdate`, add a comment with the reason.
 
 ## Performance Tips
 
@@ -149,7 +141,7 @@ If quality gates fail: stash changes, mark task as blocked, add comment with rea
 - NO exceeding 8 parallel workers
 - NO skipping git push step
 - NO exposing secrets in error messages or comments
-- ALWAYS update bead status in real-time
+- ALWAYS update task status in real-time via `TaskUpdate`
 - ALWAYS add comments for blocked work
 - ALWAYS verify `git status` shows up to date
 - ALWAYS validate inputs before executing commands
@@ -161,13 +153,13 @@ If quality gates fail: stash changes, mark task as blocked, add comment with rea
 - [ ] Linter passes
 - [ ] Types check
 - [ ] Build succeeds
-- [ ] Bead closed with reason
+- [ ] Task marked completed with reason
 - [ ] Changes pushed to remote
 - [ ] `git status` shows up to date with origin
 
 ## Related Skills
 
-`beads-workflow`, `swarm-coordination`, `testing`
+`swarm-coordination`, `testing`
 
 ## Handoff
 

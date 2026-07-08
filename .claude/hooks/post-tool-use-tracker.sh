@@ -1,5 +1,5 @@
 #!/bin/bash
-# Post-tool-use tracker: file logging, lock release, and Beads integration
+# Post-tool-use tracker: file logging and lock release
 
 INPUT=$(cat)
 
@@ -23,7 +23,7 @@ fi
 
 # Skip noisy directories and file types (case is faster than array loop)
 case "$REL_PATH" in
-    .claude/hooks/*|.beads/*|.git/*|node_modules/*)
+    .claude/hooks/*|.git/*|node_modules/*)
         exit 0
         ;;
     *.log|*.lock)
@@ -53,14 +53,6 @@ if [ -f "$TRACKER_FILE" ]; then
     LINE_COUNT=$(wc -l < "$TRACKER_FILE" 2>/dev/null || echo 0)
     if [ "$LINE_COUNT" -gt 600 ]; then
         tail -n 500 "$TRACKER_FILE" > "$TRACKER_FILE.tmp" && mv "$TRACKER_FILE.tmp" "$TRACKER_FILE"
-    fi
-fi
-
-# Beads: log active issue context when an issue is in progress
-if command -v bd &> /dev/null && [ -d "$PROJECT_DIR/.beads" ]; then
-    ACTIVE_ISSUE=$(bd list --status in_progress --json 2>/dev/null | jq -r '.[0].id // empty' 2>/dev/null)
-    if [ -n "$ACTIVE_ISSUE" ]; then
-        echo "  -> Issue $ACTIVE_ISSUE context: $REL_PATH" >> "$TRACKER_FILE"
     fi
 fi
 

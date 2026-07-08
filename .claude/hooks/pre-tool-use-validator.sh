@@ -35,7 +35,7 @@ if [ -f "$LOCK_FILE" ]; then
 
     # Lock expires after 120 seconds
     if [ $((CURRENT_TIME - LOCK_TIME)) -lt 120 ] && [ "$LOCK_SESSION" != "$SESSION_ID" ]; then
-        echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"File '$REL_PATH' is being edited by another agent. Wait for completion or coordinate via Beads.\"}}"
+        echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"File '$REL_PATH' is being edited by another agent. Wait for completion or coordinate via the task tracker.\"}}"
         exit 0
     fi
 fi
@@ -43,8 +43,6 @@ fi
 # Block edits to critical system files
 # Note: .claude/settings.json and .claude/rules/ are user-configurable
 PROTECTED_PATTERNS=(
-    ".beads/beads.db"
-    ".beads/daemon"
     ".git/"
     ".env"
     ".mcp.json"

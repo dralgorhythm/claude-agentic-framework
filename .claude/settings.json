@@ -193,9 +193,6 @@
       "Bash(echo:*)",
       "Bash(#:*)",
 
-      "// === Beads Issue Tracker ===",
-      "Bash(bd:*)",
-
       "// === Claude CLI ===",
       "Bash(claude:*)",
 

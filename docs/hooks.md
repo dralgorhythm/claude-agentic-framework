@@ -6,13 +6,13 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `session-start-loader.sh` | SessionStart | Load Beads status, detect active swarm agents, process handoffs, cleanup stale sessions |
+| `session-start-loader.sh` | SessionStart | Load session context, detect active swarm agents, process handoffs, cleanup stale sessions |
 | `skill-activation-prompt.sh` | UserPromptSubmit | Suggest relevant skills based on context |
 | `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection, protected file enforcement |
 | `dangerous-command-guard.sh` | PreToolUse (Bash) | Guard against dangerous shell commands (force push, rm -rf, etc.) |
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
 | `pre-commit-verification.sh` | PreToolUse (Bash) | Pre-commit quality checks |
-| `post-tool-use-tracker.sh` | PostToolUse | Track file changes and sync with Beads |
+| `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
 | `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted changes |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
 
@@ -41,7 +41,6 @@ Test files (`*.test.ts`, `*.spec.ts`, etc.) are excluded to reduce false positiv
 ### Protected Files (pre-tool-use-validator.sh)
 
 Blocks modifications to critical system files:
-- `.beads/beads.db`, `.beads/daemon`
 - `.git/`
 - `.env`
 - `.mcp.json`
@@ -60,7 +59,7 @@ Enforces trunk-based development by blocking pushes to main/master:
 - Supports handoff messages between sessions
 - Auto-cleans stale sessions older than 24 hours
 - Warns about uncommitted changes on session stop
-- Syncs Beads before exit
+- Releases file locks before exit
 
 ## Creating a Hook
 

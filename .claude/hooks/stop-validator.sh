@@ -39,14 +39,9 @@ if [ -d "$PROJECT_DIR/.git" ]; then
 [SESSION CLEANUP REMINDER]
 - Uncommitted changes detected: $UNCOMMITTED files
 - Consider: git add && git commit before ending
-- Or document in Beads: bd create 'Continue: <description>'
+- Or track remaining work in the task tracker / GitHub Issues
 ---"
     fi
-fi
-
-# Sync Beads if available
-if command -v bd &> /dev/null && [ -d "$PROJECT_DIR/.beads" ]; then
-    bd sync 2>/dev/null || true
 fi
 
 exit 0

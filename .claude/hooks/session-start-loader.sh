@@ -1,6 +1,6 @@
 #!/bin/bash
 # Session start hook for swarm context loading
-# Loads project context, beads status, and swarm state
+# Loads project context and swarm state
 
 INPUT=$(cat)
 SOURCE=$(echo "$INPUT" | jq -r '.source // "startup"' 2>/dev/null || echo "startup")
@@ -26,34 +26,6 @@ echo "{\"session_id\": \"$SESSION_ID\", \"started\": \"$(date -Iseconds)\", \"so
 # Build context message
 CONTEXT=""
 
-# Load Beads status if available
-if command -v bd &> /dev/null && [ -d "$PROJECT_DIR/.beads" ]; then
-    if command -v timeout >/dev/null 2>&1; then
-        TIMEOUT_CMD="timeout"
-    elif command -v gtimeout >/dev/null 2>&1; then
-        TIMEOUT_CMD="gtimeout"
-    else
-        TIMEOUT_CMD=""
-    fi
-
-    if [ -n "$TIMEOUT_CMD" ]; then
-        READY_COUNT=$($TIMEOUT_CMD 3 bd ready --json 2>/dev/null | jq 'length' 2>/dev/null || echo "0")
-        OPEN_COUNT=$($TIMEOUT_CMD 3 bd list --status open --json 2>/dev/null | jq 'length' 2>/dev/null || echo "0")
-    else
-        READY_COUNT=$(bd ready --json 2>/dev/null | jq 'length' 2>/dev/null || echo "0")
-        OPEN_COUNT=$(bd list --status open --json 2>/dev/null | jq 'length' 2>/dev/null || echo "0")
-    fi
-
-    if [ "$OPEN_COUNT" != "0" ] || [ "$READY_COUNT" != "0" ]; then
-        CONTEXT="$CONTEXT
-[BEADS STATUS]
-- Open issues: $OPEN_COUNT
-- Ready to work: $READY_COUNT
-- Run 'bd ready' to see unblocked issues
-- Run 'bd list --status open' for all open issues"
-    fi
-fi
-
 # Check for active swarm agents
 ACTIVE_AGENTS=$(ls -1 "$STATE_DIR"/session_*.json 2>/dev/null | wc -l | tr -d ' ')
 if [ "$ACTIVE_AGENTS" -gt 1 ]; then
@@ -61,8 +33,7 @@ if [ "$ACTIVE_AGENTS" -gt 1 ]; then
 
 [SWARM STATUS]
 - Active agents in project: $ACTIVE_AGENTS
-- Coordinate via Beads to avoid conflicts
-- Use 'bd create' to track new work items
+- Coordinate via the task tracker to avoid conflicts
 - Check file locks before major edits"
 fi
 

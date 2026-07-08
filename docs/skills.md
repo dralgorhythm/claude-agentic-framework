@@ -58,7 +58,6 @@ Claude sees relevant skills suggested (like `designing-apis`) and uses them to g
 - `infrastructure` — IaC, cloud setup
 - `observability` — Logs, metrics, traces
 - `incident-management` — Incident response
-- `beads-workflow` — Issue tracking
 - `swarm-coordination` — Multi-agent workflows
 - `deploy-railway` — Railway deployments
 - `deploy-aws-ecs` — ECS/Fargate deployments

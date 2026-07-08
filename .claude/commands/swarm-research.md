@@ -113,14 +113,9 @@ Before declaring research complete:
 | Comprehensive domain | 6-8 | `artifacts/research_<domain>.md` |
 | Full topic suite (15+) | 8 per batch | Per-prompt outputs + consistency report |
 
-## Beads Integration
+## Task Tracking
 
-```bash
-bd create --title="Research: [domain]" --type=task --priority=2
-bd create --title="Research: [sub-topic]" --type=task
-bd dep add <synthesis-id> <topic-id>
-bd close <id> --reason="Research complete, output at [path]"
-```
+Research tracking uses the orchestrator's native task list (`TaskCreate`/`TaskUpdate`) — workers do not touch it directly.
 
 ## Constraints
 
@@ -139,7 +134,7 @@ bd close <id> --reason="Research complete, output at [path]"
 
 ## Related Skills
 
-`swarm-coordination`, `beads-workflow`
+`swarm-coordination`
 
 ## Handoff
 

@@ -27,7 +27,7 @@ Reading process: Everyone reads the document in silence at the start of review m
 **Status:** Draft | In Review | Approved
 **Author:** [Name]
 **Date:** [YYYY-MM-DD]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 
 ---
 
@@ -215,4 +215,4 @@ This is the most critical paragraph. Write from the CUSTOMER'S point of view.
 After PR-FAQ approval:
 1. [ ] Create detailed PRD (`artifacts/prd_[feature].md`)
 2. [ ] Technical feasibility review with Architect
-3. [ ] Create Beads issue for tracking
+3. [ ] File a tracking issue in the issue tracker
