@@ -1,6 +1,6 @@
 ---
 description: Holistic codebase audit for SOLID, DRY, consistency, and code health
-argument-hint: [scope: all | packages/api | packages/web | path/to/dir]
+argument-hint: [scope: all | path/to/dir | glob]
 ---
 
 # Codebase Health Auditor

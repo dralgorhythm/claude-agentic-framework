@@ -22,6 +22,7 @@ scratchpad/
 # Swarm Runtime
 # =============================================================================
 .swarm/
+.claude/worktrees/
 
 # =============================================================================
 # Beads Runtime (project-specific, not part of framework template)
