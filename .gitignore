@@ -7,8 +7,6 @@ CLAUDE.local.md
 # =============================================================================
 # Claude Hooks Runtime
 # =============================================================================
-.claude/hooks/node_modules/
-.claude/hooks/dist/
 .claude/hooks/.file-tracker.log
 .claude/hooks/.locks/
 .claude/hooks/.state/

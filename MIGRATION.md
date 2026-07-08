@@ -48,10 +48,30 @@ v3 replaces the built-in Beads workflow with a two-tier convention:
 No migration script is provided for existing `.beads/` data — export or reference it
 manually when opening corresponding GitHub Issues, if desired.
 
+## Skill discovery
+
+v3 removes the skill-activation hook — the TypeScript hook script, its `node_modules`
+toolchain, and `.claude/skills/skill-rules.json` are all gone. Skills are now
+discovered **natively**: Claude Code loads every skill's name and description from its
+`SKILL.md` frontmatter at startup and reads the full body automatically when the
+description matches what you're doing. There's nothing to install and nothing to
+register.
+
+**If you relied on the hook's keyword matching:**
+
+- Any custom entries you had in `skill-rules.json` no longer do anything — activation
+  now depends entirely on the quality of each skill's `description` field. Make sure
+  your custom skills describe, in the third person, what they do and when to use them,
+  with trigger phrases up front.
+- If you need deterministic, keyword-based activation instead of native model-driven
+  discovery, a dependency-free opt-in example hook is documented in
+  [docs/examples/skill-activation-hook.sh](docs/examples/skill-activation-hook.sh). It
+  is disabled by default and not required for skills to work.
+
 ## What's next
 
-Additional v3 changes — including native skill discovery and the command-to-skill
-migration — will land in subsequent updates. Entries documenting those changes, and
-any further migration steps they require, will be appended below.
+Additional v3 changes — including the command-to-skill migration — will land in
+subsequent updates. Entries documenting those changes, and any further migration steps
+they require, will be appended below.
 
 <!-- Future v3 migration notes appended here. -->

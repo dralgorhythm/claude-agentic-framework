@@ -17,9 +17,8 @@ The script will:
 - Copy `CLAUDE.md` and `AGENTS.md` (project instructions)
 - Create an `artifacts/` directory for planning documents
 - Set up `.gitignore` entries
-- Install hook dependencies
 
-The script prompts before overwriting any existing files. Re-run it to pull in framework updates.
+The script prompts before overwriting any existing files. Re-run it to pull in framework updates. The framework is zero-install — no dependencies to fetch.
 
 ## After Install
 
@@ -76,7 +75,7 @@ Six specialized agent types tuned for cost and capability:
 
 ### Skills
 
-67 skills across 7 categories — auto-suggested based on keywords in your prompt:
+67 skills across 7 categories — discovered natively from each skill's description, no hook or registry required:
 
 **Architecture** · **Engineering** · **Product** · **Security** · **Operations** · **Design** · **Languages & Frameworks**
 

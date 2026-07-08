@@ -7,7 +7,7 @@ cd your-project
 curl -sSL https://raw.githubusercontent.com/dralgorhythm/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
 ```
 
-The script copies the framework files, installs hook dependencies, and prompts before overwriting anything.
+The script copies the framework files and prompts before overwriting anything. The framework is zero-install — no dependencies to fetch.
 
 ## Manual Install
 
@@ -18,7 +18,6 @@ cp claude-agentic-framework/.mcp.json your-project/
 cp claude-agentic-framework/CLAUDE.md your-project/
 cp claude-agentic-framework/AGENTS.md your-project/
 mkdir -p your-project/artifacts
-cd your-project/.claude/hooks && npm install
 ```
 
 ## What Gets Installed

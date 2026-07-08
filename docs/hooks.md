@@ -7,7 +7,6 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | Hook | Event | Purpose |
 |------|-------|---------|
 | `session-start-loader.sh` | SessionStart | Load session context, detect active swarm agents, process handoffs, cleanup stale sessions |
-| `skill-activation-prompt.sh` | UserPromptSubmit | Suggest relevant skills based on context |
 | `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection, protected file enforcement |
 | `dangerous-command-guard.sh` | PreToolUse (Bash) | Guard against dangerous shell commands (force push, rm -rf, etc.) |
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
@@ -15,6 +14,8 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
 | `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted changes |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
+
+**Optional examples**: Skills are discovered natively (no hook required — see [docs/skills.md](skills.md#how-skills-activate)). Teams that want deterministic, keyword-based skill activation instead can opt into [docs/examples/skill-activation-hook.sh](examples/skill-activation-hook.sh); it is dependency-free and disabled by default.
 
 ## Key Capabilities
 

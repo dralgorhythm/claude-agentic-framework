@@ -27,18 +27,16 @@ description: What it does
 ---
 ```
 
-2. Register in `.claude/skills/skill-rules.json`:
+2. No registration needed. Discovery is automatic: Claude Code reads every `SKILL.md`'s frontmatter at startup, so as soon as the file exists, the skill is live.
 
-```json
-{
-  "name": "my-skill",
-  "path": ".claude/skills/category/my-skill/SKILL.md",
-  "triggers": {
-    "keywords": ["keyword1", "keyword2"]
-  },
-  "priority": "medium"
-}
-```
+   The only thing that determines whether it activates is the strength of its `description`. Write it in the **third person**, stating **what** the skill does and **when** to use it — lead with the trigger phrases a user would actually type:
+
+   ```yaml
+   ---
+   name: my-skill
+   description: Guides X. Use when the user asks to Y or mentions Z.
+   ---
+   ```
 
 See `.claude/templates/skill.template.md` for the full format.
 

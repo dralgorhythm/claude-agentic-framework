@@ -101,4 +101,4 @@ Two-tier convention:
 
 ## Skills
 
-Check `.claude/skills/` before ad-hoc generation. Skills are auto-suggested based on context via `.claude/skills/skill-rules.json`.
+Check `.claude/skills/` before ad-hoc generation. Skills are discovered natively: Claude Code loads every skill's name and description at startup and pulls in the full `SKILL.md` body automatically when the description matches what you're doing — no registry file, no hook.

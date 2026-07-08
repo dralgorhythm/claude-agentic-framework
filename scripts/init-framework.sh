@@ -412,28 +412,6 @@ if [ -d "$TARGET_DIR/.claude/hooks" ]; then
     print_success "Hook scripts made executable"
 fi
 
-# Install hook dependencies if needed
-if [ -f "$TARGET_DIR/.claude/hooks/package.json" ]; then
-    print_info "Installing hook dependencies..."
-    echo ""
-
-    INSTALL_OK=false
-    if command -v pnpm &> /dev/null; then
-        (cd "$TARGET_DIR/.claude/hooks" && pnpm install --silent) && INSTALL_OK=true
-    elif command -v npm &> /dev/null; then
-        (cd "$TARGET_DIR/.claude/hooks" && npm install --silent) && INSTALL_OK=true
-    else
-        print_warning "Neither pnpm nor npm found - skipping dependency installation"
-        print_info "Install Node.js and run: cd .claude/hooks && npm install"
-    fi
-
-    if [ "$INSTALL_OK" = "true" ]; then
-        print_success "Hook dependencies installed"
-    fi
-
-    echo ""
-fi
-
 # Print next steps
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Next Steps"
