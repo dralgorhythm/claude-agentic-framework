@@ -51,14 +51,16 @@ Decompose features into actionable plans using parallel exploration swarms.
 
 ## Worker Types
 
-| Worker | Model | Primary Use |
-|--------|-------|-------------|
-| `worker-explorer` | haiku | Fast codebase search, web research, dependency mapping |
-| `worker-builder` | sonnet | Implementation, testing, refactoring |
-| `worker-reviewer` | opus | Code review, security audit, quality assessment |
-| `worker-researcher` | sonnet | Quick web research, API docs, library comparison |
-| `worker-research` | opus | Deep multi-source investigation, technology evaluation |
-| `worker-architect` | opus | Complex design decisions, ADRs, system architecture |
+| Worker | Primary Use |
+|--------|-------------|
+| `worker-explorer` | Fast codebase search, web research, dependency mapping |
+| `worker-builder` | Implementation, testing, refactoring |
+| `worker-reviewer` | Code review, security audit, quality assessment |
+| `worker-researcher` | Quick web research, API docs, library comparison |
+| `worker-research` | Deep multi-source investigation, technology evaluation |
+| `worker-architect` | Complex design decisions, ADRs, system architecture |
+
+Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth.
 
 ## Swarm Patterns
 

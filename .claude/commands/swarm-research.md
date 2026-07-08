@@ -25,11 +25,13 @@ Coordinate parallel research workers to investigate topics deeply and synthesize
 
 ## Worker Dispatch
 
-| Task Type | Worker | Model | Max Concurrent |
-|-----------|--------|-------|----------------|
-| Deep research | worker-research | opus | Up to 8 |
-| Quick fact-check | worker-explorer | haiku | Up to 8 |
-| Architecture/design research | worker-architect | opus | 1-2 |
+| Task Type | Worker | Max Concurrent |
+|-----------|--------|----------------|
+| Deep research | worker-research | Up to 8 |
+| Quick fact-check | worker-explorer | Up to 8 |
+| Architecture/design research | worker-architect | 1-2 |
+
+Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth.
 
 **Rules**:
 - Each worker gets exactly one topic or sub-topic — never overload a single worker
@@ -128,7 +130,7 @@ bd close <id> --reason="Research complete, output at [path]"
 - Flag topics where the orchestrator's own judgment fills gaps (distinguish from sourced findings)
 - Prefer dispatching a follow-up worker over guessing to fill a gap
 - Respect the max concurrent worker limit (8)
-- Use opus model for research workers — they need maximum reasoning depth
+- Worker model tiers are pinned in agent frontmatter; do not override them per-dispatch
 
 ## Error Handling
 

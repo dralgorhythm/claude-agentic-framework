@@ -3,6 +3,7 @@ name: worker-builder
 description: Implementation, testing, and refactoring worker for swarm tasks. Use for parallel coding, test writing, and code cleanup.
 permissionMode: acceptEdits
 model: sonnet
+tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
 # Builder Worker

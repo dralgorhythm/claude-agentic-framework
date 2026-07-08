@@ -3,6 +3,7 @@ name: worker-researcher
 description: Quick web research and documentation lookup. Use for API docs, library comparison, and best practices.
 permissionMode: acceptEdits
 model: sonnet
+tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 
 # Researcher Worker
