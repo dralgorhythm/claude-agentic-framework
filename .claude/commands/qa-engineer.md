@@ -47,7 +47,7 @@ Test strategy, automation, and verification.
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Related Skills
-`testing`, `test-driven-development`
+`testing`, `accessibility`
 
 ## Handoff
 - To `/swarm-execute`: For bug fixes

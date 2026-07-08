@@ -126,7 +126,7 @@ Verify findings before deletion (false positives with dynamic imports).
 
 ## Related Skills
 
-`refactoring-code`, `testing`, `decomposing-tasks`
+`testing`, `debugging`
 
 ## Handoff
 

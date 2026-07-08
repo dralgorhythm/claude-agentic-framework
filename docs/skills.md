@@ -14,66 +14,54 @@ Claude sees relevant skills suggested (like `designing-apis`) and uses them to g
 
 ## Available Skills
 
+14 skills across 6 categories.
+
 ### Architecture
-- `designing-systems` — Planning systems
-- `designing-apis` — REST/GraphQL/gRPC
-- `domain-driven-design` — Business domain modeling
-- `cloud-native-patterns` — Microservices, containers
-- `capacity-planning` — Scale and performance
-- `writing-adrs` — Architecture Decision Records
-- `defense-in-depth` — Layered security architecture
+- `designing-systems` — Design scalable, reliable software systems
+- `designing-apis` — Design clean, consistent APIs
+- `writing-adrs` — Document architectural decisions
 
-### Engineering
-- `implementing-code` — Writing features
-- `debugging` — Finding and fixing bugs
-- `refactoring-code` — Improving structure
-- `optimizing-code` — Performance
-- `testing` — Writing tests
-- `test-driven-development` — TDD workflow
-- `dependency-management` — Package management
-- `data-management` — Database design
-- `data-to-ui` — JSON to React pipelines
-
-### Product
-- `writing-prds` — Product requirements
-- `writing-pr-faqs` — Vision documents
-- `decomposing-tasks` — Breaking down work
-- `execution-roadmaps` — Project planning
-- `requirements-analysis` — Clarifying scope
-- `documentation` — Technical docs
-- `estimating-work` — Effort sizing
-- `brainstorming` — Ideation
-- `agile-methodology` — Scrum/Kanban
-- `context-management` — Onboarding/handoffs
-- `reaching-consensus` — Decision facilitation
-
-### Security
-- `application-security` — Secure coding
-- `threat-modeling` — Identifying threats
-- `security-review` — Audits
-- `compliance` — Regulatory requirements
-- `identity-access` — Auth patterns
-
-### Operations
-- `infrastructure` — IaC, cloud setup
-- `observability` — Logs, metrics, traces
-- `incident-management` — Incident response
-- `swarm-coordination` — Multi-agent workflows
-- `deploy-railway` — Railway deployments
-- `deploy-aws-ecs` — ECS/Fargate deployments
-- `deploy-cloudflare` — Cloudflare Pages/Workers
-- `chaos-engineering` — Resilience testing
+### Core Engineering
+- `debugging` — Troubleshoot and fix bugs systematically
+- `testing` — Write effective tests for code quality and reliability
 
 ### Design
-- `interface-design` — UI/UX
-- `accessibility` — a11y
-- `design-systems` — Component libraries
-- `visual-assets` — Icons, images, graphics
-- `component-recipes` — Tailwind component patterns
-- `demo-design-tokens` — Default design tokens
+- `accessibility` — Ensure digital accessibility
+- `interface-design` — Design user interfaces
 
-### Languages & Frameworks
-`typescript` · `python` · `go` · `rust` · `swift` · `kotlin` · `bash` · `terraform` · `react-patterns` · `biome` · `hono` · `tailwind-css` · `framer-motion` · `radix-ui` · `vite` · `expo-router` · `expo-sdk` · `react-native-patterns` · `nativewind` · `reanimated`
+### Operations
+- `swarm-coordination` — Coordinate multi-agent swarm workflows
+- `observability` — Implement observability solutions
+
+### Product
+- `writing-pr-faqs` — Write Press Release / FAQ documents
+- `writing-prds` — Create Product Requirements Documents
+- `execution-roadmaps` — Create execution roadmaps for projects
+
+### Security
+- `application-security` — Secure applications against common vulnerabilities
+- `threat-modeling` — Identify and analyze security threats
+
+## Catalog philosophy
+
+This framework ships only high-value, single-responsibility skills — one skill per durable workflow, not one per topic. It deliberately does **not** duplicate the model's training data: generic language and framework guidance (TypeScript idioms, React patterns, Terraform syntax, and similar) has been removed, because Claude already knows it. For version-specific or fast-moving detail, use Context7 or the official docs instead of a skill — a skill would only go stale.
+
+Every skill's `name` and `description` is loaded into context on every session, regardless of relevance, at a cost of roughly ~100 tokens each. Claude Code caps the total listing at a small budget of the context window; exceed it and descriptions start getting dropped or truncated, silently breaking discovery for whichever skill lost the coin flip. Keeping the catalog at 14 skills means the full listing comfortably fits — no description is ever dropped from the budget.
+
+### Adding your own project-specific skills
+
+Add skills for the workflows that are actually specific to your project or domain — not generic language help. Each one needs a strong, third-person `description` that states what it does and when to use it, with trigger phrases up front:
+
+```yaml
+---
+name: my-skill
+description: Guides X. Use when the user asks to Y or mentions Z.
+---
+```
+
+See [customization.md](customization.md#adding-a-skill) for the full walkthrough.
+
+After adding several skills, run `/doctor` to confirm none of your descriptions were dropped or truncated from the listing budget — that's the first symptom of a catalog that's grown too large. `/context` shows how much of the context window the skill listing is currently consuming.
 
 ## How Skills Activate
 

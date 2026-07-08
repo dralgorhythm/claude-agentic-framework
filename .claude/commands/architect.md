@@ -43,7 +43,7 @@ Save artifacts to `./artifacts/adr_[topic].md` or `./artifacts/system_design_[co
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Related Skills
-`designing-systems`, `designing-apis`, `domain-driven-design`, `cloud-native-patterns`
+`designing-systems`, `designing-apis`, `writing-adrs`
 
 ## Handoff
 - To `/swarm-execute`: After ADR approval

@@ -153,7 +153,7 @@ Use `writing-prds` skill for structure and template.
 
 ## Related Skills
 
-`decomposing-tasks`, `swarm-coordination`, `writing-adrs`, `designing-systems`, `designing-apis`, `writing-pr-faqs`, `writing-prds`, `requirements-analysis`
+`swarm-coordination`, `writing-adrs`, `designing-systems`, `designing-apis`, `writing-pr-faqs`, `writing-prds`
 
 ## Handoff
 

@@ -40,7 +40,7 @@ Translate plans into working, tested, production-ready code.
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Related Skills
-`implementing-code`, `debugging`, `testing`, `test-driven-development`
+`debugging`, `testing`
 
 ## Handoff
 - To `/swarm-review`: After implementation and for code review

@@ -51,7 +51,7 @@ Use STRIDE analysis systematically:
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Related Skills
-`application-security`, `threat-modeling`, `security-review`, `compliance`
+`application-security`, `threat-modeling`
 
 ## Handoff
 - To `/swarm-execute`: For remediation

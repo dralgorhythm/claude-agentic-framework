@@ -68,6 +68,67 @@ register.
   [docs/examples/skill-activation-hook.sh](docs/examples/skill-activation-hook.sh). It
   is disabled by default and not required for skills to work.
 
+## Skill catalog
+
+v3 cuts the skill catalog from 67 skills down to 14. The following categories of
+skills were removed in full:
+
+- **Languages & Frameworks** — `typescript`, `python`, `go`, `rust`, `swift`,
+  `kotlin`, `bash`, `terraform`, `react-patterns`, `biome`, `hono`,
+  `tailwind-css`, `framer-motion`, `radix-ui`, `vite`, `expo-router`,
+  `expo-sdk`, `react-native-patterns`, `nativewind`, `reanimated`
+- Everything else that duplicated general engineering knowledge rather than
+  encoding a project-specific or otherwise non-obvious workflow — e.g.
+  `domain-driven-design`, `cloud-native-patterns`, `capacity-planning`,
+  `defense-in-depth`, `implementing-code`, `refactoring-code`,
+  `optimizing-code`, `dependency-management`, `data-management`,
+  `data-to-ui`, `decomposing-tasks`, `requirements-analysis`, `documentation`,
+  `estimating-work`, `brainstorming`, `agile-methodology`,
+  `context-management`, `reaching-consensus`, `security-review`,
+  `compliance`, `identity-access`, `infrastructure`, `incident-management`,
+  `deploy-railway`, `deploy-aws-ecs`, `deploy-cloudflare`,
+  `chaos-engineering`, `design-systems`, `visual-assets`,
+  `component-recipes`, `demo-design-tokens`
+
+The kept 14 — `designing-systems`, `designing-apis`, `writing-adrs`,
+`debugging`, `testing`, `accessibility`, `interface-design`,
+`swarm-coordination`, `observability`, `writing-pr-faqs`, `writing-prds`,
+`execution-roadmaps`, `application-security`, `threat-modeling` — were
+reorganized under `architecture/`, `core-engineering/`, `design/`,
+`operations/`, `product/`, and `security/`. See
+[docs/skills.md](docs/skills.md) for the current catalog.
+
+**Why:** every skill's `name` and `description` is loaded into context on
+every session (~100 tokens each), and Claude Code caps the total listing at a
+small budget of the context window. At 67 skills that budget was tight enough
+that descriptions could be silently dropped or truncated, breaking discovery.
+Most of the removed skills also just restated things the model already knows
+from training — generic language and framework guidance goes stale and adds
+no value as a skill; use Context7 or the official docs instead for
+version-specific detail. Keeping only single-responsibility,
+non-training-duplicating skills gets the catalog small enough that nothing
+is ever dropped from the listing budget.
+
+**If you relied on a removed skill:**
+
+- Nothing is destroyed — deleted skills remain fully recoverable from git
+  history. Restore any individual skill with:
+
+  ```bash
+  git checkout v2.0.2 -- .claude/skills/<category>/<skill-name>
+  ```
+
+  For example, to restore the old `terraform` skill:
+
+  ```bash
+  git checkout v2.0.2 -- .claude/skills/languages/terraform
+  ```
+
+- After restoring one or more skills, run `/doctor` to confirm none of your
+  skill descriptions are being dropped or truncated from the listing budget —
+  re-adding enough skills can push you back over it. `/context` shows how
+  much of the context window the skill listing currently consumes.
+
 ## What's next
 
 Additional v3 changes — including the command-to-skill migration — will land in

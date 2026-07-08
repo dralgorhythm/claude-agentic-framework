@@ -52,7 +52,7 @@ Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 - ALWAYS save to `./artifacts/design_spec_[component].md`
 
 ## Related Skills
-`interface-design`, `accessibility`, `design-systems`
+`interface-design`, `accessibility`
 
 ## Handoff
 - To `/swarm-execute`: After design approval

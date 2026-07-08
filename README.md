@@ -1,6 +1,6 @@
 # Claude Agentic Framework
 
-A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized commands, 67 reusable skills, and safety hooks — all configured through a single install command.
+A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized commands, 14 reusable skills, and safety hooks — all configured through a single install command.
 
 ## Install
 
@@ -75,11 +75,11 @@ Six specialized agent types tuned for cost and capability:
 
 ### Skills
 
-67 skills across 7 categories — discovered natively from each skill's description, no hook or registry required:
+14 skills across 6 categories — discovered natively from each skill's description, no hook or registry required:
 
-**Architecture** · **Engineering** · **Product** · **Security** · **Operations** · **Design** · **Languages & Frameworks**
+**Architecture** · **Core Engineering** · **Design** · **Operations** · **Product** · **Security**
 
-Covers everything from `designing-systems` and `debugging` to `react-patterns`, `terraform`, and `application-security`. See [docs/skills.md](docs/skills.md) for the full list.
+A deliberately lean catalog: high-value, single-responsibility skills that don't duplicate what the model already knows, from `designing-systems` and `debugging` to `swarm-coordination` and `application-security`. See [docs/skills.md](docs/skills.md) for the full list.
 
 ### Safety Hooks
 
