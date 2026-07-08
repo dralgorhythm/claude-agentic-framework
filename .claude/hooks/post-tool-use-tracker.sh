@@ -3,6 +3,10 @@
 
 INPUT=$(cat)
 
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary)
+command -v jq >/dev/null 2>&1 || exit 0
+
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null || true)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // empty' 2>/dev/null || true)
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
@@ -16,7 +20,7 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 # Compute relative path
 if [[ "$FILE_PATH" == "$PROJECT_DIR"* ]]; then
-    REL_PATH="${FILE_PATH#$PROJECT_DIR/}"
+    REL_PATH="${FILE_PATH#"$PROJECT_DIR"/}"
 else
     REL_PATH="$FILE_PATH"
 fi
@@ -42,7 +46,7 @@ echo "[$TIMESTAMP] [$SESSION_SHORT] $TOOL_NAME: $REL_PATH" >> "$TRACKER_FILE"
 # Release file lock if held by this session
 LOCK_FILE="$LOCK_DIR/$(echo "$REL_PATH" | tr '/' '_').lock"
 if [ -f "$LOCK_FILE" ]; then
-    LOCK_SESSION=$(cat "$LOCK_FILE" 2>/dev/null | jq -r '.session_id // empty')
+    LOCK_SESSION=$(jq -r '.session_id // empty' <"$LOCK_FILE" 2>/dev/null || true)
     if [ "$LOCK_SESSION" = "$SESSION_ID" ]; then
         rm -f "$LOCK_FILE"
     fi

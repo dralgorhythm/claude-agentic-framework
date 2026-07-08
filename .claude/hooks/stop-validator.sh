@@ -3,6 +3,11 @@
 # Ensures clean handoff and state sync before session ends
 
 INPUT=$(cat)
+
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary)
+command -v jq >/dev/null 2>&1 || exit 0
+
 STOP_HOOK_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null || echo "false")
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
 
@@ -20,7 +25,7 @@ SESSION_SHORT=$(echo "$SESSION_ID" | cut -c1-8)
 if [ -d "$LOCK_DIR" ]; then
     for lock_file in "$LOCK_DIR"/*.lock; do
         [ -f "$lock_file" ] || continue
-        LOCK_SESSION=$(cat "$lock_file" 2>/dev/null | jq -r '.session_id // empty')
+        LOCK_SESSION=$(jq -r '.session_id // empty' <"$lock_file" 2>/dev/null || true)
         if [ "$LOCK_SESSION" = "$SESSION_ID" ]; then
             rm -f "$lock_file"
         fi

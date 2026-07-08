@@ -161,6 +161,12 @@ six gated skills do not auto-fire — if your Claude Code version predates
 support for this field, the field is ignored and those skills may still be
 model-invocable, so update before relying on the gate.
 
+## Permissions
+
+v3 denies reads of `.env*`, secrets, and keys at the permission layer (`permissions.deny` in `.claude/settings.json`). Previously this was only a claim in the README backed by a warn-only hook; it is now actually enforced and cannot be overridden by an allow rule from any scope. `.env.example` stays readable — the deny rule targets files that plausibly hold real secrets, not example/template files.
+
+If your workflow legitimately needs to read a path that's now denied, don't work around it ad hoc — fork the deny rule deliberately: remove or narrow the specific `permissions.deny` line in your own `.claude/settings.json` (or `settings.local.json` for a machine-local exception), understanding that doing so re-opens the exposure the rule existed to close.
+
 ## What's next
 
 Additional v3 changes will land in subsequent updates. Entries documenting

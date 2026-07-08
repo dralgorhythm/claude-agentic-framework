@@ -93,6 +93,8 @@ Pre-configured hooks that run automatically:
 - **Dangerous command guard** — warns on `rm -rf`, force push, `terraform destroy`
 - **File locking** — prevents concurrent edits in multi-agent swarms
 
+What ships enabled: format, warn, and guard hooks, all fail-soft (a missing `jq` or unparseable input skips the check rather than blocking). Secret-bearing paths and destructive commands are denied at the permission layer (`permissions.deny`), not just warned about by a hook. See [docs/hooks.md#security-model](docs/hooks.md#security-model) for what hooks can and cannot guarantee.
+
 ### MCP Servers
 
 Four servers pre-configured in `.mcp.json`:

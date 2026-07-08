@@ -3,6 +3,11 @@
 # Loads project context and swarm state
 
 INPUT=$(cat)
+
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary)
+command -v jq >/dev/null 2>&1 || exit 0
+
 SOURCE=$(echo "$INPUT" | jq -r '.source // "startup"' 2>/dev/null || echo "startup")
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
 
@@ -39,8 +44,8 @@ fi
 
 # Check for pending work from previous sessions
 if [ -f "$STATE_DIR/handoff.json" ]; then
-    HANDOFF=$(cat "$STATE_DIR/handoff.json")
-    HANDOFF_MSG=$(echo "$HANDOFF" | jq -r '.message // empty')
+    HANDOFF=$(cat "$STATE_DIR/handoff.json" 2>/dev/null || true)
+    HANDOFF_MSG=$(echo "$HANDOFF" | jq -r '.message // empty' 2>/dev/null || true)
     if [ -n "$HANDOFF_MSG" ]; then
         CONTEXT="$CONTEXT
 

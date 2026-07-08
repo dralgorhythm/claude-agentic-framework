@@ -16,8 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Skill catalog rationalized from 67 to 14 (generic language/framework skills that duplicate model training data removed; deleted skills remain recoverable from git history)
 - `.claude/commands/` migrated to `.claude/skills/<name>/SKILL.md` (slash names unchanged); side-effecting workflows gated with `disable-model-invocation: true`
 
+### Added
+
+- `post-edit-lint` and `branch-pr-discipline` hooks (generic, fail-soft); `project-secret` and `push-to-default-branch` deny rules
+
 ### Changed
 
 - Worker agents pinned to cost-efficient model tiers with least-privilege tool allowlists
+- All hooks hardened to jq-optional fail-soft with explicit timeouts
 
 <!-- Later PRs: append new Added / Changed / Deprecated / Removed / Fixed / Security entries above this line, keeping the [3.0.0] - Unreleased section open until release. -->

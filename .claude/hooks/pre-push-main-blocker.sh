@@ -10,6 +10,10 @@
 
 INPUT=$(cat)
 
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary)
+command -v jq >/dev/null 2>&1 || exit 0
+
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null || true)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null || true)
 

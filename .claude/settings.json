@@ -284,7 +284,26 @@
       "Write(~/.zshrc)",
       "Write(~/.bash_profile)",
       "Edit(~/.ssh/**)",
-      "Write(~/.ssh/**)"
+      "Write(~/.ssh/**)",
+
+      "// === Project Secrets (Read) ===",
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Read(**/.env.development)",
+      "Read(**/.env.production)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/id_rsa*)",
+      "Read(**/credentials)",
+      "Read(**/.npmrc)",
+      "Read(~/.git-credentials)",
+      "Read(~/.config/gh/**)",
+
+      "// === Push to Default Branch ===",
+      "Bash(git push origin main:*)",
+      "Bash(git push origin master:*)",
+      "Bash(git push -u origin main:*)",
+      "Bash(git push -u origin master:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
@@ -329,6 +348,11 @@
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-push-main-blocker.sh",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/branch-pr-discipline.sh",
+            "timeout": 5
           }
         ]
       }
@@ -341,6 +365,11 @@
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-tracker.sh",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-edit-lint.sh",
+            "timeout": 10
           }
         ]
       }
