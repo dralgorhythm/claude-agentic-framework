@@ -1,6 +1,6 @@
 # Claude Agentic Framework
 
-A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized commands, 14 reusable skills, and safety hooks — all configured through a single install command.
+A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized workflow skills, 14 reusable knowledge skills, and safety hooks — all configured through a single install command.
 
 ## Install
 
@@ -12,7 +12,7 @@ curl -sSL https://raw.githubusercontent.com/dralgorhythm/claude-agentic-framewor
 ```
 
 The script will:
-- Copy `.claude/` (commands, skills, rules, hooks, agents, templates)
+- Copy `.claude/` (skills, rules, hooks, agents, templates)
 - Copy `.mcp.json` (MCP server configuration)
 - Copy `CLAUDE.md` and `AGENTS.md` (project instructions)
 - Create an `artifacts/` directory for planning documents
@@ -30,7 +30,7 @@ The script prompts before overwriting any existing files. Re-run it to pull in f
 
 ### Commands
 
-Single-agent expert modes, invoked via slash commands:
+Single-agent expert modes, invoked via slash commands, backed by model-invocable skills in `.claude/skills/`:
 
 | Command | Role |
 |---------|------|
@@ -51,6 +51,8 @@ Multi-agent commands that fan work out across parallel workers:
 | `/swarm-execute` | Picks up planned work, fans out across builder agents (up to 8 parallel), each running quality gates |
 | `/swarm-review` | Launches 5 parallel reviewers (security, performance, architecture, tests, quality) — run 2-3 times |
 | `/swarm-research` | Deep multi-source investigation with verification tiers |
+
+`/builder`, `/swarm-execute`, `/swarm-plan`, `/swarm-review`, `/swarm-research`, and `/code-check` are side-effecting and carry `disable-model-invocation: true` — only a user typing the slash name can invoke them. `/architect`, `/qa-engineer`, `/security-auditor`, and `/ui-ux-designer` are advisory and stay model-invocable, so Claude can also reach for them on its own.
 
 ### The Full Cycle
 
@@ -106,7 +108,7 @@ Four servers pre-configured in `.mcp.json`:
 
 Everything is designed to be extended:
 
-- Add commands → `.claude/commands/your-command.md`
+- Add command-style skills → `.claude/skills/your-skill/SKILL.md` (add `disable-model-invocation: true` for side-effecting workflows)
 - Add skills → `.claude/skills/category/your-skill/SKILL.md`
 - Add rules → `.claude/rules/your-rule.md`
 - Add hooks → `.claude/hooks/your-hook.sh`

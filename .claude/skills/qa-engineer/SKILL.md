@@ -1,4 +1,5 @@
 ---
+name: qa-engineer
 description: Test strategy, automation, and quality verification
 argument-hint: [component-to-test]
 ---

@@ -42,6 +42,15 @@ Claude sees relevant skills suggested (like `designing-apis`) and uses them to g
 - `application-security` — Secure applications against common vulnerabilities
 - `threat-modeling` — Identify and analyze security threats
 
+## Workflow skills (invoked as /name)
+
+10 additional skills, one per command, live directly under `.claude/skills/<name>/SKILL.md`. Unlike the 14 knowledge skills above, these are typed explicitly as slash commands (e.g. `/architect`) rather than relied on for auto-discovery.
+
+- `architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer` — advisory, model-invocable: Claude can also reach for these on its own.
+- `builder`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research`, `code-check` — side-effecting, gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them.
+
+See [personas.md](personas.md) for the full command reference.
+
 ## Catalog philosophy
 
 This framework ships only high-value, single-responsibility skills — one skill per durable workflow, not one per topic. It deliberately does **not** duplicate the model's training data: generic language and framework guidance (TypeScript idioms, React patterns, Terraform syntax, and similar) has been removed, because Claude already knows it. For version-specific or fast-moving detail, use Context7 or the official docs instead of a skill — a skill would only go stale.

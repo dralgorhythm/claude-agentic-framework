@@ -1,20 +1,34 @@
 # Customization
 
-Add your own commands, skills, rules, and hooks.
+Add your own command-style skills, skills, rules, and hooks.
 
-## Adding a Command
+## Adding a Command-Style Skill
 
-Create `.claude/commands/my-command.md`:
+Commands are just skills invoked by their slash name. Create `.claude/skills/my-command/SKILL.md`:
 
 ```yaml
 ---
+name: my-command
 description: What this command does
+argument-hint: [task-description]
+disable-model-invocation: true
 ---
 ```
 
-Add command instructions below the frontmatter.
+- `name` — must match the directory name.
+- `description` — shown in autocomplete; also what Claude matches against if model-invocation is left enabled.
+- `argument-hint` — optional help text shown for the command's arguments.
+- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset for purely advisory workflows (e.g. an architecture or review skill) where model-invocation is safe.
 
-See `.claude/templates/command.template.md` for the full format.
+Add command instructions below the frontmatter, and end the file with `$ARGUMENTS` so the user's trailing text is passed through:
+
+```markdown
+...instructions...
+
+$ARGUMENTS
+```
+
+See `.claude/templates/skill.template.md` for the full format.
 
 ## Adding a Skill
 

@@ -1,4 +1,5 @@
 ---
+name: security-auditor
 description: Security compliance, threat modeling, and audits
 argument-hint: [scope-or-component]
 ---

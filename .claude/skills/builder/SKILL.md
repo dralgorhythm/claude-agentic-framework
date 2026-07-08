@@ -1,6 +1,8 @@
 ---
+name: builder
 description: Implementation agent for coding, debugging, and testing
 argument-hint: [task-description]
+disable-model-invocation: true
 ---
 
 # Builder - Senior Implementation Agent

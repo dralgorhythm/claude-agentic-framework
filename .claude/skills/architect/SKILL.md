@@ -1,4 +1,5 @@
 ---
+name: architect
 description: System design, technical specs, and architecture decisions
 argument-hint: [design-topic]
 ---

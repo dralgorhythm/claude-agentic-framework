@@ -1,6 +1,8 @@
 ---
+name: swarm-plan
 description: Create implementation plans using parallel specialist workers
 argument-hint: [feature-or-task-description]
+disable-model-invocation: true
 ---
 
 # Planning Orchestrator

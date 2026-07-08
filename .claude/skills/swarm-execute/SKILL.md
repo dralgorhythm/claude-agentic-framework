@@ -1,6 +1,8 @@
 ---
+name: swarm-execute
 description: Execute implementation plans with parallel worker swarm and native task tracking
 argument-hint: [plan-artifact-or-task-id]
+disable-model-invocation: true
 ---
 
 # Execution Orchestrator

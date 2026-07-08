@@ -129,10 +129,42 @@ is ever dropped from the listing budget.
   re-adding enough skills can push you back over it. `/context` shows how
   much of the context window the skill listing currently consumes.
 
+## Commands → skills
+
+v3 migrates every file under `.claude/commands/` to `.claude/skills/<name>/SKILL.md`.
+The directory `.claude/commands/` no longer exists in the framework.
+
+**What's unchanged:**
+
+- Slash names are identical — `/architect`, `/builder`, `/qa-engineer`,
+  `/security-auditor`, `/ui-ux-designer`, `/code-check`, `/swarm-plan`,
+  `/swarm-execute`, `/swarm-review`, and `/swarm-research` all still work
+  exactly as before.
+- If you added your own custom files under `.claude/commands/`, they continue
+  to work — this is legacy-supported. The recommended home for new and
+  migrated commands is `.claude/skills/`, and you should move your custom
+  commands there when convenient.
+
+**What's new:**
+
+- Six side-effecting workflows — `builder`, `swarm-execute`, `swarm-plan`,
+  `swarm-review`, `swarm-research`, and `code-check` — now carry
+  `disable-model-invocation: true` in their frontmatter. This restricts them
+  to explicit user invocation via `/name`; Claude will not trigger them on
+  its own.
+- Four advisory workflows — `architect`, `qa-engineer`, `security-auditor`,
+  and `ui-ux-designer` — remain model-invocable, same as before.
+
+**Action required:** the `disable-model-invocation` gating semantics require
+a recent Claude Code version. After upgrading, run `/doctor` and confirm the
+six gated skills do not auto-fire — if your Claude Code version predates
+support for this field, the field is ignored and those skills may still be
+model-invocable, so update before relying on the gate.
+
 ## What's next
 
-Additional v3 changes — including the command-to-skill migration — will land in
-subsequent updates. Entries documenting those changes, and any further migration steps
-they require, will be appended below.
+Additional v3 changes will land in subsequent updates. Entries documenting
+those changes, and any further migration steps they require, will be
+appended below.
 
 <!-- Future v3 migration notes appended here. -->

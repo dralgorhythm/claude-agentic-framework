@@ -1,6 +1,8 @@
 ---
+name: swarm-review
 description: Adversarial multi-perspective review of code changes on a branch
 argument-hint: [branch-name-or-pr-number]
+disable-model-invocation: true
 ---
 
 # Adversarial Reviewer

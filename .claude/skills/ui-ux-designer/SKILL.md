@@ -1,4 +1,5 @@
 ---
+name: ui-ux-designer
 description: Interface design, visual assets, and accessibility
 argument-hint: [component-or-flow]
 ---

@@ -1,6 +1,8 @@
 ---
+name: code-check
 description: Holistic codebase audit for SOLID, DRY, consistency, and code health
 argument-hint: [scope: all | path/to/dir | glob]
+disable-model-invocation: true
 ---
 
 # Codebase Health Auditor

@@ -1,6 +1,6 @@
 # Commands
 
-Commands are expert modes invoked via slash commands (e.g., `/architect`).
+Commands are expert modes invoked via slash commands (e.g., `/architect`), defined as skills under `.claude/skills/<name>/SKILL.md`.
 
 ## Quick Reference
 
@@ -41,7 +41,7 @@ Each command reads the previous artifacts and builds on them. See [handoffs.md](
 
 ## Creating Your Own
 
-See [customization.md](customization.md#adding-a-command).
+See [customization.md](customization.md#adding-a-command-style-skill).
 
 ---
 

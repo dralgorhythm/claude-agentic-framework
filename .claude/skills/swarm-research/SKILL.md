@@ -1,5 +1,8 @@
 ---
+name: swarm-research
 description: Research orchestrator for deep investigation with parallel specialist workers
+argument-hint: [research-topic-or-question]
+disable-model-invocation: true
 ---
 
 # Research Orchestrator
