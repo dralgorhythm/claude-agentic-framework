@@ -1,0 +1,16 @@
+{
+  "name": "agentic-framework",
+  "owner": {
+    "name": "dralgorhythm"
+  },
+  "description": "Marketplace for the Claude Agentic Framework plugin.",
+  "plugins": [
+    {
+      "name": "agentic-framework",
+      "source": "./",
+      "description": "Swarm orchestration workflows, curated knowledge skills, tiered worker agents, and fail-soft guardrail hooks.",
+      "category": "productivity",
+      "tags": ["workflow", "swarm", "skills", "hooks"]
+    }
+  ]
+}

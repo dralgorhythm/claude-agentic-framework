@@ -2,14 +2,19 @@
 
 A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized workflow skills, 14 reusable knowledge skills, and safety hooks — all configured through a single install command.
 
-## Install
+## Two ways to adopt
 
-Run this inside your project directory:
+### (a) Raw drop-in — recommended, full-featured
+
+Clone or copy the repo's files directly into your project. This is the only path that gives you everything: skills, agents, hooks, `.claude/settings.json` permission rules (including the `permissions.deny` secret-file guards), and `.claude/rules/` (tech strategy, security standards, core directives).
 
 ```bash
+git clone https://github.com/dralgorhythm/claude-agentic-framework.git
 cd your-project
-curl -sSL https://raw.githubusercontent.com/dralgorhythm/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
+../claude-agentic-framework/scripts/init-framework.sh .
 ```
+
+(Clone-then-run, deliberately — this framework's own permission rules deny pipe-to-shell installs, and its docs tell you to review scripts before executing them. Practice what we ship.)
 
 The script will:
 - Copy `.claude/` (skills, rules, hooks, agents, templates)
@@ -20,11 +25,33 @@ The script will:
 
 The script prompts before overwriting any existing files. Re-run it to pull in framework updates. The framework is zero-install — no dependencies to fetch.
 
-## After Install
+**After install:**
 
 1. **Edit `CLAUDE.md`** — Add your build/test commands and project context
 2. **Edit `.claude/rules/tech-strategy.md`** — Configure your tech stack (this is required — the framework enforces whatever you put here)
 3. Start Claude Code and try: `/architect hello`
+
+### (b) Plugin install — skills, agents, and hooks only
+
+Install directly inside a Claude Code session, no cloning required:
+
+```
+/plugin marketplace add dralgorhythm/claude-agentic-framework
+/plugin install agentic-framework@agentic-framework
+```
+
+This gets you the skills, the six worker agents, and the guardrail hooks, wired up automatically. It does **not** replace cloning the repo — it's a lighter-weight path with real gaps:
+
+- **Skills are namespaced.** Invoke them as `/agentic-framework:architect`, `/agentic-framework:builder`, etc., not the bare `/architect` names used in the raw drop-in.
+- **No `.claude/settings.json` permission rules ship with the plugin.** The `permissions.deny` guards for secrets, `.env*`, and other sensitive paths are repo-level configuration — a plugin install will not add them to your project. You get the hooks that warn/guard, but not the deny-layer enforcement described above.
+- **No `.claude/rules/` ship with the plugin.** `tech-strategy.md`, `security.md`, `core-directives.md`, `agent-constraints.md`, and `code-quality.md` are repo-level files, not plugin content — they won't appear in your project via plugin install.
+- **Plugin agents ignore `permissionMode` frontmatter.** Any per-agent permission mode set in an agent's frontmatter is not honored when the agent is loaded as a plugin agent.
+
+If you need the full guardrail set (deny rules, rules directory, settings.json), use the raw drop-in instead — the plugin path trades completeness for a faster, in-session install.
+
+For maintainers: validate packaging with `claude plugin validate --strict .` (marketplace) and `claude plugin validate .claude-plugin/plugin.json` (plugin — reports one expected warning that the repo-level `CLAUDE.md` is not loaded as plugin context; that is by design, per the caveats above).
+
+This repo currently ships with no `LICENSE` file; nothing here should be read as a license grant.
 
 ## What You Get
 

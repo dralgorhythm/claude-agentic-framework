@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `post-edit-lint` and `branch-pr-discipline` hooks (generic, fail-soft); `project-secret` and `push-to-default-branch` deny rules
 - debugging-protocol rule (three-before-one, root-cause mandate, stale-context check)
+- Plugin packaging (`.claude-plugin/plugin.json` + `marketplace.json` + `hooks/hooks.json`): the repo is `/plugin install`-able; raw drop-in remains the recommended full-featured path
 
 ### Changed
 

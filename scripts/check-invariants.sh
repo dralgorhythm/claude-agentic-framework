@@ -98,6 +98,19 @@ while IFS= read -r f; do
 done < <(git ls-files '.claude/hooks/*.sh')
 report hooks-valid "$([ -z "$bad" ]; echo $?)" "bash -n failed:$bad"
 
+# 14. plugin-agents-sync: plugin.json must list every agent file (validate requires explicit paths)
+if git ls-files --error-unmatch .claude-plugin/plugin.json >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PYEOF'
+import json, subprocess, sys
+listed = set(json.load(open('.claude-plugin/plugin.json')).get('agents', []))
+actual = set('./' + f for f in subprocess.run(['git','ls-files','.claude/agents/*.md'],capture_output=True,text=True).stdout.split())
+sys.exit(0 if listed == actual else 1)
+PYEOF
+  report plugin-agents-sync $? "plugin.json agents list out of sync with .claude/agents/*.md"
+else
+  report plugin-agents-sync 0 "(no plugin manifest or python3 — skipped)"
+fi
+
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"
 exit "$FAIL"

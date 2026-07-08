@@ -20,6 +20,17 @@ cp claude-agentic-framework/AGENTS.md your-project/
 mkdir -p your-project/artifacts
 ```
 
+## Install as a plugin
+
+For a lighter-weight, in-session install (skills, agents, and hooks only — no cloning):
+
+```
+/plugin marketplace add dralgorhythm/claude-agentic-framework
+/plugin install agentic-framework@agentic-framework
+```
+
+Skills are namespaced (`/agentic-framework:architect`, not `/architect`). The plugin does **not** ship `.claude/settings.json` permission rules or `.claude/rules/` — those are repo-level and only come from the raw drop-in above. See [README.md — Two ways to adopt](../README.md#two-ways-to-adopt) for the full comparison.
+
 ## What Gets Installed
 
 ```

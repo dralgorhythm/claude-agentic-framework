@@ -167,6 +167,12 @@ v3 denies reads of `.env*`, secrets, and keys at the permission layer (`permissi
 
 If your workflow legitimately needs to read a path that's now denied, don't work around it ad hoc — fork the deny rule deliberately: remove or narrow the specific `permissions.deny` line in your own `.claude/settings.json` (or `settings.local.json` for a machine-local exception), understanding that doing so re-opens the exposure the rule existed to close.
 
+## Plugin distribution
+
+v3 adds an optional second install path: the repo can now be installed as a Claude Code plugin (`/plugin marketplace add dralgorhythm/claude-agentic-framework` then `/plugin install agentic-framework@agentic-framework`). This is purely additive — nothing about the existing raw drop-in (clone/init-script) path changes or breaks.
+
+The plugin path is intentionally narrower: it ships skills, agents, and hooks only. It does not include `.claude/settings.json` permission rules (notably the `permissions.deny` secret-file guards) or `.claude/rules/`, and plugin agents ignore `permissionMode` frontmatter. If you want the full guardrail set, keep using the raw drop-in — see [README.md — Two ways to adopt](README.md#two-ways-to-adopt) for the complete comparison.
+
 ## What's next
 
 Additional v3 changes will land in subsequent updates. Entries documenting
