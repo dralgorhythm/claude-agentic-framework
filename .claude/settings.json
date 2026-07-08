@@ -285,9 +285,7 @@
 
       "// === Project Secrets (Read) ===",
       "Read(**/.env)",
-      "Read(**/.env.local)",
-      "Read(**/.env.development)",
-      "Read(**/.env.production)",
+      "Read(**/.env.*)",
       "Read(**/secrets/**)",
       "Read(**/*.pem)",
       "Read(**/id_rsa*)",

@@ -86,7 +86,7 @@ Every skill's name + description is **always loaded**, regardless of whether it'
 
 - Run `/doctor` to see which skill descriptions were dropped or truncated.
 - Run `/context` to see how much of the context window the skill listing is currently consuming.
-- Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom.
+- Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom. The catalog's budget headroom is enforced in CI as a static character-count proxy (`scripts/check-invariants.sh` desc-budget, ~2.3k chars for the shipped 14 skills); run `/doctor` and `/context` in a live session for the authoritative measurement on your setup.
 
 Caveat: on large-context models, the ~1% budget is currently computed against a ~200K-token baseline rather than the model's true context window (an upstream tracking issue) — so budget math is conservative and the effective allowance may be smaller than 1% of the real window.
 

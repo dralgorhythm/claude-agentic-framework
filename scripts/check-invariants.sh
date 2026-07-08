@@ -65,7 +65,7 @@ done < <(git ls-files '.claude/agents/*.md')
 report model-tiering "$([ -z "$bad" ]; echo $?)" "violations:$bad"
 
 # 8. no-model-drift: docs must not pair reviewer/research workers with opus
-hits=$(git grep -InE 'worker-(reviewer|research)[^a-z].*opus' -- ':!artifacts/' ':!CHANGELOG*' ':!MIGRATION*' 2>/dev/null | wc -l | tr -d ' ')
+hits=$(git grep -IniE 'worker-(reviewer|research)[^a-z].*opus' -- ':!artifacts/' ':!CHANGELOG*' ':!MIGRATION*' 2>/dev/null | wc -l | tr -d ' ')
 report no-model-drift "$([ "$hits" = 0 ]; echo $?)" "$hits stale opus pairing(s)"
 
 # 9. gating: side-effecting skills must carry disable-model-invocation: true

@@ -93,14 +93,16 @@ One agent thinks. Many agents build. Many agents review.
 
 Six specialized agent types tuned for cost and capability:
 
-| Worker | Model | Use |
-|--------|-------|-----|
-| `worker-explorer` | Haiku | Fast codebase search, dependency mapping |
-| `worker-builder` | Sonnet | Implementation, testing, refactoring |
-| `worker-reviewer` | Opus | Code review, security analysis |
-| `worker-researcher` | Sonnet | Quick web research, API docs |
-| `worker-research` | Opus | Deep multi-source investigation |
-| `worker-architect` | Opus | Complex design decisions, ADRs |
+| Worker | Use |
+|--------|-----|
+| `worker-explorer` | Fast codebase search, dependency mapping |
+| `worker-builder` | Implementation, testing, refactoring |
+| `worker-reviewer` | Code review, security analysis |
+| `worker-researcher` | Quick web research, API docs |
+| `worker-research` | Deep multi-source investigation |
+| `worker-architect` | Complex design decisions, ADRs |
+
+Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth.
 
 ### Skills
 

@@ -3,8 +3,9 @@
 ## Install
 
 ```bash
+git clone https://github.com/dralgorhythm/claude-agentic-framework.git
 cd your-project
-curl -sSL https://raw.githubusercontent.com/dralgorhythm/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
+../claude-agentic-framework/scripts/init-framework.sh .
 ```
 
 The script copies the framework files and prompts before overwriting anything. The framework is zero-install — no dependencies to fetch.
