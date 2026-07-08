@@ -1,0 +1,19 @@
+name: framework-invariants
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  invariants:
+    name: Check framework invariants
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run invariant checks
+        run: ./scripts/check-invariants.sh
