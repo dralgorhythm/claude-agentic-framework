@@ -19,10 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `post-edit-lint` and `branch-pr-discipline` hooks (generic, fail-soft); `project-secret` and `push-to-default-branch` deny rules
+- debugging-protocol rule (three-before-one, root-cause mandate, stale-context check)
 
 ### Changed
 
 - Worker agents pinned to cost-efficient model tiers with least-privilege tool allowlists
 - All hooks hardened to jq-optional fail-soft with explicit timeouts
+- docs/personas.md renamed to docs/commands.md
+
+### Removed
+
+- pre-enabled frontend-design plugin and dangling IDE-tool allows from settings.json (neutral template ships no third-party plugin enablement)
 
 <!-- Later PRs: append new Added / Changed / Deprecated / Removed / Fixed / Security entries above this line, keeping the [3.0.0] - Unreleased section open until release. -->

@@ -206,9 +206,6 @@
       "mcp__sequential-thinking__sequentialthinking",
       "mcp__chrome-devtools__*",
       "mcp__filesystem__*",
-      "// ide tools are provided by editor extensions (VS Code, JetBrains), not .mcp.json",
-      "mcp__ide__getDiagnostics",
-      "mcp__ide__executeCode",
 
       "// === WebFetch: Documentation Sites ===",
       "WebFetch(domain:github.com)",
@@ -396,8 +393,5 @@
         ]
       }
     ]
-  },
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true
   }
 }

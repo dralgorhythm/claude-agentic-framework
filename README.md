@@ -124,7 +124,7 @@ See [docs/customization.md](docs/customization.md) for details.
 
 - [Getting started](docs/getting-started.md)
 - [Multi-agent swarms](docs/swarm.md)
-- [Commands](docs/personas.md)
+- [Commands](docs/commands.md)
 - [Skills reference](docs/skills.md)
 - [MCP servers](docs/mcp-servers.md)
 - [Hooks](docs/hooks.md)

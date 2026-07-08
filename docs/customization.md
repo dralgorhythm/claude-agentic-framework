@@ -66,6 +66,8 @@ Rules here. Keep it short — rules load on every request.
 
 Rules auto-load. No registration needed.
 
+The framework intentionally ships no stack-specific frontend rule (React, Vue, etc.) — that choice belongs to the adopter, not the template. Add your own under `.claude/rules/` using `.claude/templates/rule.template.md` as the starting point.
+
 ## Adding a Hook
 
 See [hooks.md](hooks.md) for the full guide.

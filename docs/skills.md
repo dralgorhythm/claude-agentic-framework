@@ -49,7 +49,7 @@ Claude sees relevant skills suggested (like `designing-apis`) and uses them to g
 - `architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer` — advisory, model-invocable: Claude can also reach for these on its own.
 - `builder`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research`, `code-check` — side-effecting, gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them.
 
-See [personas.md](personas.md) for the full command reference.
+See [commands.md](commands.md) for the full command reference.
 
 ## Catalog philosophy
 
