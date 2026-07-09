@@ -46,8 +46,7 @@ Claude sees relevant skills suggested (like `designing-apis`) and uses them to g
 
 10 additional skills, one per command, live directly under `.claude/skills/<name>/SKILL.md`. Unlike the 14 knowledge skills above, these are typed explicitly as slash commands (e.g. `/architect`) rather than relied on for auto-discovery.
 
-- `architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer` — advisory, model-invocable: Claude can also reach for these on its own.
-- `builder`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research`, `code-check` — side-effecting, gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them.
+- `architect`, `builder`, `qa-engineer`, `security-auditor`, `ui-ux-designer`, `code-check`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research` — all gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer`) are thin entry points that delegate methodology to the always-on library skills above (e.g. `architect` delegates to `designing-systems`); Claude reaches those library skills on its own, so the role skill's overlapping description doesn't need to stay in the always-loaded listing too.
 
 See [commands.md](commands.md) for the full command reference.
 

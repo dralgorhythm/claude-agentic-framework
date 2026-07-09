@@ -2,11 +2,16 @@
 name: qa-engineer
 description: Test strategy, automation, and quality verification
 argument-hint: [component-to-test]
+disable-model-invocation: true
 ---
 
 # QA Engineer
 
-Test strategy, automation, and verification.
+Role entry point for test strategy and quality verification.
+
+## Method
+
+Follow the `testing` skill for methodology (pyramid, unit/integration/E2E design) and the `accessibility` skill for WCAG criteria. This entry point adds the QA-role workflow, DevTools-backed gates, and the tool mapping below.
 
 ## MCP Tools
 
@@ -41,17 +46,14 @@ Test strategy, automation, and verification.
 - NO shared state between tests
 - NO order-dependent tests
 - ALWAYS deterministic and isolated
-- ALWAYS run Lighthouse for UI components
+- ALWAYS run Lighthouse as a quality gate for UI components
 - ALWAYS capture screenshots for visual changes
 
 ## Output
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
-## Related Skills
-`testing`, `accessibility`
-
 ## Handoff
-- To `/swarm-execute`: For bug fixes
-- To `/swarm-review`: After test pass
+- To `builder` / `swarm-execute`: for bug fixes
+- To `swarm-review`: after test pass
 
 $ARGUMENTS

@@ -68,15 +68,15 @@ report model-tiering "$([ -z "$bad" ]; echo $?)" "violations:$bad"
 hits=$(git grep -IniE 'worker-(reviewer|research)[^a-z].*opus' -- ':!artifacts/' ':!CHANGELOG*' ':!MIGRATION*' 2>/dev/null | wc -l | tr -d ' ')
 report no-model-drift "$([ "$hits" = 0 ]; echo $?)" "$hits stale opus pairing(s)"
 
-# 9. gating: side-effecting skills must carry disable-model-invocation: true
+# 9. gating: all workflow skills must carry disable-model-invocation: true
 bad=""
-for s in builder swarm-execute swarm-plan swarm-review swarm-research code-check; do
+for s in builder swarm-execute swarm-plan swarm-review swarm-research code-check architect qa-engineer security-auditor ui-ux-designer; do
   f=".claude/skills/$s/SKILL.md"
   if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
     grep -q '^disable-model-invocation: true' "$f" || bad="$bad $s"
   fi
 done
-report gating "$([ -z "$bad" ]; echo $?)" "ungated side-effecting skill(s):$bad"
+report gating "$([ -z "$bad" ]; echo $?)" "ungated workflow skill(s):$bad"
 
 # 10. no-private-ids: no private-reference identifiers in tracked files
 hits=$({ git grep -IniwE 'argo|42gen' -- ':!scripts/check-invariants.sh' 2>/dev/null | grep -viE 'cargo|argocd'; git grep -InE 'ENG-[0-9]+|/Users/[a-z]+' -- ':!scratchpad/' ':!scripts/check-invariants.sh' 2>/dev/null; } | wc -l | tr -d ' ')
@@ -127,6 +127,27 @@ if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
 else
   report builder-isolation 1 "$f not tracked"
 fi
+
+# 17. preload-ungated: skills preloaded via an agent's `skills:` field must not be gated
+bad=""
+while IFS= read -r agent_file; do
+  line=$(awk '/^---$/{c++;next} c==1 && /^skills:/{sub(/^skills:[ ]*/,"");print;exit}' "$agent_file")
+  [ -z "$line" ] && continue
+  IFS=',' read -ra names <<< "$line"
+  for raw in "${names[@]}"; do
+    nm=$(echo "$raw" | tr -d ' ')
+    [ -z "$nm" ] && continue
+    skill_file=$(git ls-files '*SKILL.md' | while IFS= read -r sf; do
+      [ "$(basename "$(dirname "$sf")")" = "$nm" ] && echo "$sf" && break
+    done)
+    if [ -z "$skill_file" ]; then
+      bad="$bad $agent_file->$nm(not-found)"
+    elif grep -q '^disable-model-invocation: true' "$skill_file"; then
+      bad="$bad $agent_file->$nm(gated)"
+    fi
+  done
+done < <(git ls-files '.claude/agents/*.md')
+report preload-ungated "$([ -z "$bad" ]; echo $?)" "preloaded-but-gated or missing skill(s):$bad"
 
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"

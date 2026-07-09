@@ -147,17 +147,27 @@ The directory `.claude/commands/` no longer exists in the framework.
 
 **What's new:**
 
-- Six side-effecting workflows — `builder`, `swarm-execute`, `swarm-plan`,
-  `swarm-review`, `swarm-research`, and `code-check` — now carry
+- All ten workflow skills — `architect`, `builder`, `qa-engineer`,
+  `security-auditor`, `ui-ux-designer`, `code-check`, `swarm-plan`,
+  `swarm-execute`, `swarm-review`, and `swarm-research` — now carry
   `disable-model-invocation: true` in their frontmatter. This restricts them
   to explicit user invocation via `/name`; Claude will not trigger them on
   its own.
-- Four advisory workflows — `architect`, `qa-engineer`, `security-auditor`,
-  and `ui-ux-designer` — remain model-invocable, same as before.
+- The four previously-advisory role skills (`architect`, `qa-engineer`,
+  `security-auditor`, `ui-ux-designer`) were rewritten as thin role entry
+  points: role framing plus role-unique content, delegating methodology to
+  the always-on library skills (`designing-systems`, `application-security`,
+  `accessibility`, `interface-design`, and similar). This is a
+  single-responsibility split — the library skills carry the reusable
+  knowledge and auto-trigger on relevant work, while the role skills are
+  user-invoked workflows layered on top. Gating them removes their
+  now-overlapping descriptions from the always-loaded catalog listing, since
+  the underlying knowledge is already discoverable through the library
+  skills they delegate to.
 
 **Action required:** the `disable-model-invocation` gating semantics require
 Claude Code >= 2.1.x (this release was authored and validated against 2.1.181). After upgrading, run `/doctor` and confirm the
-six gated skills do not auto-fire — if your Claude Code version predates
+ten gated skills do not auto-fire — if your Claude Code version predates
 support for this field, the field is ignored and those skills may still be
 model-invocable, so update before relying on the gate.
 

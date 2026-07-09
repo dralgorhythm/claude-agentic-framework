@@ -9,6 +9,10 @@ disable-model-invocation: true
 
 Translate plans into working, tested, production-ready code.
 
+## Method
+
+Follow the `testing` skill for TDD/coverage methodology and the `debugging` skill for root-cause investigation. This entry point adds the plan-governance workflow and GitHub-MCP dependency checking below.
+
 ## MCP Tools
 
 **GitHub** (workflow integration):
@@ -41,10 +45,7 @@ Translate plans into working, tested, production-ready code.
 ## Output
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
-## Related Skills
-`debugging`, `testing`
-
 ## Handoff
-- To `/swarm-review`: After implementation and for code review
+- To `swarm-review`: after implementation, for code review
 
 $ARGUMENTS

@@ -61,7 +61,7 @@ This repo currently ships with no `LICENSE` file; nothing here should be read as
 
 ### Commands
 
-Single-agent expert modes, invoked via slash commands, backed by model-invocable skills in `.claude/skills/`:
+Single-agent expert modes, invoked via slash commands, backed by skills in `.claude/skills/`:
 
 | Command | Role |
 |---------|------|
@@ -83,7 +83,7 @@ Multi-agent commands that fan work out across parallel workers:
 | `/swarm-review` | Launches 5 parallel reviewers (security, performance, architecture, tests, quality) — run 2-3 times |
 | `/swarm-research` | Deep multi-source investigation with verification tiers |
 
-`/builder`, `/swarm-execute`, `/swarm-plan`, `/swarm-review`, `/swarm-research`, and `/code-check` are side-effecting and carry `disable-model-invocation: true` — only a user typing the slash name can invoke them. `/architect`, `/qa-engineer`, `/security-auditor`, and `/ui-ux-designer` are advisory and stay model-invocable, so Claude can also reach for them on its own.
+All 10 workflow skills — `/architect`, `/builder`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`, `/code-check`, `/swarm-plan`, `/swarm-execute`, `/swarm-review`, and `/swarm-research` — carry `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`/architect`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`) are thin entry points that delegate methodology to always-on library skills (e.g. `designing-systems`, `accessibility`) — Claude still reaches those on its own, so the underlying knowledge stays discoverable even though the role wrapper is gated.
 
 ### The Full Cycle
 
