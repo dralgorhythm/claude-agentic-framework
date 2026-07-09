@@ -150,10 +150,72 @@ HARD rules — the ones that must always hold — live in `settings.json` under 
 
 Only **exit code 2** blocks an action. Exit code 1 (or any non-zero code other than 2) is treated as a non-blocking error and does not stop the tool call — our blocking hooks either exit with code 2 or return deny-JSON (`permissionDecision: "deny"`) explicitly. If you write a hook intended to block, verify it actually exits 2 or returns deny-JSON; anything else is advisory only.
 
+### Enforcement ladder
+
+Hooks are one rung on a broader enforcement ladder, from weakest to strongest:
+
+prose rules (advisory) < skills (on-demand advisory) < hooks (deterministic guardrails, fail-open by design in this repo) < `permissions.deny` + CI (boundaries).
+
+See `.claude/rules/security.md` for the full ladder and rationale. In short: nothing below `permissions.deny` and CI is guaranteed to run, and hooks specifically are guaranteed to skip rather than block when they can't parse their input.
+
 **How to disable a hook:**
 
 - Remove its entry from `.claude/settings.json` (`hooks` section) to disable it for everyone who pulls that config.
 - Set `"disableAllHooks": true` in your local `settings.local.json` to disable all hooks for your own machine only.
+
+## Opt-in recipes
+
+These recipes are **not enabled by default**. They are documented here as copy-paste starting points, consistent with this repo's fail-soft hook doctrine: hooks in this repo ship disabled unless a project deliberately opts in. Wiring one in is a per-project choice, not something this framework turns on for you.
+
+### (a) `TaskCompleted` quality-gate hook
+
+Blocks task completion until quality gates (tests, lint, types, build) pass. Exit code 2 is what makes this blocking rather than advisory — see "Only exit code 2 blocks an action" above.
+
+```bash
+#!/bin/bash
+# .claude/hooks/task-quality-gate.sh
+input=$(cat)
+
+if ! npm test --silent >./scratchpad/gate-test.log 2>&1; then
+  echo "Quality gate failed: tests. See ./scratchpad/gate-test.log" >&2
+  exit 2
+fi
+
+if ! npm run lint --silent >./scratchpad/gate-lint.log 2>&1; then
+  echo "Quality gate failed: lint. See ./scratchpad/gate-lint.log" >&2
+  exit 2
+fi
+
+echo '{"continue": true}'
+```
+
+Install (add to `.claude/settings.json`):
+
+```json
+{"hooks": {"TaskCompleted": [{"hooks": [{"type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/task-quality-gate.sh", "timeout": 120}]}]}}
+```
+
+### (b) Forced-eval skill-activation hook
+
+Before proceeding on a matching prompt, requires the agent to state explicit YES/NO reasoning about whether a skill applies, rather than relying on native discovery alone.
+
+```bash
+#!/bin/bash
+# .claude/hooks/forced-skill-eval.sh
+input=$(cat)
+
+cat <<EOF
+{"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": "Before responding, evaluate each skill in .claude/skills/ against this prompt and state YES or NO with one-line reasoning for whether it applies. Only then proceed."}}
+EOF
+```
+
+Install (add to `.claude/settings.json`):
+
+```json
+{"hooks": {"UserPromptSubmit": [{"hooks": [{"type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/forced-skill-eval.sh", "timeout": 5}]}]}}
+```
+
+Evidence: single disclosed-methodology test, N=50, 84% vs 20% activation (MEDIUM confidence). This is one internal test, not a peer-reviewed benchmark — treat the effect size as directional, not a guarantee, and re-validate against your own prompt mix before relying on it.
 
 ---
 

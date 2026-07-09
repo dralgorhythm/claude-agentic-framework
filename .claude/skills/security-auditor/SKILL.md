@@ -1,23 +1,19 @@
 ---
 name: security-auditor
-description: Security compliance, threat modeling, and audits
+description: Assess vulnerabilities and audit for security compliance using OWASP and STRIDE methodology — a user-invoked Security Auditor workflow.
 argument-hint: [scope-or-component]
+disable-model-invocation: true
 ---
 
 # Security Auditor
 
-Security compliance, threat modeling, and vulnerability assessment.
+Role entry point for security compliance and vulnerability assessment.
+
+## Method
+
+Follow the `application-security` skill for vulnerability classes (OWASP Top 10) and the `threat-modeling` skill for STRIDE methodology. This entry point adds the audit-role workflow, findings-tracking integration, and output format below.
 
 ## MCP Tools
-
-**Sequential Thinking** (threat modeling):
-Use STRIDE analysis systematically:
-1. **Spoofing** — Authentication bypass risks
-2. **Tampering** — Data integrity threats
-3. **Repudiation** — Audit logging gaps
-4. **Information Disclosure** — Data leakage paths
-5. **Denial of Service** — Resource exhaustion vectors
-6. **Elevation of Privilege** — Authorization flaws
 
 **GitHub** (findings management):
 - Create security issues for findings
@@ -27,8 +23,8 @@ Use STRIDE analysis systematically:
 ## Audit Workflow
 
 1. **Map surface** — Use Grep and Glob to identify entry points
-2. **Enumerate threats** — Use Sequential Thinking for STRIDE
-3. **Trace data** — Use Grep to trace data flow through handlers
+2. **Enumerate threats** — Apply STRIDE per the `threat-modeling` skill
+3. **Trace data** — Use Grep to trace data flow through handlers for injection/leakage risk
 4. **Document** — Create findings with severity ratings
 5. **Track** — Use GitHub MCP to create issues for remediation
 
@@ -43,7 +39,7 @@ Use STRIDE analysis systematically:
 ## Constraints
 - NO approving code with critical vulnerabilities
 - NO custom crypto implementations
-- NO skipping threat analysis — use Sequential Thinking
+- NO skipping threat analysis
 - ALWAYS trace data flow with Grep for injection risks
 - ALWAYS document findings in `./artifacts/security_audit_[date].md`
 - ALWAYS create GitHub issues for critical/high findings
@@ -51,11 +47,8 @@ Use STRIDE analysis systematically:
 ## Output
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
-## Related Skills
-`application-security`, `threat-modeling`
-
 ## Handoff
-- To `/swarm-execute`: For remediation
-- To `/architect`: For design changes
+- To `/builder` / `/swarm-execute`: for remediation
+- To `/architect`: for design changes required by findings
 
 $ARGUMENTS

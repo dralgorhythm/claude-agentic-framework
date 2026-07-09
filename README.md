@@ -42,7 +42,7 @@ Install directly inside a Claude Code session, no cloning required:
 /plugin install agentic-framework@agentic-framework
 ```
 
-This gets you the skills, the six worker agents, and the guardrail hooks, wired up automatically. It does **not** replace cloning the repo — it's a lighter-weight path with real gaps:
+This gets you the skills, the five worker agents, and the guardrail hooks, wired up automatically. It does **not** replace cloning the repo — it's a lighter-weight path with real gaps:
 
 - **Skills are namespaced.** Invoke them as `/agentic-framework:architect`, `/agentic-framework:builder`, etc., not the bare `/architect` names used in the raw drop-in.
 - **No `.claude/settings.json` permission rules ship with the plugin.** The `permissions.deny` guards for secrets, `.env*`, and other sensitive paths are repo-level configuration — a plugin install will not add them to your project. You get the hooks that warn/guard, but not the deny-layer enforcement described above.
@@ -57,11 +57,19 @@ For maintainers: validate packaging with `claude plugin validate --strict .` (ma
 
 This repo currently ships with no `LICENSE` file; nothing here should be read as a license grant.
 
+## Why This Shape
+
+Three findings anchor the design, dated because the evidence base moves:
+
+- **Speed and stability correlate — they don't trade off.** Forsgren, Humble & Kim's *Accelerate* (2018) found this, and DORA's 2025 State of DevOps Report replicated it: teams that ship fast are also the teams whose systems stay stable. Under that model, quality gates (tests, linting, type checks, review) are throughput enablers, not a tax on speed — which is why this framework treats them as non-negotiable rather than optional.
+- **AI amplifies whatever engineering discipline already exists.** DORA's 2025 report found AI adoption alone doesn't predict outcomes; it magnifies the discipline — or its absence — that was already there. This framework's rules, skills, and quality gates exist to give that amplification something good to amplify.
+- **The anti-pattern this framework designs against**: big-batch, under-reviewed AI changesets. It's the mechanism DORA, GitClear, and the emerging agent-generated-PR research all converge on independently — large, unreviewed diffs are where speed and stability actually start trading off. Swarm orchestration's small-task decomposition and mandatory multi-perspective review exist specifically to keep AI-authored changes out of that failure mode.
+
 ## What You Get
 
 ### Commands
 
-Single-agent expert modes, invoked via slash commands, backed by model-invocable skills in `.claude/skills/`:
+Single-agent expert modes, invoked via slash commands, backed by skills in `.claude/skills/`:
 
 | Command | Role |
 |---------|------|
@@ -83,7 +91,7 @@ Multi-agent commands that fan work out across parallel workers:
 | `/swarm-review` | Launches 5 parallel reviewers (security, performance, architecture, tests, quality) — run 2-3 times |
 | `/swarm-research` | Deep multi-source investigation with verification tiers |
 
-`/builder`, `/swarm-execute`, `/swarm-plan`, `/swarm-review`, `/swarm-research`, and `/code-check` are side-effecting and carry `disable-model-invocation: true` — only a user typing the slash name can invoke them. `/architect`, `/qa-engineer`, `/security-auditor`, and `/ui-ux-designer` are advisory and stay model-invocable, so Claude can also reach for them on its own.
+All 10 workflow skills — `/architect`, `/builder`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`, `/code-check`, `/swarm-plan`, `/swarm-execute`, `/swarm-review`, and `/swarm-research` — carry `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`/architect`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`) are thin entry points that delegate methodology to always-on library skills (e.g. `designing-systems`, `accessibility`) — Claude still reaches those on its own, so the underlying knowledge stays discoverable even though the role wrapper is gated.
 
 ### The Full Cycle
 
@@ -95,14 +103,13 @@ One agent thinks. Many agents build. Many agents review.
 
 ### Workers
 
-Six specialized agent types tuned for cost and capability:
+Five specialized agent types tuned for cost and capability:
 
 | Worker | Use |
 |--------|-----|
-| `worker-explorer` | Fast codebase search, dependency mapping |
+| `worker-explorer` | Fast codebase search, web research, dependency mapping |
 | `worker-builder` | Implementation, testing, refactoring |
 | `worker-reviewer` | Code review, security analysis |
-| `worker-researcher` | Quick web research, API docs |
 | `worker-research` | Deep multi-source investigation |
 | `worker-architect` | Complex design decisions, ADRs |
 
@@ -115,6 +122,10 @@ Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that 
 **Architecture** · **Core Engineering** · **Design** · **Operations** · **Product** · **Security**
 
 A deliberately lean catalog: high-value, single-responsibility skills that don't duplicate what the model already knows, from `designing-systems` and `debugging` to `swarm-coordination` and `application-security`. See [docs/skills.md](docs/skills.md) for the full list.
+
+Catalog size is a defended design decision, not an oversight. Every skill's name and description loads into every session's context regardless of relevance, and the skill-listing context budget is shared across *everything* an adopter has installed — this framework's skills plus their own. Growing the catalog without discipline degrades discovery for every skill sharing that budget, including ones this repo didn't add. New skill proposals go through CONTRIBUTING.md's eval-first bar, not "this seems useful."
+
+Measured 2026-07: after gating the 10 workflow skills (`disable-model-invocation: true`), only the 14 library skills are ungated and auto-discoverable, at roughly ~1.4k tokens of always-loaded listing — against a ~2k-token listing budget on 200K-context sessions (~10k on 1M-context sessions). Separately, CLAUDE.md (104 lines) plus `.claude/rules/` (409 lines) run roughly ~5k tokens of always-loaded instructions — a different budget line item from the skill listing. Both numbers move as the platform and catalog change; run `/doctor` to check for dropped or truncated skill descriptions and `/context` to see live context-window consumption on your own setup rather than trusting a static figure.
 
 ### Safety Hooks
 

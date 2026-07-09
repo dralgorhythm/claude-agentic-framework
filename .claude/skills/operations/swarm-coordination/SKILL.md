@@ -17,8 +17,8 @@ Protocols and patterns for consistent, conflict-free multi-agent development. Fo
 ## Two-Tier Task Tracking
 
 - **Tier 1 — Durable record**: GitHub Issues (or `ISSUES.md` for repos without a tracker) hold the permanent history of work items: what was requested, why, and its final disposition.
-- **Tier 2 — In-flight work**: The orchestrator owns a native task list (TaskCreate/TaskUpdate/TaskList). One task per work item, each with explicit acceptance criteria. Workers are stateless — they receive a focused prompt, do the work, and return a result. They do not read or write shared mutable state, and they do not maintain their own task lists.
-- **Handoffs**: Always reference a concrete artifact under `./artifacts/` (file path + one-line description). The receiving agent/command must be able to verify the artifact exists before proceeding.
+- **Tier 2 — In-flight work**: The orchestrator owns a native task list (TaskCreate/TaskUpdate/TaskList). One task per work item, each with explicit acceptance criteria. Workers do not maintain their own task lists (see `.claude/rules/agent-constraints.md` for the no-shared-state rule).
+- **Handoffs**: see Core Directives §7 "Follow Command Protocols" — every handoff needs a verifiable artifact reference.
 
 ## File-Based Output
 
@@ -31,7 +31,7 @@ Workers write results to `scratchpad/<task-id>.md`, not direct context. Only dur
 - [ ] **Check the Task List**: Orchestrator reviews TaskList for unblocked, unclaimed items
 - [ ] **Create Tasks**: One task per work item, each with explicit acceptance criteria
 - [ ] **Check Conflicts**: Review `.claude/hooks/.file-tracker.log` for recent edits
-- [ ] **Dispatch**: Send workers a focused, self-contained prompt — no shared mutable state
+- [ ] **Dispatch**: Send workers a focused, self-contained prompt (see `agent-constraints.md`)
 
 ### During Work
 
@@ -85,7 +85,7 @@ echo '{"message": "Continue implementing auth middleware. Tests passing but need
 For complex tasks, one agent orchestrates while others execute:
 
 1. **Orchestrator**: Plans, decomposes work into tasks on the native task list, dispatches workers
-2. **Workers**: Receive a focused prompt, implement, return results — stateless, no worker-to-worker state sharing
+2. **Workers**: Receive a focused prompt, implement, return results (no worker-to-worker state sharing — see `agent-constraints.md`)
 3. **Sync Point**: Orchestrator collects all worker results and reconciles before final integration
 
 ### Parallel Streams

@@ -1,8 +1,9 @@
 ---
 name: worker-explorer
-description: Codebase exploration and web research worker. Use for pattern search, dependency mapping, doc lookup, and library comparison.
+description: Codebase exploration and web research worker. Use for pattern search, dependency mapping, quick API/doc lookup, and library comparison.
 permissionMode: default
 model: haiku
+maxTurns: 30
 tools: Read, Grep, Glob, WebFetch, WebSearch
 ---
 

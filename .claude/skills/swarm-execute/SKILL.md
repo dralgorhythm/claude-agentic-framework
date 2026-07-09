@@ -1,6 +1,6 @@
 ---
 name: swarm-execute
-description: Execute implementation plans with parallel worker swarm and native task tracking
+description: Execute an implementation plan with parallel worker swarms, quality gates, and native task tracking — a user-invoked Execution Orchestrator workflow.
 argument-hint: [plan-artifact-or-task-id]
 disable-model-invocation: true
 ---
@@ -35,9 +35,9 @@ Execute plans using parallel worker swarms with quality gates and native task-li
 ## Context Efficiency
 
 1. **Workers inherit session context** - CLAUDE.md and rules are loaded, but workers use focused instructions
-2. **Narrow scope** - Each worker focuses on one task
+2. **Narrow scope** - Each worker focuses on one task, sized to roughly 200-400 changed LOC or 15-45 minutes of focused work (review effectiveness collapses beyond ~400 LOC — SmartBear/Cisco)
 3. **Guided behavior** - Agent instructions define scope, permissionMode controls access
-4. **Right-sized models** - Haiku for exploration, Sonnet for implementation, Opus for architecture
+4. **Right-sized models** - see Worker Types below for the tiering pointer
 
 ## Worker Types
 
@@ -46,7 +46,6 @@ Execute plans using parallel worker swarms with quality gates and native task-li
 | `worker-explorer` | Fast codebase search, web research, dependency mapping |
 | `worker-builder` | Implementation, testing, refactoring |
 | `worker-reviewer` | Code review, security audit, quality assessment |
-| `worker-researcher` | Quick web research, API docs, library comparison |
 | `worker-research` | Deep multi-source investigation, technology evaluation |
 | `worker-architect` | Complex design decisions, ADRs, system architecture |
 
@@ -68,14 +67,7 @@ Orchestrators specialize workers by specifying a focus mode in the prompt.
 
 ## Quality Gates
 
-Run quality gates per `code-quality.md` — all must pass:
-- Test suite passes
-- Linter passes
-- Type checker passes (if applicable)
-- Build succeeds
-- Security audit passes
-
-No exceptions.
+Run quality gates per `code-quality.md` — all must pass. No exceptions.
 
 ## Coordination Protocol
 
@@ -87,27 +79,15 @@ No exceptions.
 
 ### Worker Completion Requirements
 
-Workers do not have direct access to the native task list — the orchestrator owns it. When a worker completes its assigned task, it MUST follow the full completion protocol from AGENTS.md:
+Workers do not have direct access to the native task list — the orchestrator owns it. Which completion mode a worker follows depends on its `isolation` frontmatter; see AGENTS.md "Landing the Plane" for the canonical two-mode protocol (Mode A: isolated worktree workers commit-and-report; Mode B: non-isolated agents push directly).
 
-1. Report any remaining or follow-up work to the orchestrator (orchestrator files it via `TaskCreate`)
-2. Run quality gates (if code changed)
-3. Report completion status back to the orchestrator (orchestrator marks the task completed via `TaskUpdate`)
-4. **PUSH TO REMOTE** (mandatory):
-   ```bash
-   git pull --rebase
-   git push
-   ```
-5. Report completion to orchestrator
+`worker-builder` runs isolated (`isolation: worktree`) — every other worker in this table does not. For an isolated worker's completed task, the orchestrator:
 
-**Critical**: Workers must push changes to remote. Work is NOT complete until `git push` succeeds.
-
-## Git Push Protocol
-
-Work is NOT complete until pushed:
-1. Stage and commit with descriptive message
-2. Pull with rebase
-3. Push to remote
-4. Verify: `git status` must show "up to date with origin"
+1. **Merges** the worker's worktree branch into the feature branch with `git merge --ff-only`
+2. **Re-runs quality gates** on the merged result — a worker's local gate pass does not substitute for the orchestrator's own verification
+3. **Pushes** the feature branch to remote (mandatory — see Core Directives "Constraints" for the Ship It rule)
+4. **Cleans up** the worker's worktree
+5. **Marks the task completed** via `TaskUpdate`, and files any follow-up work the worker reported via `TaskCreate`
 
 ## Checkpointing
 
@@ -124,6 +104,10 @@ If a worker fails:
 1. Orchestrator marks the task blocked via `TaskUpdate` (status: blocked), with a comment: "Blocked: [safe error description without secrets]"
 2. Orchestrator creates a new blocker task via `TaskCreate` describing the fix needed
 3. Orchestrator sets the original task's `blockedBy` to reference the new blocker task
+
+### Recovery
+
+For a maxTurns ceiling hit, a lost orchestrator session, or a rejected fast-forward merge, see AGENTS.md "Landing the Plane" → Mode A → Recovery for the three canonical recovery procedures.
 
 ## Rollback
 
@@ -168,5 +152,3 @@ If quality gates fail: stash changes, mark the task as blocked via `TaskUpdate`,
 - To `/swarm-review`: After implementation complete, create PR
 - To `/qa-engineer`: For acceptance testing
 - To `/swarm-plan`: When scope changes discovered
-
-$ARGUMENTS

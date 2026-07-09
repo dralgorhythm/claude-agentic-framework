@@ -1,12 +1,17 @@
 ---
 name: ui-ux-designer
-description: Interface design, visual assets, and accessibility
+description: Design interfaces and validate accessibility against WCAG 2.1 with DevTools-backed checks — a user-invoked UI/UX Designer workflow.
 argument-hint: [component-or-flow]
+disable-model-invocation: true
 ---
 
 # UI/UX Designer
 
-Interface design, visual consistency, and accessibility.
+Role entry point for interface design and accessibility validation.
+
+## Method
+
+Follow the `interface-design` skill for layout/wireframe methodology and the `accessibility` skill for WCAG 2.1 requirements. This entry point adds the DevTools-backed validation workflow and screenshot deliverables below.
 
 ## MCP Tools
 
@@ -27,36 +32,25 @@ Interface design, visual consistency, and accessibility.
 5. **Test interactions** — Automate keyboard/mouse flows
 6. **Document** — Capture screenshots for spec
 
-## Focus
-- Design user interfaces and flows
-- Create component specifications
-- Ensure accessibility (WCAG 2.1 AA)
-- Maintain design system consistency
-
 ## Deliverables
-- Wireframes and mockups
-- Component specifications
-- Interaction patterns
-- Accessibility requirements
-- **Screenshots** at mobile/tablet/desktop breakpoints
+- Wireframes and component specifications
+- **Screenshots** at 320px, 768px, 1024px, 1440px breakpoints
 - **Lighthouse report** for accessibility score
-
-Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Constraints
 - NO inaccessible designs — verify with Lighthouse
 - NO inconsistent with design system
 - NO lorem ipsum in final designs
 - ALWAYS mobile-first
-- ALWAYS test at 320px, 768px, 1024px, 1440px breakpoints
-- ALWAYS verify color contrast via DevTools
+- ALWAYS test at all four breakpoints above
+- ALWAYS verify color contrast and keyboard navigation via DevTools
 - ALWAYS save to `./artifacts/design_spec_[component].md`
 
-## Related Skills
-`interface-design`, `accessibility`
+## Output
+Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Handoff
-- To `/swarm-execute`: After design approval
-- To `/swarm-review`: For accessibility testing
+- To `/builder` / `/swarm-execute`: after design approval
+- To `/swarm-review`: for accessibility testing
 
 $ARGUMENTS

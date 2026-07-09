@@ -1,6 +1,6 @@
 ---
 name: code-check
-description: Holistic codebase audit for SOLID, DRY, consistency, and code health
+description: Audit a codebase holistically for SOLID, DRY, and consistency violations — a user-invoked Codebase Auditor workflow.
 argument-hint: [scope: all | path/to/dir | glob]
 disable-model-invocation: true
 ---
@@ -36,19 +36,8 @@ Launch workers for different audit aspects:
 
 ## Audit Dimensions
 
-### SOLID Principles
-Apply SOLID principles from `code-quality.md`:
-- Single Responsibility (SRP) — One reason to change
-- Open/Closed (OCP) — Open for extension, closed for modification
-- Liskov Substitution (LSP) — Subtypes substitutable for base types
-- Interface Segregation (ISP) — Small, specific interfaces
-- Dependency Inversion (DIP) — Depend on abstractions
-
-### DRY Violations
-Detect DRY violations per `code-quality.md`:
-- Knowledge duplication (MUST fix) — Same business logic in multiple places
-- Incidental duplication (evaluate carefully) — Similar code that may evolve differently
-- Use AST-based tools (jscpd) not just grep patterns
+### SOLID and DRY
+Apply the principles and duplication classes defined in `.claude/rules/code-quality.md` — do not restate them here; that file is the single source of truth. For DRY, use AST-based tools (jscpd) not just grep patterns.
 
 ### Code Smells
 Identify common code smells (context-dependent thresholds):
@@ -126,13 +115,9 @@ Verify findings before deletion (false positives with dynamic imports).
 - ALWAYS suggest concrete remediation steps
 - ALWAYS consider context when evaluating thresholds
 
-## Related Skills
-
-`testing`, `debugging`
-
 ## Handoff
 
-- To `/swarm-execute`: with tasks for specific fixes and refactoring
-- To `/architect`: For systemic architectural issues
+- To `/builder` / `/swarm-execute`: with tasks for specific fixes and refactoring
+- To `/architect`: for systemic architectural issues
 
 $ARGUMENTS

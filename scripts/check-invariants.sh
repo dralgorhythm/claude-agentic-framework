@@ -68,15 +68,15 @@ report model-tiering "$([ -z "$bad" ]; echo $?)" "violations:$bad"
 hits=$(git grep -IniE 'worker-(reviewer|research)[^a-z].*opus' -- ':!artifacts/' ':!CHANGELOG*' ':!MIGRATION*' 2>/dev/null | wc -l | tr -d ' ')
 report no-model-drift "$([ "$hits" = 0 ]; echo $?)" "$hits stale opus pairing(s)"
 
-# 9. gating: side-effecting skills must carry disable-model-invocation: true
+# 9. gating: all workflow skills must carry disable-model-invocation: true
 bad=""
-for s in builder swarm-execute swarm-plan swarm-review swarm-research code-check; do
+for s in builder swarm-execute swarm-plan swarm-review swarm-research code-check architect qa-engineer security-auditor ui-ux-designer; do
   f=".claude/skills/$s/SKILL.md"
   if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
     grep -q '^disable-model-invocation: true' "$f" || bad="$bad $s"
   fi
 done
-report gating "$([ -z "$bad" ]; echo $?)" "ungated side-effecting skill(s):$bad"
+report gating "$([ -z "$bad" ]; echo $?)" "ungated workflow skill(s):$bad"
 
 # 10. no-private-ids: no private-reference identifiers in tracked files
 hits=$({ git grep -IniwE 'argo|42gen' -- ':!scripts/check-invariants.sh' 2>/dev/null | grep -viE 'cargo|argocd'; git grep -InE 'ENG-[0-9]+|/Users/[a-z]+' -- ':!scratchpad/' ':!scripts/check-invariants.sh' 2>/dev/null; } | wc -l | tr -d ' ')
@@ -110,6 +110,78 @@ PYEOF
 else
   report plugin-agents-sync 0 "(no plugin manifest or python3 — skipped)"
 fi
+
+# 15. agent-maxturns: every agent frontmatter has a positive integer maxTurns
+bad=""
+while IFS= read -r f; do
+  mt=$(awk '/^---$/{c++;next} c==1 && /^maxTurns:/{sub(/^maxTurns:[ ]*/,"");gsub(/["'"'"']/,"");print;exit}' "$f")
+  case "$mt" in ''|0|*[!0-9]*) bad="$bad $f(maxTurns=${mt:-missing})";; esac
+done < <(git ls-files '.claude/agents/*.md')
+report agent-maxturns "$([ -z "$bad" ]; echo $?)" "missing/non-integer maxTurns:$bad"
+
+# 16. builder-isolation: worker-builder.md declares isolation: worktree
+f=".claude/agents/worker-builder.md"
+if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
+  iso=$(awk '/^---$/{c++;next} c==1 && /^isolation:/{sub(/^isolation:[ ]*/,"");print;exit}' "$f")
+  report builder-isolation "$([ "$iso" = "worktree" ]; echo $?)" "worker-builder.md isolation=${iso:-missing}, want worktree"
+else
+  report builder-isolation 1 "$f not tracked"
+fi
+
+# 17. preload-ungated: skills preloaded via an agent's `skills:` field must not be gated
+bad=""
+while IFS= read -r agent_file; do
+  line=$(awk '/^---$/{c++;next} c==1 && /^skills:/{sub(/^skills:[ ]*/,"");print;exit}' "$agent_file")
+  [ -z "$line" ] && continue
+  IFS=',' read -ra names <<< "$line"
+  for raw in "${names[@]}"; do
+    nm=$(echo "$raw" | tr -d ' ')
+    [ -z "$nm" ] && continue
+    skill_file=$(git ls-files '*SKILL.md' | while IFS= read -r sf; do
+      [ "$(basename "$(dirname "$sf")")" = "$nm" ] && echo "$sf" && break
+    done)
+    if [ -z "$skill_file" ]; then
+      bad="$bad $agent_file->$nm(not-found)"
+    elif grep -q '^disable-model-invocation: true' "$skill_file"; then
+      bad="$bad $agent_file->$nm(gated)"
+    fi
+  done
+done < <(git ls-files '.claude/agents/*.md')
+report preload-ungated "$([ -z "$bad" ]; echo $?)" "preloaded-but-gated or missing skill(s):$bad"
+
+# 18. desc-style: every SKILL.md description is non-empty, <=500 chars, third-person
+#     (not "I "/"You "/"This skill"/"A skill" — self-referential openers slip into
+#     first/second person and read like a chatbot, not spec prose), and — for
+#     ungated skills only — contains "Use when" (the official guidance: ungated
+#     descriptions are the model's auto-invocation trigger text and need an explicit
+#     when-clause; gated skills are human `/name` menu text where the when-clause is
+#     optional because the user already decided to invoke it).
+bad=""
+while IFS= read -r f; do
+  d=$(awk '/^---$/{c++;next} c==1 && /^description:/{sub(/^description:[ ]*/,"");print;exit}' "$f")
+  if [ -z "$d" ]; then bad="$bad $f(empty)"; continue; fi
+  [ "${#d}" -gt 500 ] && bad="$bad $f(len=${#d})"
+  echo "$d" | grep -qiE '^(i |you |this skill|a skill)' && bad="$bad $f(self-referential)"
+  if ! grep -q '^disable-model-invocation: true' "$f"; then
+    case "$d" in *"Use when"*) ;; *) bad="$bad $f(missing-use-when)";; esac
+  fi
+done < <(git ls-files '*SKILL.md')
+report desc-style "$([ -z "$bad" ]; echo $?)" "violations:$bad"
+
+# 19. evals-json: every evals.json under .claude/skills/ must parse as valid JSON
+if command -v python3 >/dev/null 2>&1; then
+  bad=""
+  while IFS= read -r f; do
+    python3 -m json.tool "$f" >/dev/null 2>&1 || bad="$bad $f"
+  done < <(git ls-files '.claude/skills/*evals.json')
+  report evals-json "$([ -z "$bad" ]; echo $?)" "failed to parse:$bad"
+else
+  report evals-json 0 "(no python3 — parse check skipped)"
+fi
+
+# 20. claudemd-lines: CLAUDE.md must stay a short summary layer (<= 200 lines)
+n=$(awk 'END{print NR}' CLAUDE.md | tr -d ' ')
+report claudemd-lines "$([ "${n:-9999}" -le 200 ]; echo $?)" "CLAUDE.md is $n lines (budget 200)"
 
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"

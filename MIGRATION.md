@@ -147,17 +147,27 @@ The directory `.claude/commands/` no longer exists in the framework.
 
 **What's new:**
 
-- Six side-effecting workflows — `builder`, `swarm-execute`, `swarm-plan`,
-  `swarm-review`, `swarm-research`, and `code-check` — now carry
+- All ten workflow skills — `architect`, `builder`, `qa-engineer`,
+  `security-auditor`, `ui-ux-designer`, `code-check`, `swarm-plan`,
+  `swarm-execute`, `swarm-review`, and `swarm-research` — now carry
   `disable-model-invocation: true` in their frontmatter. This restricts them
   to explicit user invocation via `/name`; Claude will not trigger them on
   its own.
-- Four advisory workflows — `architect`, `qa-engineer`, `security-auditor`,
-  and `ui-ux-designer` — remain model-invocable, same as before.
+- The four previously-advisory role skills (`architect`, `qa-engineer`,
+  `security-auditor`, `ui-ux-designer`) were rewritten as thin role entry
+  points: role framing plus role-unique content, delegating methodology to
+  the always-on library skills (`designing-systems`, `application-security`,
+  `accessibility`, `interface-design`, and similar). This is a
+  single-responsibility split — the library skills carry the reusable
+  knowledge and auto-trigger on relevant work, while the role skills are
+  user-invoked workflows layered on top. Gating them removes their
+  now-overlapping descriptions from the always-loaded catalog listing, since
+  the underlying knowledge is already discoverable through the library
+  skills they delegate to.
 
 **Action required:** the `disable-model-invocation` gating semantics require
 Claude Code >= 2.1.x (this release was authored and validated against 2.1.181). After upgrading, run `/doctor` and confirm the
-six gated skills do not auto-fire — if your Claude Code version predates
+ten gated skills do not auto-fire — if your Claude Code version predates
 support for this field, the field is ignored and those skills may still be
 model-invocable, so update before relying on the gate.
 
@@ -172,6 +182,52 @@ If your workflow legitimately needs to read a path that's now denied, don't work
 v3 adds an optional second install path: the repo can now be installed as a Claude Code plugin (`/plugin marketplace add dralgorhythm/claude-agentic-framework` then `/plugin install agentic-framework@agentic-framework`). This is purely additive — nothing about the existing raw drop-in (clone/init-script) path changes or breaks.
 
 The plugin path is intentionally narrower: it ships skills, agents, and hooks only. It does not include `.claude/settings.json` permission rules (notably the `permissions.deny` secret-file guards) or `.claude/rules/`, and plugin agents ignore `permissionMode` frontmatter. If you want the full guardrail set, keep using the raw drop-in — see [README.md — Two ways to adopt](README.md#two-ways-to-adopt) for the complete comparison.
+
+## v3.0.x → next release
+
+Two behavior changes adopters can feel land in this release. Neither requires
+code changes on your part, but both change what fires automatically.
+
+### The four role skills no longer auto-invoke
+
+`architect`, `qa-engineer`, `security-auditor`, and `ui-ux-designer` now carry
+`disable-model-invocation: true`, joining the six workflow skills that were
+already gated in v3.0.0. All ten workflow skills are gated as of this release
+(version set at release time via scripts/release.sh).
+
+**What this means for you:**
+
+- Claude will no longer reach for these four role skills on its own mid-task.
+  Invoke them explicitly: `/architect`, `/qa-engineer`, `/security-auditor`,
+  `/ui-ux-designer`.
+- This does **not** remove the underlying knowledge from auto-discovery. Each
+  role skill was rewritten as a thin entry point that delegates its
+  methodology to an always-on library skill — `designing-systems`,
+  `application-security`, `accessibility`, `interface-design`, and similar.
+  Those library skills remain ungated and continue to auto-trigger when the
+  task matches, so architecture, security, and accessibility guidance still
+  surfaces without you typing a slash command; only the role-specific
+  workflow wrapper (PR-FAQ/ADR framing, audit checklists, handoff protocol)
+  now requires explicit invocation.
+- If you have automation or documentation that assumed these four would
+  fire without an explicit `/name`, update it to invoke them directly.
+
+### `worker-researcher` removed
+
+The `worker-researcher` agent is gone. Its two use cases split across the
+two agents that already existed alongside it:
+
+| If you used `worker-researcher` for... | Use instead |
+|---|---|
+| Quick web lookups, API doc checks | `worker-explorer` |
+| Deep, multi-source investigation | `worker-research` |
+
+`worker-explorer`'s description was extended to name the quick-lookup case
+explicitly (its existing WebFetch/WebSearch tool access already covered it).
+Nothing else about `worker-explorer` or `worker-research` changed as part of
+this removal. If your prompts or automation reference `worker-researcher` by
+name, update them to one of the two agents above based on the depth of
+investigation needed.
 
 ## What's next
 

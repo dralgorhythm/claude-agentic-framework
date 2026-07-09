@@ -46,8 +46,7 @@ Claude sees relevant skills suggested (like `designing-apis`) and uses them to g
 
 10 additional skills, one per command, live directly under `.claude/skills/<name>/SKILL.md`. Unlike the 14 knowledge skills above, these are typed explicitly as slash commands (e.g. `/architect`) rather than relied on for auto-discovery.
 
-- `architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer` — advisory, model-invocable: Claude can also reach for these on its own.
-- `builder`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research`, `code-check` — side-effecting, gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them.
+- `architect`, `builder`, `qa-engineer`, `security-auditor`, `ui-ux-designer`, `code-check`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research` — all gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer`) are thin entry points that delegate methodology to the always-on library skills above (e.g. `architect` delegates to `designing-systems`); Claude reaches those library skills on its own, so the role skill's overlapping description doesn't need to stay in the always-loaded listing too.
 
 See [commands.md](commands.md) for the full command reference.
 
@@ -84,6 +83,8 @@ This means the `description` field is the entire activation mechanism. Write it 
 
 Every skill's name + description is **always loaded**, regardless of whether it's relevant to the current prompt — budget roughly **~100 tokens per skill**. The full set of listings is capped at a **listing budget of ~1% of the context window**. If you add enough skills to exceed that budget, Claude Code drops or truncates descriptions to fit.
 
+Measured 2026-07 for this repo: the 10 workflow skills carry `disable-model-invocation: true` and cost nothing in the listing until invoked, leaving 14 ungated library skills at roughly **~1.4k tokens** of always-loaded listing — against a **~2k-token budget on a 200K-context session** (**~10k on a 1M-context session**; state whichever denominator your session actually uses). Both figures move as the catalog or platform changes — treat them as a snapshot, not a guarantee.
+
 - Run `/doctor` to see which skill descriptions were dropped or truncated.
 - Run `/context` to see how much of the context window the skill listing is currently consuming.
 - Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom. The catalog's budget headroom is enforced in CI as a static character-count proxy (`scripts/check-invariants.sh` desc-budget, ~2.3k chars for the shipped 14 skills); run `/doctor` and `/context` in a live session for the authoritative measurement on your setup.
@@ -97,6 +98,14 @@ Native discovery is probabilistic — it depends on the model matching your prom
 ## Creating Your Own
 
 See [customization.md](customization.md#adding-a-skill).
+
+## Evaluating skills
+
+Skills are prompt-driven, not compiled — the only way to know one actually changes
+behavior is to test it. Before shipping a new skill or a material change to an existing
+one, see [.claude/skills/core-engineering/testing/evals/](../.claude/skills/core-engineering/testing/evals/)
+for a worked exemplar (eval scenarios + fresh-session baseline comparison) and
+[CONTRIBUTING.md](../CONTRIBUTING.md) for the eval-first policy this repo holds itself to.
 
 ---
 

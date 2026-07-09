@@ -1,6 +1,6 @@
 ---
 name: swarm-plan
-description: Create implementation plans using parallel specialist workers
+description: Decompose a feature into an actionable implementation plan using parallel worker-explorer swarms — a user-invoked Planning Orchestrator workflow.
 argument-hint: [feature-or-task-description]
 disable-model-invocation: true
 ---
@@ -25,7 +25,7 @@ Decompose features into actionable plans using parallel exploration swarms.
 1. **Explore** — Launch 3-6 worker-explorer agents to research existing patterns, dependencies, constraints, and prior art
 2. **Classify** — Determine decision reversibility (Two-Way Door vs One-Way Door)
 3. **Document** — Create appropriate artifacts based on scope
-4. **Decompose** — Break into right-sized tasks (1-2 days each)
+4. **Decompose** — Break into right-sized tasks: roughly 200-400 changed LOC or 15-45 minutes of focused work each — review effectiveness collapses beyond ~400 LOC (SmartBear/Cisco)
 5. **Track** — Record tasks in the native task list for implementation tracking
 
 ## Decision Framework
@@ -58,7 +58,6 @@ Decompose features into actionable plans using parallel exploration swarms.
 | `worker-explorer` | Fast codebase search, web research, dependency mapping |
 | `worker-builder` | Implementation, testing, refactoring |
 | `worker-reviewer` | Code review, security audit, quality assessment |
-| `worker-researcher` | Quick web research, API docs, library comparison |
 | `worker-research` | Deep multi-source investigation, technology evaluation |
 | `worker-architect` | Complex design decisions, ADRs, system architecture |
 
@@ -149,10 +148,6 @@ Use `writing-prds` skill for structure and template.
 3. **Design** — Create ADR with trade-off matrix
 4. **Validate** — Verify design fits existing patterns
 
-### Output
-- `scratchpad/` for planning exploration and working notes
-- `artifacts/` for final documents (PR-FAQ, PRD, ADR, plan)
-
 ## Related Skills
 
 `swarm-coordination`, `writing-adrs`, `designing-systems`, `designing-apis`, `writing-pr-faqs`, `writing-prds`
@@ -161,5 +156,3 @@ Use `writing-prds` skill for structure and template.
 
 - To `/swarm-execute`: Plan artifact + task list ready
 - To `/architect`: Complex decisions requiring ADR review
-
-$ARGUMENTS

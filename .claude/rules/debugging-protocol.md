@@ -18,7 +18,7 @@ Fix causes, not symptoms.
 
 - A fix without an explanation of WHY the bug happened is not done. If you cannot articulate the causal chain from root cause to observed failure, keep investigating.
 - Patching the symptom (retrying, catching and ignoring, widening a type, adding a null check) is acceptable only as a documented, temporary mitigation — never as the final commit message.
-- Per Core Principle 2, every bug fix gets a regression test that fails before the fix and passes after. If you can't write a test that fails without your change, you haven't isolated the root cause yet.
+- Regression-test workflow: see the `testing` skill — if you can't write one that fails without your change, you haven't isolated the root cause yet.
 
 ## Stale Context Check
 
