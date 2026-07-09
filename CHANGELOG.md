@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `maxTurns` bound on every agent's frontmatter (`worker-explorer: 30`, `worker-builder: 60`, `worker-reviewer: 40`, `worker-research: 80`, `worker-architect: 40`), plus `isolation: worktree` on `worker-builder` so it runs in its own throwaway git worktree instead of the shared checkout
+- `maxTurns` bound on every agent's frontmatter (`worker-explorer: 30`, `worker-builder: 90`, `worker-reviewer: 60`, `worker-research: 80`, `worker-architect: 40`; builder and reviewer values retuned upward after observed ceiling hits during this release's own build), plus `isolation: worktree` on `worker-builder` so it runs in its own throwaway git worktree instead of the shared checkout
 - Six new CI invariants in `scripts/check-invariants.sh` — `agent-maxturns`, `builder-isolation`, `preload-ungated`, `desc-style`, `evals-json`, `claudemd-lines` — bringing the total to 20 checks
 - Two new `.github/workflows/framework-invariants.yml` jobs: a Trivy `fs --scanners secret` secret-scan job and a diff-size advisory job
 - `CONTRIBUTING.md` with eval-first, evidence, and scope policies for new skill/rule proposals
