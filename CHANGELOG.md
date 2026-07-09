@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Add entries under Breaking / Added / Changed / Deprecated / Removed / Fixed / Security. scripts/release.sh stamps this section with a version and date at release time. -->
 
+### Added
+
+- `maxTurns` bound on every agent's frontmatter (`worker-explorer: 30`, `worker-builder: 60`, `worker-reviewer: 40`, `worker-research: 80`, `worker-architect: 40`), plus `isolation: worktree` on `worker-builder` so it runs in its own throwaway git worktree instead of the shared checkout
+- Six new CI invariants in `scripts/check-invariants.sh` — `agent-maxturns`, `builder-isolation`, `preload-ungated`, `desc-style`, `evals-json`, `claudemd-lines` — bringing the total to 20 checks
+- Two new `.github/workflows/framework-invariants.yml` jobs: a Trivy `fs --scanners secret` secret-scan job and a diff-size advisory job
+- `CONTRIBUTING.md` with eval-first, evidence, and scope policies for new skill/rule proposals
+- Exemplar eval set for the `testing` skill (`.claude/skills/core-engineering/testing/evals/evals.json` + `README.md`)
+- Enforcement-ladder documentation in `.claude/rules/security.md` (prose < skills < hooks < `permissions.deny`/CI) and opt-in hook recipes in `docs/hooks.md`
+- README "Why This Shape" section citing *Accelerate* / DORA 2025 evidence for the quality-gate and swarm-review design choices
+- Dated (2026-07) model-tier assignment table in `docs/swarm.md` with per-tier `maxTurns` and rationale, including the Fable/Mythos premium-tier opt-out note
+- Task-sizing guidance in `docs/swarm.md` (~200-400 changed LOC or 15-45 minutes per worker task, citing SmartBear/Cisco review-effectiveness research)
+- Two-mode, isolation-aware "Landing the Plane" completion protocol in `AGENTS.md` — Mode A for `isolation: worktree` workers (commit + report SHA, orchestrator merges/pushes), Mode B for everyone else (push directly)
+
+### Changed
+
+- `architect`, `qa-engineer`, `security-auditor`, and `ui-ux-designer` skills rewritten as thin, user-invoked entry points that delegate methodology to always-on library skills (`designing-systems`, `application-security`, `accessibility`, `interface-design`, etc.) instead of restating it
+- `builder` and `code-check` skills deduplicated to reference `testing`/`debugging` and `.claude/rules/code-quality.md` as the single source of truth instead of inlining SOLID/DRY/TDD content
+- All 10 gated workflow-skill descriptions rewritten in third person for consistency with the new `desc-style` invariant
+- `.claude/rules/core-directives.md` and `.claude/rules/security.md` single-homed several duplicated facts to their canonical detail-level location (e.g., "Landing the Plane" mechanics now live only in `AGENTS.md`); the always-loaded rules layer nets to 409 lines. Rule 6 ("Follow the Planning Flow") now scales ceremony with change scope instead of mandating the full PR-FAQ→PRD→ADR→Design Spec→Plan sequence for every change
+- `docs/swarm.md` worker table and README worker counts updated from six workers to five
+
+### Removed
+
+- `worker-researcher` agent, consolidated into `worker-explorer` (quick web lookups) and `worker-research` (deep multi-source investigation) — see MIGRATION.md for the replacement mapping
+
 ## [3.0.0] - 2026-07-09
 
 ### Breaking
