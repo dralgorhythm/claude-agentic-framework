@@ -22,10 +22,9 @@ Lightweight agents that work in parallel. Use them for big tasks.
 
 | Worker | Best For |
 |--------|----------|
-| `worker-explorer` | Fast codebase search, dependency mapping |
+| `worker-explorer` | Fast codebase search, web research, dependency mapping |
 | `worker-builder` | Implementation, testing, refactoring |
 | `worker-reviewer` | Code review, security analysis |
-| `worker-researcher` | Quick web research, API docs |
 | `worker-research` | Deep multi-source investigation |
 | `worker-architect` | Complex design decisions, ADRs |
 

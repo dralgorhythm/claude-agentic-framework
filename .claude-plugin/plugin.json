@@ -21,7 +21,6 @@
     "./.claude/agents/worker-builder.md",
     "./.claude/agents/worker-explorer.md",
     "./.claude/agents/worker-research.md",
-    "./.claude/agents/worker-researcher.md",
     "./.claude/agents/worker-reviewer.md"
   ],
   "hooks": "./hooks/hooks.json"

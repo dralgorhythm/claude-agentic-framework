@@ -58,7 +58,6 @@ Decompose features into actionable plans using parallel exploration swarms.
 | `worker-explorer` | Fast codebase search, web research, dependency mapping |
 | `worker-builder` | Implementation, testing, refactoring |
 | `worker-reviewer` | Code review, security audit, quality assessment |
-| `worker-researcher` | Quick web research, API docs, library comparison |
 | `worker-research` | Deep multi-source investigation, technology evaluation |
 | `worker-architect` | Complex design decisions, ADRs, system architecture |
 

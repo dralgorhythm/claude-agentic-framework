@@ -42,7 +42,7 @@ Install directly inside a Claude Code session, no cloning required:
 /plugin install agentic-framework@agentic-framework
 ```
 
-This gets you the skills, the six worker agents, and the guardrail hooks, wired up automatically. It does **not** replace cloning the repo — it's a lighter-weight path with real gaps:
+This gets you the skills, the five worker agents, and the guardrail hooks, wired up automatically. It does **not** replace cloning the repo — it's a lighter-weight path with real gaps:
 
 - **Skills are namespaced.** Invoke them as `/agentic-framework:architect`, `/agentic-framework:builder`, etc., not the bare `/architect` names used in the raw drop-in.
 - **No `.claude/settings.json` permission rules ship with the plugin.** The `permissions.deny` guards for secrets, `.env*`, and other sensitive paths are repo-level configuration — a plugin install will not add them to your project. You get the hooks that warn/guard, but not the deny-layer enforcement described above.
@@ -95,14 +95,13 @@ One agent thinks. Many agents build. Many agents review.
 
 ### Workers
 
-Six specialized agent types tuned for cost and capability:
+Five specialized agent types tuned for cost and capability:
 
 | Worker | Use |
 |--------|-----|
-| `worker-explorer` | Fast codebase search, dependency mapping |
+| `worker-explorer` | Fast codebase search, web research, dependency mapping |
 | `worker-builder` | Implementation, testing, refactoring |
 | `worker-reviewer` | Code review, security analysis |
-| `worker-researcher` | Quick web research, API docs |
 | `worker-research` | Deep multi-source investigation |
 | `worker-architect` | Complex design decisions, ADRs |
 

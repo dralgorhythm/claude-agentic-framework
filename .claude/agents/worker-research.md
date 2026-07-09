@@ -4,6 +4,7 @@ tools: Read, Grep, Glob, WebFetch, WebSearch, Write
 name: worker-research
 description: "Deep research and investigation worker. Use for multi-source analysis, technology evaluation, competitive research, and comprehensive documentation."
 permissionMode: acceptEdits
+maxTurns: 80
 ---
 
 # Research Worker

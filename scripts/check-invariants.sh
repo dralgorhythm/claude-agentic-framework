@@ -111,6 +111,23 @@ else
   report plugin-agents-sync 0 "(no plugin manifest or python3 — skipped)"
 fi
 
+# 15. agent-maxturns: every agent frontmatter has an integer maxTurns
+bad=""
+while IFS= read -r f; do
+  mt=$(awk '/^---$/{c++;next} c==1 && /^maxTurns:/{sub(/^maxTurns:[ ]*/,"");print;exit}' "$f")
+  case "$mt" in ''|*[!0-9]*) bad="$bad $f(maxTurns=${mt:-missing})";; esac
+done < <(git ls-files '.claude/agents/*.md')
+report agent-maxturns "$([ -z "$bad" ]; echo $?)" "missing/non-integer maxTurns:$bad"
+
+# 16. builder-isolation: worker-builder.md declares isolation: worktree
+f=".claude/agents/worker-builder.md"
+if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
+  iso=$(awk '/^---$/{c++;next} c==1 && /^isolation:/{sub(/^isolation:[ ]*/,"");print;exit}' "$f")
+  report builder-isolation "$([ "$iso" = "worktree" ]; echo $?)" "worker-builder.md isolation=${iso:-missing}, want worktree"
+else
+  report builder-isolation 1 "$f not tracked"
+fi
+
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"
 exit "$FAIL"

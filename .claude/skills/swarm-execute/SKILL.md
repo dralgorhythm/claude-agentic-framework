@@ -46,7 +46,6 @@ Execute plans using parallel worker swarms with quality gates and native task-li
 | `worker-explorer` | Fast codebase search, web research, dependency mapping |
 | `worker-builder` | Implementation, testing, refactoring |
 | `worker-reviewer` | Code review, security audit, quality assessment |
-| `worker-researcher` | Quick web research, API docs, library comparison |
 | `worker-research` | Deep multi-source investigation, technology evaluation |
 | `worker-architect` | Complex design decisions, ADRs, system architecture |
 
