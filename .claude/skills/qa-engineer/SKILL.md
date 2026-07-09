@@ -1,6 +1,6 @@
 ---
 name: qa-engineer
-description: Test strategy, automation, and quality verification
+description: Define test strategy and verify quality against WCAG and testing-pyramid criteria — a user-invoked QA Engineer workflow.
 argument-hint: [component-to-test]
 disable-model-invocation: true
 ---

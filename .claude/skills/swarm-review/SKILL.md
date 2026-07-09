@@ -1,6 +1,6 @@
 ---
 name: swarm-review
-description: Adversarial multi-perspective review of code changes on a branch
+description: Run an adversarial, multi-perspective code review with root-cause analysis and security focus — a user-invoked Adversarial Reviewer workflow.
 argument-hint: [branch-name-or-pr-number]
 disable-model-invocation: true
 ---
@@ -131,5 +131,3 @@ Apply until reaching systemic cause (may be 3-7 whys):
 - To `/swarm-execute`: With specific remediation tasks
 - To `/architect`: For architectural concerns requiring ADR
 - To `/security-auditor`: For deep security analysis
-
-$ARGUMENTS

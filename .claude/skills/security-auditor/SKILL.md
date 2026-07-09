@@ -1,6 +1,6 @@
 ---
 name: security-auditor
-description: Security compliance, threat modeling, and audits
+description: Assess vulnerabilities and audit for security compliance using OWASP and STRIDE methodology — a user-invoked Security Auditor workflow.
 argument-hint: [scope-or-component]
 disable-model-invocation: true
 ---

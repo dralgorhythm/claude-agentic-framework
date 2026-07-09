@@ -1,6 +1,6 @@
 ---
 name: code-check
-description: Holistic codebase audit for SOLID, DRY, consistency, and code health
+description: Audit a codebase holistically for SOLID, DRY, and consistency violations — a user-invoked Codebase Auditor workflow.
 argument-hint: [scope: all | path/to/dir | glob]
 disable-model-invocation: true
 ---

@@ -1,6 +1,6 @@
 ---
 name: architect
-description: System design, technical specs, and architecture decisions
+description: Design systems and record architecture decisions as ADRs — a user-invoked Principal Architect workflow.
 argument-hint: [design-topic]
 disable-model-invocation: true
 ---

@@ -1,6 +1,6 @@
 ---
 name: swarm-execute
-description: Execute implementation plans with parallel worker swarm and native task tracking
+description: Execute an implementation plan with parallel worker swarms, quality gates, and native task tracking — a user-invoked Execution Orchestrator workflow.
 argument-hint: [plan-artifact-or-task-id]
 disable-model-invocation: true
 ---
@@ -167,5 +167,3 @@ If quality gates fail: stash changes, mark the task as blocked via `TaskUpdate`,
 - To `/swarm-review`: After implementation complete, create PR
 - To `/qa-engineer`: For acceptance testing
 - To `/swarm-plan`: When scope changes discovered
-
-$ARGUMENTS

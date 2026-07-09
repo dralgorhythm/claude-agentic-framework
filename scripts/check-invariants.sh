@@ -149,6 +149,36 @@ while IFS= read -r agent_file; do
 done < <(git ls-files '.claude/agents/*.md')
 report preload-ungated "$([ -z "$bad" ]; echo $?)" "preloaded-but-gated or missing skill(s):$bad"
 
+# 18. desc-style: every SKILL.md description is non-empty, <=500 chars, third-person
+#     (not "I "/"You "/"This skill"/"A skill" — self-referential openers slip into
+#     first/second person and read like a chatbot, not spec prose), and — for
+#     ungated skills only — contains "Use when" (the official guidance: ungated
+#     descriptions are the model's auto-invocation trigger text and need an explicit
+#     when-clause; gated skills are human `/name` menu text where the when-clause is
+#     optional because the user already decided to invoke it).
+bad=""
+while IFS= read -r f; do
+  d=$(awk '/^---$/{c++;next} c==1 && /^description:/{sub(/^description:[ ]*/,"");print;exit}' "$f")
+  if [ -z "$d" ]; then bad="$bad $f(empty)"; continue; fi
+  [ "${#d}" -gt 500 ] && bad="$bad $f(len=${#d})"
+  echo "$d" | grep -qiE '^(i |you |this skill|a skill)' && bad="$bad $f(self-referential)"
+  if ! grep -q '^disable-model-invocation: true' "$f"; then
+    case "$d" in *"Use when"*) ;; *) bad="$bad $f(missing-use-when)";; esac
+  fi
+done < <(git ls-files '*SKILL.md')
+report desc-style "$([ -z "$bad" ]; echo $?)" "violations:$bad"
+
+# 19. evals-json: every evals.json under .claude/skills/ must parse as valid JSON
+if command -v python3 >/dev/null 2>&1; then
+  bad=""
+  while IFS= read -r f; do
+    python3 -m json.tool "$f" >/dev/null 2>&1 || bad="$bad $f"
+  done < <(git ls-files '.claude/skills/*evals.json')
+  report evals-json "$([ -z "$bad" ]; echo $?)" "failed to parse:$bad"
+else
+  report evals-json 0 "(no python3 — parse check skipped)"
+fi
+
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"
 exit "$FAIL"

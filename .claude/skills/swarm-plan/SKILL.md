@@ -1,6 +1,6 @@
 ---
 name: swarm-plan
-description: Create implementation plans using parallel specialist workers
+description: Decompose a feature into an actionable implementation plan using parallel worker-explorer swarms — a user-invoked Planning Orchestrator workflow.
 argument-hint: [feature-or-task-description]
 disable-model-invocation: true
 ---
@@ -160,5 +160,3 @@ Use `writing-prds` skill for structure and template.
 
 - To `/swarm-execute`: Plan artifact + task list ready
 - To `/architect`: Complex decisions requiring ADR review
-
-$ARGUMENTS

@@ -97,6 +97,14 @@ Native discovery is probabilistic — it depends on the model matching your prom
 
 See [customization.md](customization.md#adding-a-skill).
 
+## Evaluating skills
+
+Skills are prompt-driven, not compiled — the only way to know one actually changes
+behavior is to test it. Before shipping a new skill or a material change to an existing
+one, see [.claude/skills/core-engineering/testing/evals/](../.claude/skills/core-engineering/testing/evals/)
+for a worked exemplar (eval scenarios + fresh-session baseline comparison) and
+[CONTRIBUTING.md](../CONTRIBUTING.md) for the eval-first policy this repo holds itself to.
+
 ---
 
 [← Back to README](../README.md)

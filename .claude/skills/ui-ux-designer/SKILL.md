@@ -1,6 +1,6 @@
 ---
 name: ui-ux-designer
-description: Interface design, visual assets, and accessibility
+description: Design interfaces and validate accessibility against WCAG 2.1 with DevTools-backed checks — a user-invoked UI/UX Designer workflow.
 argument-hint: [component-or-flow]
 disable-model-invocation: true
 ---

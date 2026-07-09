@@ -1,6 +1,6 @@
 ---
 name: swarm-research
-description: Research orchestrator for deep investigation with parallel specialist workers
+description: Coordinate parallel research workers to investigate a topic deeply and synthesize citation-backed findings — a user-invoked Research Orchestrator workflow.
 argument-hint: [research-topic-or-question]
 disable-model-invocation: true
 ---
@@ -145,5 +145,3 @@ Research tracking uses the orchestrator's native task list (`TaskCreate`/`TaskUp
 - To `/swarm-plan`: when research reveals scope or architecture decisions needed
 - To `/swarm-review`: when research findings inform a code review
 - From `/swarm-plan`: when planning identifies knowledge gaps requiring investigation
-
-$ARGUMENTS
