@@ -35,10 +35,10 @@ Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that 
 | Tier | Worker(s) | Rationale |
 |------|-----------|-----------|
 | Haiku | `worker-explorer` (`maxTurns: 30`) | Mechanical, read-heavy work — codebase search, dependency mapping, quick web lookups. Cheapest tier for high tool-call volume with low judgment. |
-| Sonnet | `worker-builder` (`maxTurns: 60`, `isolation: worktree`), `worker-reviewer` (`maxTurns: 40`), `worker-research` (`maxTurns: 80`) | Production default — the tier for implementation, review, and multi-source investigation where judgment matters but the reasoning load doesn't require the top tier. |
+| Sonnet | `worker-builder` (`maxTurns: 90`, `isolation: worktree`), `worker-reviewer` (`maxTurns: 60`), `worker-research` (`maxTurns: 80`) | Production default — the tier for implementation, review, and multi-source investigation where judgment matters but the reasoning load doesn't require the top tier. |
 | Opus | `worker-architect` (`maxTurns: 40`) | Top mainline tier, reserved for architecture judgment — system design, ADRs, trade-off evaluation across competing constraints. |
 
-Fable/Mythos exists as a premium tier at roughly 2× Opus pricing — deliberately **not** a default for any worker in this framework; reserve it only for stakes that justify the cost. Separately, newer-generation models tokenize noticeably more tokens (roughly +30%) for equivalent text versus older tokenizers, which affects cost comparisons across model generations even at flat per-token pricing — factor that in before assuming a price-per-token figure translates directly to cost-per-task.
+Fable/Mythos exists as a premium tier at roughly 2× Opus pricing (Opus: $5/$25 per MTok in/out, 2026-07) — deliberately **not** a default for any worker in this framework; reserve it only for stakes that justify the cost. Separately, newer-generation models tokenize noticeably more tokens (roughly +30%) for equivalent text versus older tokenizers, which affects cost comparisons across model generations even at flat per-token pricing — factor that in before assuming a price-per-token figure translates directly to cost-per-task. No in-session tool surfaces pricing — re-check the official pricing page when these figures matter.
 
 ## When to Use
 

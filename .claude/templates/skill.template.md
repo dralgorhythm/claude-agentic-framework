@@ -35,12 +35,12 @@ Supporting files (auto-discovered):
 Location: .claude/skills/[domain]/[skill-name]/SKILL.md
   (command-style skills live directly at .claude/skills/[skill-name]/SKILL.md)
 
-If this is a command-style skill, end the file with $ARGUMENTS so any text
-the user types after /skill-name is passed through:
+$ARGUMENTS is an optional placement marker: if present, user-typed arguments
+substitute there; if omitted, arguments are appended to the end
+automatically.
 
-  ...instructions...
-
-  $ARGUMENTS
+Reference convention: user-invoked workflow skills are cited as /name;
+always-on library skills as bare name.
 -->
 
 # [Skill Name]

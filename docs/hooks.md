@@ -176,13 +176,13 @@ Blocks task completion until quality gates (tests, lint, types, build) pass. Exi
 # .claude/hooks/task-quality-gate.sh
 input=$(cat)
 
-if ! npm test --silent >/tmp/gate-test.log 2>&1; then
-  echo "Quality gate failed: tests. See /tmp/gate-test.log" >&2
+if ! npm test --silent >./scratchpad/gate-test.log 2>&1; then
+  echo "Quality gate failed: tests. See ./scratchpad/gate-test.log" >&2
   exit 2
 fi
 
-if ! npm run lint --silent >/tmp/gate-lint.log 2>&1; then
-  echo "Quality gate failed: lint. See /tmp/gate-lint.log" >&2
+if ! npm run lint --silent >./scratchpad/gate-lint.log 2>&1; then
+  echo "Quality gate failed: lint. See ./scratchpad/gate-lint.log" >&2
   exit 2
 fi
 

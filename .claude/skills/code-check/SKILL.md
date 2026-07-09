@@ -117,7 +117,7 @@ Verify findings before deletion (false positives with dynamic imports).
 
 ## Handoff
 
-- To `builder` / `swarm-execute`: with tasks for specific fixes and refactoring
-- To `architect`: for systemic architectural issues
+- To `/builder` / `/swarm-execute`: with tasks for specific fixes and refactoring
+- To `/architect`: for systemic architectural issues
 
 $ARGUMENTS

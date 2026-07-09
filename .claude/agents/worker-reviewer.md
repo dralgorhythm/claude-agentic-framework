@@ -3,7 +3,7 @@ name: worker-reviewer
 description: Code review, security audit, and QA worker for swarm tasks. Use for parallel review, vulnerability detection, and quality assessment.
 permissionMode: acceptEdits
 model: sonnet
-maxTurns: 40
+maxTurns: 60
 tools: Read, Grep, Glob, Bash
 skills: application-security
 ---

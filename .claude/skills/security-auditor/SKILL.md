@@ -48,7 +48,7 @@ Follow the `application-security` skill for vulnerability classes (OWASP Top 10)
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Handoff
-- To `builder` / `swarm-execute`: for remediation
-- To `architect`: for design changes required by findings
+- To `/builder` / `/swarm-execute`: for remediation
+- To `/architect`: for design changes required by findings
 
 $ARGUMENTS

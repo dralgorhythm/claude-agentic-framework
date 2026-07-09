@@ -50,7 +50,7 @@ Follow the `interface-design` skill for layout/wireframe methodology and the `ac
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Handoff
-- To `builder` / `swarm-execute`: after design approval
-- To `swarm-review`: for accessibility testing
+- To `/builder` / `/swarm-execute`: after design approval
+- To `/swarm-review`: for accessibility testing
 
 $ARGUMENTS

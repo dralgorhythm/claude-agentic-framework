@@ -105,6 +105,10 @@ If a worker fails:
 2. Orchestrator creates a new blocker task via `TaskCreate` describing the fix needed
 3. Orchestrator sets the original task's `blockedBy` to reference the new blocker task
 
+### Recovery
+
+For a maxTurns ceiling hit, a lost orchestrator session, or a rejected fast-forward merge, see AGENTS.md "Landing the Plane" → Mode A → Recovery for the three canonical recovery procedures.
+
 ## Rollback
 
 If quality gates fail: stash changes, mark the task as blocked via `TaskUpdate`, add a comment with the reason.

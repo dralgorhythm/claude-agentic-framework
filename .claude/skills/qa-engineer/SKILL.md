@@ -53,7 +53,7 @@ Follow the `testing` skill for methodology (pyramid, unit/integration/E2E design
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Handoff
-- To `builder` / `swarm-execute`: for bug fixes
-- To `swarm-review`: after test pass
+- To `/builder` / `/swarm-execute`: for bug fixes
+- To `/swarm-review`: after test pass
 
 $ARGUMENTS

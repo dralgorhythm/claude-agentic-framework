@@ -46,6 +46,6 @@ Follow the `testing` skill for TDD/coverage methodology and the `debugging` skil
 Working notes go to `scratchpad/`, final documents go to `artifacts/`.
 
 ## Handoff
-- To `swarm-review`: after implementation, for code review
+- To `/swarm-review`: after implementation, for code review
 
 $ARGUMENTS

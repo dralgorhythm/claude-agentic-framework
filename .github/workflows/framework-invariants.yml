@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Run invariant checks
         run: ./scripts/check-invariants.sh
 
@@ -25,9 +25,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - name: Run Trivy secret scan
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@915b19bbe73b92a6cf82a1bc12b087c9a19a5fe2 # v0.28.0
         with:
           scan-type: fs
           scanners: secret
@@ -40,13 +40,15 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
+    # This job is advisory only and must never fail a build by design.
+    continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
       - name: Report changed LOC (non-blocking)
         run: |
-          total=$(git diff --numstat "origin/${{ github.base_ref }}...HEAD" | awk '{added+=$1; deleted+=$2} END {print added+deleted+0}')
+          total=$(git diff --numstat "origin/${{ github.base_ref }}...HEAD" 2>/dev/null | awk '{added+=$1; deleted+=$2} END {print added+deleted+0}' || echo 0)
           echo "Changed LOC: $total"
           if [ "$total" -gt 400 ]; then
             echo "::warning::PR changes $total lines (added+deleted), exceeding the ~400 LOC guidance. Code-review effectiveness drops beyond ~400 changed LOC (SmartBear/Cisco). Consider splitting into smaller, independently reviewable PRs."

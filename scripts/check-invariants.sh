@@ -111,11 +111,11 @@ else
   report plugin-agents-sync 0 "(no plugin manifest or python3 — skipped)"
 fi
 
-# 15. agent-maxturns: every agent frontmatter has an integer maxTurns
+# 15. agent-maxturns: every agent frontmatter has a positive integer maxTurns
 bad=""
 while IFS= read -r f; do
-  mt=$(awk '/^---$/{c++;next} c==1 && /^maxTurns:/{sub(/^maxTurns:[ ]*/,"");print;exit}' "$f")
-  case "$mt" in ''|*[!0-9]*) bad="$bad $f(maxTurns=${mt:-missing})";; esac
+  mt=$(awk '/^---$/{c++;next} c==1 && /^maxTurns:/{sub(/^maxTurns:[ ]*/,"");gsub(/["'"'"']/,"");print;exit}' "$f")
+  case "$mt" in ''|0|*[!0-9]*) bad="$bad $f(maxTurns=${mt:-missing})";; esac
 done < <(git ls-files '.claude/agents/*.md')
 report agent-maxturns "$([ -z "$bad" ]; echo $?)" "missing/non-integer maxTurns:$bad"
 
@@ -180,7 +180,7 @@ else
 fi
 
 # 20. claudemd-lines: CLAUDE.md must stay a short summary layer (<= 200 lines)
-n=$(wc -l < CLAUDE.md | tr -d ' ')
+n=$(awk 'END{print NR}' CLAUDE.md | tr -d ' ')
 report claudemd-lines "$([ "${n:-9999}" -le 200 ]; echo $?)" "CLAUDE.md is $n lines (budget 200)"
 
 echo ""

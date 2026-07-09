@@ -183,16 +183,17 @@ v3 adds an optional second install path: the repo can now be installed as a Clau
 
 The plugin path is intentionally narrower: it ships skills, agents, and hooks only. It does not include `.claude/settings.json` permission rules (notably the `permissions.deny` secret-file guards) or `.claude/rules/`, and plugin agents ignore `permissionMode` frontmatter. If you want the full guardrail set, keep using the raw drop-in — see [README.md — Two ways to adopt](README.md#two-ways-to-adopt) for the complete comparison.
 
-## v3.0.x → v3.1.0
+## v3.0.x → next release
 
-Two behavior changes adopters can feel land in v3.1.0. Neither requires code
-changes on your part, but both change what fires automatically.
+Two behavior changes adopters can feel land in this release. Neither requires
+code changes on your part, but both change what fires automatically.
 
 ### The four role skills no longer auto-invoke
 
 `architect`, `qa-engineer`, `security-auditor`, and `ui-ux-designer` now carry
 `disable-model-invocation: true`, joining the six workflow skills that were
-already gated in v3.0.0. All ten workflow skills are gated as of v3.1.0.
+already gated in v3.0.0. All ten workflow skills are gated as of this release
+(version set at release time via scripts/release.sh).
 
 **What this means for you:**
 
@@ -221,11 +222,12 @@ two agents that already existed alongside it:
 | Quick web lookups, API doc checks | `worker-explorer` |
 | Deep, multi-source investigation | `worker-research` |
 
-`worker-explorer`'s description and tool access were extended to cover the
-quick-lookup case explicitly. Nothing else about `worker-explorer` or
-`worker-research` changed as part of this removal. If your prompts or
-automation reference `worker-researcher` by name, update them to one of the
-two agents above based on the depth of investigation needed.
+`worker-explorer`'s description was extended to name the quick-lookup case
+explicitly (its existing WebFetch/WebSearch tool access already covered it).
+Nothing else about `worker-explorer` or `worker-research` changed as part of
+this removal. If your prompts or automation reference `worker-researcher` by
+name, update them to one of the two agents above based on the depth of
+investigation needed.
 
 ## What's next
 

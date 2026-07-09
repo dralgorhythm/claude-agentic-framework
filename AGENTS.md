@@ -29,6 +29,14 @@ An isolated worker runs in its own throwaway git worktree, not the shared checko
 3. **Report back to the orchestrator**: the commit SHA and a summary of files changed, tests added/modified, and any follow-up work discovered
 4. **Stop there** — do NOT `git push`, do NOT merge, do NOT switch branches. The orchestrator merges the worktree branch into the feature branch, re-runs gates, pushes, and cleans up the worktree.
 
+#### Recovery
+
+Three failure cases and how the orchestrator recovers from each:
+
+1. **Worker stops at its `maxTurns` ceiling without a completion report.** Inspect the worktree state (`git -C <worktree-path> status`, `git -C <worktree-path> log`) to see what was actually done. Resume the SAME worker with a focused continuation message — its context is preserved — rather than respawning a new worker from scratch.
+2. **Orchestrator session is lost after a worker committed but before merge.** Reclaim in-flight work by listing worktree branches (`git branch --list 'worktree-agent-*'`) and diffing each against the feature branch (`git log <branch> --not <feature-branch>`) to find unlanded commits. Review what's there, then merge or discard deliberately — do not assume the commits are safe to drop.
+3. **`git merge --ff-only` is rejected because the feature branch advanced** (e.g., parallel workers landed from the same base). Rebase the worker branch onto the current feature-branch tip, re-run quality gates on the rebased result, then retry the fast-forward merge.
+
 ### Mode B — Non-isolated agents and sessions (no `isolation: worktree`)
 
 **When ending a work session**, complete ALL steps below. Work is NOT complete until `git push` succeeds.

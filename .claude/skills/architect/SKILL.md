@@ -39,7 +39,7 @@ Follow the `designing-systems`, `writing-adrs`, and `designing-apis` skills for 
 Save artifacts to `./artifacts/adr_[topic].md` or `./artifacts/system_design_[component].md`. Working notes go to `scratchpad/`.
 
 ## Handoff
-- To `builder` / `swarm-execute`: after ADR approval, for implementation
-- To `swarm-review`: for security and architecture review
+- To `/builder` / `/swarm-execute`: after ADR approval, for implementation
+- To `/swarm-review`: for security and architecture review
 
 $ARGUMENTS
