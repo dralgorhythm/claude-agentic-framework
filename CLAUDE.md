@@ -44,7 +44,7 @@ Defined in `.claude/rules/tech-strategy.md` — auto-loaded for every session.
 
 **Branching**: Always branch from `main`. Never commit directly to `main`.
 
-**Planning flow**: PR-FAQ → PRD → ADR → Design Spec → Plan → Implementation Tasks
+**Planning flow**: PR-FAQ → PRD → ADR → Design Spec → Plan → Implementation Tasks — ceremony scales with scope (see `core-directives.md` Rule 6): skip phases a change genuinely doesn't need.
 
 **Artifacts**: All planning docs stored in `./artifacts/`:
 

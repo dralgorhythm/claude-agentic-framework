@@ -25,7 +25,7 @@ Decompose features into actionable plans using parallel exploration swarms.
 1. **Explore** — Launch 3-6 worker-explorer agents to research existing patterns, dependencies, constraints, and prior art
 2. **Classify** — Determine decision reversibility (Two-Way Door vs One-Way Door)
 3. **Document** — Create appropriate artifacts based on scope
-4. **Decompose** — Break into right-sized tasks (1-2 days each)
+4. **Decompose** — Break into right-sized tasks: roughly 200-400 changed LOC or 15-45 minutes of focused work each — review effectiveness collapses beyond ~400 LOC (SmartBear/Cisco)
 5. **Track** — Record tasks in the native task list for implementation tracking
 
 ## Decision Framework

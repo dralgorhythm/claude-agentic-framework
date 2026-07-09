@@ -18,6 +18,19 @@ Two-tier convention:
 
 ## Landing the Plane (Session Completion)
 
+This protocol has two modes. Check which one applies before following either — it depends on whether the current agent's frontmatter declares `isolation: worktree`.
+
+### Mode A — Isolated workers (`isolation: worktree` in agent frontmatter)
+
+An isolated worker runs in its own throwaway git worktree, not the shared checkout — this exists specifically to stop parallel workers from racing on one git index. Because the worktree is throwaway and the branch is not the integration branch, the worker does not push; the orchestrator does.
+
+1. **Run quality gates** (if code changed) — tests, linter, type checker, build
+2. **Commit** on the assigned worktree branch — atomic, complete, working changes only
+3. **Report back to the orchestrator**: the commit SHA and a summary of files changed, tests added/modified, and any follow-up work discovered
+4. **Stop there** — do NOT `git push`, do NOT merge, do NOT switch branches. The orchestrator merges the worktree branch into the feature branch, re-runs gates, pushes, and cleans up the worktree.
+
+### Mode B — Non-isolated agents and sessions (no `isolation: worktree`)
+
 **When ending a work session**, complete ALL steps below. Work is NOT complete until `git push` succeeds.
 
 1. **File issues for remaining work** — create tracker issues for anything that needs follow-up

@@ -35,7 +35,7 @@ Execute plans using parallel worker swarms with quality gates and native task-li
 ## Context Efficiency
 
 1. **Workers inherit session context** - CLAUDE.md and rules are loaded, but workers use focused instructions
-2. **Narrow scope** - Each worker focuses on one task
+2. **Narrow scope** - Each worker focuses on one task, sized to roughly 200-400 changed LOC or 15-45 minutes of focused work (review effectiveness collapses beyond ~400 LOC — SmartBear/Cisco)
 3. **Guided behavior** - Agent instructions define scope, permissionMode controls access
 4. **Right-sized models** - see Worker Types below for the tiering pointer
 
@@ -79,12 +79,15 @@ Run quality gates per `code-quality.md` — all must pass. No exceptions.
 
 ### Worker Completion Requirements
 
-Workers do not have direct access to the native task list — the orchestrator owns it. When a worker completes its assigned task, it MUST follow the full completion protocol from AGENTS.md:
+Workers do not have direct access to the native task list — the orchestrator owns it. Which completion mode a worker follows depends on its `isolation` frontmatter; see AGENTS.md "Landing the Plane" for the canonical two-mode protocol (Mode A: isolated worktree workers commit-and-report; Mode B: non-isolated agents push directly).
 
-1. Report any remaining or follow-up work to the orchestrator (orchestrator files it via `TaskCreate`)
-2. Run quality gates (if code changed)
-3. Push to remote per AGENTS.md "Landing the Plane" (mandatory — see Core Directives "Constraints" for the Ship It rule)
-4. Report completion status back to the orchestrator (orchestrator marks the task completed via `TaskUpdate`)
+`worker-builder` runs isolated (`isolation: worktree`) — every other worker in this table does not. For an isolated worker's completed task, the orchestrator:
+
+1. **Merges** the worker's worktree branch into the feature branch with `git merge --ff-only`
+2. **Re-runs quality gates** on the merged result — a worker's local gate pass does not substitute for the orchestrator's own verification
+3. **Pushes** the feature branch to remote (mandatory — see Core Directives "Constraints" for the Ship It rule)
+4. **Cleans up** the worker's worktree
+5. **Marks the task completed** via `TaskUpdate`, and files any follow-up work the worker reported via `TaskCreate`
 
 ## Checkpointing
 

@@ -28,7 +28,17 @@ Lightweight agents that work in parallel. Use them for big tasks.
 | `worker-research` | Deep multi-source investigation |
 | `worker-architect` | Complex design decisions, ADRs |
 
-Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth.
+Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth. `maxTurns` values below are the frontmatter defaults, sized from observed runs with headroom; tune them per-agent if your workload runs longer or shorter.
+
+### Model tier assignments (dated 2026-07)
+
+| Tier | Worker(s) | Rationale |
+|------|-----------|-----------|
+| Haiku | `worker-explorer` (`maxTurns: 30`) | Mechanical, read-heavy work — codebase search, dependency mapping, quick web lookups. Cheapest tier for high tool-call volume with low judgment. |
+| Sonnet | `worker-builder` (`maxTurns: 60`, `isolation: worktree`), `worker-reviewer` (`maxTurns: 40`), `worker-research` (`maxTurns: 80`) | Production default — the tier for implementation, review, and multi-source investigation where judgment matters but the reasoning load doesn't require the top tier. |
+| Opus | `worker-architect` (`maxTurns: 40`) | Top mainline tier, reserved for architecture judgment — system design, ADRs, trade-off evaluation across competing constraints. |
+
+Fable/Mythos exists as a premium tier at roughly 2× Opus pricing — deliberately **not** a default for any worker in this framework; reserve it only for stakes that justify the cost. Separately, newer-generation models tokenize noticeably more tokens (roughly +30%) for equivalent text versus older tokenizers, which affects cost comparisons across model generations even at flat per-token pricing — factor that in before assuming a price-per-token figure translates directly to cost-per-task.
 
 ## When to Use
 
@@ -86,7 +96,7 @@ Workers do not share mutable state directly — they receive a focused prompt fr
 
 ## Worker Completion
 
-Workers MUST follow the "Landing the Plane" protocol from AGENTS.md. Work is NOT complete until `git push` succeeds.
+Workers MUST follow the "Landing the Plane" protocol from AGENTS.md — which is two modes now, not one. `worker-builder` runs isolated (`isolation: worktree` in its frontmatter) and follows Mode A: commit on the assigned worktree branch, then report the commit SHA back to the orchestrator, which merges, re-runs gates, pushes, and cleans up the worktree. Every other worker (and any non-isolated agent or session) follows Mode B and pushes directly. Work is NOT complete until the responsible party's `git push` succeeds.
 
 ## Tips
 
@@ -94,6 +104,7 @@ Workers MUST follow the "Landing the Plane" protocol from AGENTS.md. Work is NOT
 - Max 8 concurrent workers
 - Don't have workers spawn workers (single-level only)
 - Keep worker prompts under 500 tokens for fast startup
+- Right-size tasks to roughly 200-400 changed LOC or 15-45 minutes of focused work — review effectiveness collapses beyond ~400 LOC (SmartBear/Cisco)
 
 ---
 

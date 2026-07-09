@@ -83,6 +83,8 @@ This means the `description` field is the entire activation mechanism. Write it 
 
 Every skill's name + description is **always loaded**, regardless of whether it's relevant to the current prompt — budget roughly **~100 tokens per skill**. The full set of listings is capped at a **listing budget of ~1% of the context window**. If you add enough skills to exceed that budget, Claude Code drops or truncates descriptions to fit.
 
+Measured 2026-07 for this repo: the 10 workflow skills carry `disable-model-invocation: true` and cost nothing in the listing until invoked, leaving 14 ungated library skills at roughly **~1.4k tokens** of always-loaded listing — against a **~2k-token budget on a 200K-context session** (**~10k on a 1M-context session**; state whichever denominator your session actually uses). Both figures move as the catalog or platform changes — treat them as a snapshot, not a guarantee.
+
 - Run `/doctor` to see which skill descriptions were dropped or truncated.
 - Run `/context` to see how much of the context window the skill listing is currently consuming.
 - Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom. The catalog's budget headroom is enforced in CI as a static character-count proxy (`scripts/check-invariants.sh` desc-budget, ~2.3k chars for the shipped 14 skills); run `/doctor` and `/context` in a live session for the authoritative measurement on your setup.
