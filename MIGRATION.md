@@ -1,6 +1,6 @@
 # Migrating to v3
 
-This guide covers the changes needed to move from the v2.x line (latest: v2.0.2) to v3.
+This guide covers the changes needed to move from the v2.x line to v3.
 v3 is a breaking release. More entries will be appended here as further v3 changes land.
 
 ## Who is affected

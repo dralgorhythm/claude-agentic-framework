@@ -14,6 +14,8 @@ cd your-project
 ../claude-agentic-framework/scripts/init-framework.sh .
 ```
 
+To pin to a known-good release: `git checkout vX.Y.Z` before running the script.
+
 (Clone-then-run, deliberately — this framework's own permission rules deny pipe-to-shell installs, and its docs tell you to review scripts before executing them. Practice what we ship.)
 
 The script will:
@@ -23,7 +25,7 @@ The script will:
 - Create an `artifacts/` directory for planning documents
 - Set up `.gitignore` entries
 
-The script prompts before overwriting any existing files. Re-run it to pull in framework updates. The framework is zero-install — no dependencies to fetch.
+The script prompts before overwriting any existing files. To pull in framework updates, cd into your clone, git pull, then re-run the script. The framework is zero-install — no dependencies to fetch. New versions are announced on the GitHub Releases page.
 
 **After install:**
 
@@ -48,6 +50,8 @@ This gets you the skills, the six worker agents, and the guardrail hooks, wired 
 - **Plugin agents ignore `permissionMode` frontmatter.** Any per-agent permission mode set in an agent's frontmatter is not honored when the agent is loaded as a plugin agent.
 
 If you need the full guardrail set (deny rules, rules directory, settings.json), use the raw drop-in instead — the plugin path trades completeness for a faster, in-session install.
+
+Plugin content updates at each tagged release — run `/plugin update` to pull the latest; after updating, check `MIGRATION.md` for breaking changes.
 
 For maintainers: validate packaging with `claude plugin validate --strict .` (marketplace) and `claude plugin validate .claude-plugin/plugin.json` (plugin — reports one expected warning that the repo-level `CLAUDE.md` is not loaded as plugin context; that is by design, per the caveats above).
 
@@ -160,3 +164,6 @@ See [docs/customization.md](docs/customization.md) for details.
 - [Handoffs](docs/handoffs.md)
 - [Task tracking](CLAUDE.md#task-tracking)
 - [Customization](docs/customization.md)
+- [Changelog](CHANGELOG.md)
+- [Migration guide](MIGRATION.md)
+- [Releasing](docs/releasing.md)
