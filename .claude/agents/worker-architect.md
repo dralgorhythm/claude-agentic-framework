@@ -3,6 +3,7 @@ name: worker-architect
 description: Senior architecture decisions. Use for complex design problems requiring deep analysis.
 permissionMode: acceptEdits
 model: opus
+tools: Read, Grep, Glob, Write
 skills: designing-systems, writing-adrs, designing-apis
 ---
 

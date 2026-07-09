@@ -14,7 +14,7 @@ Related Skills: writing-prds, decomposing-tasks, requirements-analysis
 **Author:** [Name]
 **Date:** [YYYY-MM-DD]
 **Version:** [1.0]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 **PR-FAQ:** [Link to approved PR-FAQ - required for new initiatives]
 **Stakeholders:** [List]
 
@@ -152,8 +152,8 @@ After PRD approval:
    - Trigger: `/swarm-plan`
    - Output: Implementation Plan (`artifacts/plan_[task].md`)
 
-4. [ ] **Create Beads Issues**: Decompose into trackable work items
-   - Command: `bd create "Title" -t feature`
+4. [ ] **File Follow-up Issues**: Decompose into trackable work items
+   - Record tasks in the issue tracker (or `ISSUES.md`) with clear acceptance criteria
 
 **Related Artifacts**:
 - ADR: [Link after architect review]

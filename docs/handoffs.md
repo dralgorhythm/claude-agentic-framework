@@ -17,7 +17,7 @@ Each command reads the previous artifacts and builds on them.
 ## Swarm Orchestration Handoffs
 
 ```
-/swarm-plan       →  artifacts/plan_*.md + Beads tasks
+/swarm-plan       →  artifacts/plan_*.md + native task list entries
        ↓
 /swarm-execute    →  Parallel workers implement tasks
        ↓
@@ -41,16 +41,20 @@ echo '{"message": "Completed API endpoints. Remaining: tests for /users route."}
 
 The next session's `session-start-loader.sh` will display this message on startup.
 
-## Beads-Based Handoffs
+## Task-Based Handoffs
 
-Use Beads for structured handoffs between agents:
+Two-tier task tracking coordinates handoffs between agents:
 
-```bash
-bd create "Continue: implement pagination for /users" --type=task
-bd dep add <new-id> <completed-id>  # link dependency
+1. **Durable record**: GitHub Issues (or a committed `ISSUES.md` for repos without a tracker) — the permanent record of what needs doing.
+2. **In-flight work**: Claude Code's native task list (`TaskCreate`/`TaskUpdate`/`TaskList`), owned by the orchestrator. Workers receive focused prompts and return results; they do not share mutable state with each other.
+3. **Handoffs**: Reference the relevant artifact under `./artifacts/` so the next agent can pick up where the previous one left off — for example:
+
+```
+Continue: implement pagination for /users
+See artifacts/plan_users_api.md for the remaining task breakdown.
 ```
 
-Workers discover available work via `bd ready`.
+The orchestrator tracks dependencies between tasks directly in the native task list; workers discover available work from the orchestrator's assignment, not by polling shared state.
 
 ---
 

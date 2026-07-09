@@ -6,15 +6,18 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 
 | Hook | Event | Purpose |
 |------|-------|---------|
-| `session-start-loader.sh` | SessionStart | Load Beads status, detect active swarm agents, process handoffs, cleanup stale sessions |
-| `skill-activation-prompt.sh` | UserPromptSubmit | Suggest relevant skills based on context |
+| `session-start-loader.sh` | SessionStart | Load session context, detect active swarm agents, process handoffs, cleanup stale sessions |
 | `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection, protected file enforcement |
 | `dangerous-command-guard.sh` | PreToolUse (Bash) | Guard against dangerous shell commands (force push, rm -rf, etc.) |
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
 | `pre-commit-verification.sh` | PreToolUse (Bash) | Pre-commit quality checks |
-| `post-tool-use-tracker.sh` | PostToolUse | Track file changes and sync with Beads |
+| `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
 | `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted changes |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
+| `post-edit-lint.sh` | PostToolUse | Auto-format after edits; surfaces only unfixable issues |
+| `branch-pr-discipline.sh` | PreToolUse (Bash) | Warn-only branch/PR hygiene checks |
+
+**Optional examples**: Skills are discovered natively (no hook required — see [docs/skills.md](skills.md#how-skills-activate)). Teams that want deterministic, keyword-based skill activation instead can opt into [docs/examples/skill-activation-hook.sh](examples/skill-activation-hook.sh); it is dependency-free and disabled by default.
 
 ## Key Capabilities
 
@@ -41,7 +44,6 @@ Test files (`*.test.ts`, `*.spec.ts`, etc.) are excluded to reduce false positiv
 ### Protected Files (pre-tool-use-validator.sh)
 
 Blocks modifications to critical system files:
-- `.beads/beads.db`, `.beads/daemon`
 - `.git/`
 - `.env`
 - `.mcp.json`
@@ -60,7 +62,7 @@ Enforces trunk-based development by blocking pushes to main/master:
 - Supports handoff messages between sessions
 - Auto-cleans stale sessions older than 24 hours
 - Warns about uncommitted changes on session stop
-- Syncs Beads before exit
+- Releases file locks before exit
 
 ## Creating a Hook
 
@@ -137,6 +139,21 @@ For PreToolUse hooks, return a permission decision:
 - Keep hooks fast (< 5 seconds timeout)
 - Test with: `echo '{}' | ./my-hook.sh`
 - Override hooks via `settings.local.json`
+
+## Security model
+
+Committed hooks are executable code. Once you trust a workspace, every hook registered in `.claude/settings.json` runs automatically, on every collaborator's machine, without a per-run confirmation. Treat hook scripts with the same scrutiny as any other code that executes on checkout — review them before trusting a repo. 2026 supply-chain research demonstrated remote code execution via malicious committed agent-config hooks; this is not theoretical.
+
+The hooks shipped in this repo are **guardrails, not a security boundary**. They are designed to **fail open**: if `jq` is missing, or the hook receives input it can't parse, the check is skipped and the tool call proceeds. This is a deliberate tradeoff for reliability over strict enforcement — do not rely on a hook to be the only thing standing between an agent and a destructive or unsafe action.
+
+HARD rules — the ones that must always hold — live in `settings.json` under `permissions.deny`. A deny entry there cannot be overridden by an allow rule from any scope (project, user, or local settings). If something absolutely must never happen, it belongs in `permissions.deny`, not in a hook.
+
+Only **exit code 2** blocks an action. Exit code 1 (or any non-zero code other than 2) is treated as a non-blocking error and does not stop the tool call — our blocking hooks either exit with code 2 or return deny-JSON (`permissionDecision: "deny"`) explicitly. If you write a hook intended to block, verify it actually exits 2 or returns deny-JSON; anything else is advisory only.
+
+**How to disable a hook:**
+
+- Remove its entry from `.claude/settings.json` (`hooks` section) to disable it for everyone who pulls that config.
+- Set `"disableAllHooks": true` in your local `settings.local.json` to disable all hooks for your own machine only.
 
 ---
 

@@ -13,7 +13,7 @@ Related Skills: implementing-code, debugging, testing, test-driven-development
 **Status:** Draft | Approved | In Progress | Complete
 **Author:** [Name]
 **Date:** [YYYY-MM-DD]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 **Related PRD:** [Link to PRD]
 **Related ADR:** [Link to ADR]
 

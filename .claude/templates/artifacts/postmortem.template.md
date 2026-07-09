@@ -17,7 +17,7 @@ Blameless culture: Focus on systems and processes, not individuals.
 **Duration:** [X hours Y minutes]
 **Severity:** SEV1 | SEV2 | SEV3 | SEV4
 **Status:** Draft | In Review | Complete
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 
 **Author:** [Name]
 **Incident Commander:** [Name]
@@ -188,22 +188,22 @@ Key Incident Metrics:
 
 ### Immediate (Within 1 Week)
 
-| Action | Owner | Due Date | Status | Beads Issue |
+| Action | Owner | Due Date | Status | Tracking Issue |
 |--------|-------|----------|--------|-------------|
-| [Action 1] | [Name] | [Date] | Open | [bd://xxx] |
-| [Action 2] | [Name] | [Date] | Open | [bd://xxx] |
+| [Action 1] | [Name] | [Date] | Open | [issue link] |
+| [Action 2] | [Name] | [Date] | Open | [issue link] |
 
 ### Short-Term (Within 1 Month)
 
-| Action | Owner | Due Date | Status | Beads Issue |
+| Action | Owner | Due Date | Status | Tracking Issue |
 |--------|-------|----------|--------|-------------|
-| [Action 1] | [Name] | [Date] | Open | [bd://xxx] |
+| [Action 1] | [Name] | [Date] | Open | [issue link] |
 
 ### Long-Term (Within 1 Quarter)
 
-| Action | Owner | Due Date | Status | Beads Issue |
+| Action | Owner | Due Date | Status | Tracking Issue |
 |--------|-------|----------|--------|-------------|
-| [Action 1] | [Name] | [Date] | Open | [bd://xxx] |
+| [Action 1] | [Name] | [Date] | Open | [issue link] |
 
 ---
 

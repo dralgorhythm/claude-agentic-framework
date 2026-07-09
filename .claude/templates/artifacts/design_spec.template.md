@@ -18,7 +18,7 @@ Design Principles:
 **Status:** Draft | In Review | Approved
 **Designer:** [Name]
 **Date:** [YYYY-MM-DD]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 **Related PRD:** [Link to PRD]
 **Approach:** Mobile-first
 

@@ -4,6 +4,10 @@
 
 INPUT=$(cat)
 
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary)
+command -v jq >/dev/null 2>&1 || exit 0
+
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null || true)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // empty' 2>/dev/null || true)
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
@@ -19,7 +23,7 @@ mkdir -p "$LOCK_DIR"
 
 # Get relative path for lock file naming
 if [[ "$FILE_PATH" == "$PROJECT_DIR"* ]]; then
-    REL_PATH="${FILE_PATH#$PROJECT_DIR/}"
+    REL_PATH="${FILE_PATH#"$PROJECT_DIR"/}"
 else
     REL_PATH="$FILE_PATH"
 fi
@@ -29,13 +33,14 @@ LOCK_FILE="$LOCK_DIR/$(echo "$REL_PATH" | tr '/' '_').lock"
 
 # Check for concurrent edits (swarm conflict prevention)
 if [ -f "$LOCK_FILE" ]; then
-    LOCK_SESSION=$(cat "$LOCK_FILE" 2>/dev/null | jq -r '.session_id // empty')
-    LOCK_TIME=$(cat "$LOCK_FILE" 2>/dev/null | jq -r '.timestamp // 0')
+    LOCK_SESSION=$(jq -r '.session_id // empty' <"$LOCK_FILE" 2>/dev/null || true)
+    LOCK_TIME=$(jq -r '.timestamp // 0' <"$LOCK_FILE" 2>/dev/null || echo 0)
+    [[ "$LOCK_TIME" =~ ^[0-9]+$ ]] || LOCK_TIME=0
     CURRENT_TIME=$(date +%s)
 
     # Lock expires after 120 seconds
     if [ $((CURRENT_TIME - LOCK_TIME)) -lt 120 ] && [ "$LOCK_SESSION" != "$SESSION_ID" ]; then
-        echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"File '$REL_PATH' is being edited by another agent. Wait for completion or coordinate via Beads.\"}}"
+        echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"File '$REL_PATH' is being edited by another agent. Wait for completion or coordinate via the task tracker.\"}}"
         exit 0
     fi
 fi
@@ -43,8 +48,6 @@ fi
 # Block edits to critical system files
 # Note: .claude/settings.json and .claude/rules/ are user-configurable
 PROTECTED_PATTERNS=(
-    ".beads/beads.db"
-    ".beads/daemon"
     ".git/"
     ".env"
     ".mcp.json"
@@ -64,7 +67,7 @@ if [[ "$REL_PATH" == *.test.ts ]] || [[ "$REL_PATH" == *.spec.ts ]] || \
     # Test files may contain mock secrets — skip detection
     :
 elif [[ "$TOOL_NAME" == "Write" || "$TOOL_NAME" == "Edit" ]]; then
-    CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.new_string // empty')
+    CONTENT=$(echo "$INPUT" | jq -r '.tool_input.content // .tool_input.new_string // empty' 2>/dev/null || true)
 
     # Check for potential secrets - multiple patterns
     SECRET_DETECTED=false

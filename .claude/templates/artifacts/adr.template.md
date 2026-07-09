@@ -20,7 +20,7 @@ Best Practices:
 **Status:** Proposed | Accepted | Deprecated | Superseded
 **Date:** [YYYY-MM-DD]
 **Deciders:** [List of people involved]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 **Related PRD:** [Link to PRD]
 **Tech Strategy Alignment:**
 - [ ] Decision follows Golden Path in `.claude/rules/tech-strategy.md`

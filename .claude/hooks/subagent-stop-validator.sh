@@ -3,7 +3,18 @@
 # Ensures subagents complete their assigned work before returning
 
 INPUT=$(cat)
-STOP_HOOK_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null || echo "false")
+
+# Prefer jq for parsing; fall back to a simple grep for this trivial
+# boolean field so logging still works on a machine without jq.
+if command -v jq >/dev/null 2>&1; then
+    STOP_HOOK_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null || echo "false")
+else
+    if echo "$INPUT" | grep -qE '"stop_hook_active"[[:space:]]*:[[:space:]]*true'; then
+        STOP_HOOK_ACTIVE="true"
+    else
+        STOP_HOOK_ACTIVE="false"
+    fi
+fi
 
 # Prevent infinite loops
 if [ "$STOP_HOOK_ACTIVE" = "true" ]; then

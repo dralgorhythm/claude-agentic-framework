@@ -1,7 +1,11 @@
 #!/bin/bash
-# Post-tool-use tracker: file logging, lock release, and Beads integration
+# Post-tool-use tracker: file logging and lock release
 
 INPUT=$(cat)
+
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary)
+command -v jq >/dev/null 2>&1 || exit 0
 
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null || true)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.path // empty' 2>/dev/null || true)
@@ -16,14 +20,14 @@ PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
 # Compute relative path
 if [[ "$FILE_PATH" == "$PROJECT_DIR"* ]]; then
-    REL_PATH="${FILE_PATH#$PROJECT_DIR/}"
+    REL_PATH="${FILE_PATH#"$PROJECT_DIR"/}"
 else
     REL_PATH="$FILE_PATH"
 fi
 
 # Skip noisy directories and file types (case is faster than array loop)
 case "$REL_PATH" in
-    .claude/hooks/*|.beads/*|.git/*|node_modules/*)
+    .claude/hooks/*|.git/*|node_modules/*)
         exit 0
         ;;
     *.log|*.lock)
@@ -42,7 +46,7 @@ echo "[$TIMESTAMP] [$SESSION_SHORT] $TOOL_NAME: $REL_PATH" >> "$TRACKER_FILE"
 # Release file lock if held by this session
 LOCK_FILE="$LOCK_DIR/$(echo "$REL_PATH" | tr '/' '_').lock"
 if [ -f "$LOCK_FILE" ]; then
-    LOCK_SESSION=$(cat "$LOCK_FILE" 2>/dev/null | jq -r '.session_id // empty')
+    LOCK_SESSION=$(jq -r '.session_id // empty' <"$LOCK_FILE" 2>/dev/null || true)
     if [ "$LOCK_SESSION" = "$SESSION_ID" ]; then
         rm -f "$LOCK_FILE"
     fi
@@ -53,14 +57,6 @@ if [ -f "$TRACKER_FILE" ]; then
     LINE_COUNT=$(wc -l < "$TRACKER_FILE" 2>/dev/null || echo 0)
     if [ "$LINE_COUNT" -gt 600 ]; then
         tail -n 500 "$TRACKER_FILE" > "$TRACKER_FILE.tmp" && mv "$TRACKER_FILE.tmp" "$TRACKER_FILE"
-    fi
-fi
-
-# Beads: log active issue context when an issue is in progress
-if command -v bd &> /dev/null && [ -d "$PROJECT_DIR/.beads" ]; then
-    ACTIVE_ISSUE=$(bd list --status in_progress --json 2>/dev/null | jq -r '.[0].id // empty' 2>/dev/null)
-    if [ -n "$ACTIVE_ISSUE" ]; then
-        echo "  -> Issue $ACTIVE_ISSUE context: $REL_PATH" >> "$TRACKER_FILE"
     fi
 fi
 

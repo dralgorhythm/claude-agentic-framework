@@ -16,7 +16,7 @@ Uses C4 model for architecture visualization (Context → Container → Componen
 **Status:** Draft | In Review | Approved | Implemented
 **Author:** [Name]
 **Date:** [YYYY-MM-DD]
-**Beads Issue:** [bd://issue-id or N/A]
+**Tracking Issue:** [issue link or N/A]
 **Related PRD:** [Link to PRD]
 **Related ADRs:** [Links to relevant ADRs]
 

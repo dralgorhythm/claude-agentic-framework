@@ -20,14 +20,16 @@ Lightweight agents that work in parallel. Use them for big tasks.
 
 ## Available Workers
 
-| Worker | Model | Best For |
-|--------|-------|----------|
-| `worker-explorer` | Haiku | Fast codebase search, dependency mapping |
-| `worker-builder` | Sonnet | Implementation, testing, refactoring |
-| `worker-reviewer` | Opus | Code review, security analysis |
-| `worker-researcher` | Sonnet | Quick web research, API docs |
-| `worker-research` | Opus | Deep multi-source investigation |
-| `worker-architect` | Opus | Complex design decisions, ADRs |
+| Worker | Best For |
+|--------|----------|
+| `worker-explorer` | Fast codebase search, dependency mapping |
+| `worker-builder` | Implementation, testing, refactoring |
+| `worker-reviewer` | Code review, security analysis |
+| `worker-researcher` | Quick web research, API docs |
+| `worker-research` | Deep multi-source investigation |
+| `worker-architect` | Complex design decisions, ADRs |
+
+Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth.
 
 ## When to Use
 
@@ -54,7 +56,7 @@ Results aggregated into plan artifact
 ### Divide and Conquer (via /swarm-execute)
 ```
 1. worker-architect designs solution
-2. Break into independent tasks via Beads
+2. Break into independent tasks in the orchestrator's native task list
 3. Multiple worker-builder agents implement in parallel
 4. worker-reviewer validates each
 5. Orchestrator integrates
@@ -73,14 +75,15 @@ Findings consolidated with severity classification
 
 ## Coordination
 
-Workers use Beads to avoid conflicts:
+The orchestrator uses its native task list to avoid conflicts between workers:
 
-```bash
-bd create "Implement user service"
-bd update <id> --status in_progress  # worker claims
-bd close <id> --reason "Done"        # worker completes
-bd sync                              # sync with git
 ```
+TaskCreate  "Implement user service"
+TaskUpdate  <id> --status in_progress   # worker claims (reported back to orchestrator)
+TaskUpdate  <id> --status completed     # worker completes
+```
+
+Workers do not share mutable state directly — they receive a focused prompt from the orchestrator and return results. The orchestrator records durable follow-up work as GitHub Issues (or `ISSUES.md`) and references relevant artifacts under `./artifacts/` in each handoff.
 
 ## Worker Completion
 

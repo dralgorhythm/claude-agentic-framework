@@ -1,20 +1,34 @@
 # Customization
 
-Add your own commands, skills, rules, and hooks.
+Add your own command-style skills, skills, rules, and hooks.
 
-## Adding a Command
+## Adding a Command-Style Skill
 
-Create `.claude/commands/my-command.md`:
+Commands are just skills invoked by their slash name. Create `.claude/skills/my-command/SKILL.md`:
 
 ```yaml
 ---
+name: my-command
 description: What this command does
+argument-hint: [task-description]
+disable-model-invocation: true
 ---
 ```
 
-Add command instructions below the frontmatter.
+- `name` — must match the directory name.
+- `description` — shown in autocomplete; also what Claude matches against if model-invocation is left enabled.
+- `argument-hint` — optional help text shown for the command's arguments.
+- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset for purely advisory workflows (e.g. an architecture or review skill) where model-invocation is safe.
 
-See `.claude/templates/command.template.md` for the full format.
+Add command instructions below the frontmatter, and end the file with `$ARGUMENTS` so the user's trailing text is passed through:
+
+```markdown
+...instructions...
+
+$ARGUMENTS
+```
+
+See `.claude/templates/skill.template.md` for the full format.
 
 ## Adding a Skill
 
@@ -27,18 +41,16 @@ description: What it does
 ---
 ```
 
-2. Register in `.claude/skills/skill-rules.json`:
+2. No registration needed. Discovery is automatic: Claude Code reads every `SKILL.md`'s frontmatter at startup, so as soon as the file exists, the skill is live.
 
-```json
-{
-  "name": "my-skill",
-  "path": ".claude/skills/category/my-skill/SKILL.md",
-  "triggers": {
-    "keywords": ["keyword1", "keyword2"]
-  },
-  "priority": "medium"
-}
-```
+   The only thing that determines whether it activates is the strength of its `description`. Write it in the **third person**, stating **what** the skill does and **when** to use it — lead with the trigger phrases a user would actually type:
+
+   ```yaml
+   ---
+   name: my-skill
+   description: Guides X. Use when the user asks to Y or mentions Z.
+   ---
+   ```
 
 See `.claude/templates/skill.template.md` for the full format.
 
@@ -53,6 +65,8 @@ Rules here. Keep it short — rules load on every request.
 ```
 
 Rules auto-load. No registration needed.
+
+The framework intentionally ships no stack-specific frontend rule (React, Vue, etc.) — that choice belongs to the adopter, not the template. Add your own under `.claude/rules/` using `.claude/templates/rule.template.md` as the starting point.
 
 ## Adding a Hook
 

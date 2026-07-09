@@ -193,9 +193,6 @@
       "Bash(echo:*)",
       "Bash(#:*)",
 
-      "// === Beads Issue Tracker ===",
-      "Bash(bd:*)",
-
       "// === Claude CLI ===",
       "Bash(claude:*)",
 
@@ -209,9 +206,6 @@
       "mcp__sequential-thinking__sequentialthinking",
       "mcp__chrome-devtools__*",
       "mcp__filesystem__*",
-      "// ide tools are provided by editor extensions (VS Code, JetBrains), not .mcp.json",
-      "mcp__ide__getDiagnostics",
-      "mcp__ide__executeCode",
 
       "// === WebFetch: Documentation Sites ===",
       "WebFetch(domain:github.com)",
@@ -287,22 +281,28 @@
       "Write(~/.zshrc)",
       "Write(~/.bash_profile)",
       "Edit(~/.ssh/**)",
-      "Write(~/.ssh/**)"
+      "Write(~/.ssh/**)",
+
+      "// === Project Secrets (Read) ===",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/id_rsa*)",
+      "Read(**/credentials)",
+      "Read(**/.npmrc)",
+      "Read(~/.git-credentials)",
+      "Read(~/.config/gh/**)",
+
+      "// === Push to Default Branch ===",
+      "Bash(git push origin main:*)",
+      "Bash(git push origin master:*)",
+      "Bash(git push -u origin main:*)",
+      "Bash(git push -u origin master:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
   "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/skill-activation-prompt.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "matcher": "startup|resume|compact|clear",
@@ -343,6 +343,11 @@
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-push-main-blocker.sh",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/branch-pr-discipline.sh",
+            "timeout": 5
           }
         ]
       }
@@ -355,6 +360,11 @@
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-tracker.sh",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-edit-lint.sh",
+            "timeout": 10
           }
         ]
       }
@@ -381,8 +391,5 @@
         ]
       }
     ]
-  },
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": true
   }
 }

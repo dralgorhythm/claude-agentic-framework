@@ -1,17 +1,27 @@
 ---
 name: [skill-name]
 description: [Clear description of what this skill does and when Claude should use it. Include trigger phrases like "Use when..." to help with skill invocation.]
+argument-hint: [optional-arg-description]
+disable-model-invocation: false
 ---
 
 <!--
-Skills are model-invoked workflows discovered via description matching.
+Skills are discovered via description matching, and can also be invoked
+directly by slash name (e.g. /my-skill) — that's what a "command" is: a
+skill invoked as /name instead of (or in addition to) auto-discovery.
 
 Required fields:
   - name: lowercase, hyphens only, max 64 chars, must match directory name
   - description: max 1024 chars, CRITICAL for auto-discovery
 
 Optional fields:
-  (none — skills do not support tool restrictions)
+  - argument-hint: help text shown for a command-style skill's arguments
+    (e.g. "[task-description]"). Omit for pure knowledge skills.
+  - disable-model-invocation: set to true when the skill's workflow has side
+    effects (writes files, runs shell commands, pushes to git, launches
+    workers) — this restricts invocation to a user explicitly typing
+    /skill-name and stops Claude from triggering it on its own. Leave false
+    (or omit) for advisory/knowledge skills where auto-discovery is safe.
 
 Description best practices:
   GOOD: "API design skill. Use when designing REST APIs, GraphQL schemas, or gRPC services."
@@ -23,6 +33,14 @@ Supporting files (auto-discovered):
   - resources/: Additional materials
 
 Location: .claude/skills/[domain]/[skill-name]/SKILL.md
+  (command-style skills live directly at .claude/skills/[skill-name]/SKILL.md)
+
+If this is a command-style skill, end the file with $ARGUMENTS so any text
+the user types after /skill-name is passed through:
+
+  ...instructions...
+
+  $ARGUMENTS
 -->
 
 # [Skill Name]

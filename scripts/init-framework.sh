@@ -175,6 +175,13 @@ copy_file_with_diff() {
     fi
 }
 
+# Remove machine-local / runtime files that must never ship to a target project
+scrub_local_files() {
+    local dst="$1"
+    find "$dst" \( -name 'settings.local.json' -o -name '.file-tracker.log' -o -name '.DS_Store' \) -type f -delete 2>/dev/null || true
+    find "$dst" -type d \( -name '.locks' -o -name '.state' -o -name 'worktrees' -o -name 'node_modules' \) -prune -exec rm -rf {} + 2>/dev/null || true
+}
+
 # Function to copy directory with diff prompt
 copy_dir_with_diff() {
     local src="$1"
@@ -203,6 +210,7 @@ copy_dir_with_diff() {
         if confirm "  Overwrite $name/?"; then
             rm -rf "$dst"
             cp -r "$src" "$dst"
+            scrub_local_files "$dst"
             print_success "$name/ updated"
         else
             print_info "Skipped $name/"
@@ -210,6 +218,7 @@ copy_dir_with_diff() {
     else
         print_info "Copying $name/..."
         cp -r "$src" "$dst"
+        scrub_local_files "$dst"
         print_success "$name/ installed"
     fi
 }
@@ -273,26 +282,8 @@ else
 fi
 
 # Copy config files with diff support
-copy_file_with_diff "$FRAMEWORK_DIR/.gitattributes" "$TARGET_DIR/.gitattributes" ".gitattributes"
+copy_file_with_diff "$FRAMEWORK_DIR/.gitattributes" "$TARGET_DIR/.gitattributes" ".gitattributes" "true"
 copy_file_with_diff "$FRAMEWORK_DIR/.mcp.json" "$TARGET_DIR/.mcp.json" ".mcp.json"
-
-# Initialize Beads issue tracking (required for swarm coordination)
-if [ ! -d "$TARGET_DIR/.beads" ]; then
-    if command -v bd &>/dev/null; then
-        print_info "Initializing Beads issue tracking..."
-        if (cd "$TARGET_DIR" && bd init 2>/dev/null); then
-            print_success "Beads initialized"
-        else
-            print_warning "Beads initialization failed. Run 'bd init' manually for swarm coordination."
-        fi
-    else
-        print_warning "Beads CLI not found — required for swarm coordination"
-        print_info "  Install: curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash"
-        print_info "  Then: cd $TARGET_DIR && bd init"
-    fi
-else
-    print_info ".beads/ already initialized"
-fi
 
 # Copy CLAUDE.md and AGENTS.md with diff support
 copy_file_with_diff "$FRAMEWORK_DIR/CLAUDE.md" "$TARGET_DIR/CLAUDE.md" "CLAUDE.md"
@@ -430,28 +421,6 @@ if [ -d "$TARGET_DIR/.claude/hooks" ]; then
     print_success "Hook scripts made executable"
 fi
 
-# Install hook dependencies if needed
-if [ -f "$TARGET_DIR/.claude/hooks/package.json" ]; then
-    print_info "Installing hook dependencies..."
-    echo ""
-
-    INSTALL_OK=false
-    if command -v pnpm &> /dev/null; then
-        (cd "$TARGET_DIR/.claude/hooks" && pnpm install --silent) && INSTALL_OK=true
-    elif command -v npm &> /dev/null; then
-        (cd "$TARGET_DIR/.claude/hooks" && npm install --silent) && INSTALL_OK=true
-    else
-        print_warning "Neither pnpm nor npm found - skipping dependency installation"
-        print_info "Install Node.js and run: cd .claude/hooks && npm install"
-    fi
-
-    if [ "$INSTALL_OK" = "true" ]; then
-        print_success "Hook dependencies installed"
-    fi
-
-    echo ""
-fi
-
 # Print next steps
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Next Steps"
@@ -475,10 +444,6 @@ echo "   /swarm-execute   - Execute with parallel workers"
 echo "   /swarm-review    - Adversarial multi-perspective review"
 echo "   /swarm-research  - Deep investigation"
 echo "   /code-check      - SOLID, DRY, consistency audit"
-echo ""
-echo "4. If Beads was not initialized above, install it for swarm coordination:"
-echo "   curl -sSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash"
-echo "   cd $TARGET_DIR && bd init"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""

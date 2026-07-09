@@ -5,6 +5,10 @@
 
 INPUT=$(cat)
 
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary)
+command -v jq >/dev/null 2>&1 || exit 0
+
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty' 2>/dev/null || true)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null || true)
@@ -27,6 +31,7 @@ VERIFICATION_FILE="$STATE_DIR/commit-verified"
 # If verification was completed recently (within last 5 minutes), allow commit
 if [ -f "$VERIFICATION_FILE" ]; then
     VERIFIED_TIME=$(cat "$VERIFICATION_FILE" 2>/dev/null || echo 0)
+    [[ "$VERIFIED_TIME" =~ ^[0-9]+$ ]] || VERIFIED_TIME=0
     CURRENT_TIME=$(date +%s)
     TIME_DIFF=$((CURRENT_TIME - VERIFIED_TIME))
 
