@@ -148,10 +148,6 @@ Use `writing-prds` skill for structure and template.
 3. **Design** — Create ADR with trade-off matrix
 4. **Validate** — Verify design fits existing patterns
 
-### Output
-- `scratchpad/` for planning exploration and working notes
-- `artifacts/` for final documents (PR-FAQ, PRD, ADR, plan)
-
 ## Related Skills
 
 `swarm-coordination`, `writing-adrs`, `designing-systems`, `designing-apis`, `writing-pr-faqs`, `writing-prds`

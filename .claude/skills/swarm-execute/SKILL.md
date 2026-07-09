@@ -37,7 +37,7 @@ Execute plans using parallel worker swarms with quality gates and native task-li
 1. **Workers inherit session context** - CLAUDE.md and rules are loaded, but workers use focused instructions
 2. **Narrow scope** - Each worker focuses on one task
 3. **Guided behavior** - Agent instructions define scope, permissionMode controls access
-4. **Right-sized models** - Haiku for exploration, Sonnet for implementation, Opus for architecture
+4. **Right-sized models** - see Worker Types below for the tiering pointer
 
 ## Worker Types
 
@@ -67,14 +67,7 @@ Orchestrators specialize workers by specifying a focus mode in the prompt.
 
 ## Quality Gates
 
-Run quality gates per `code-quality.md` — all must pass:
-- Test suite passes
-- Linter passes
-- Type checker passes (if applicable)
-- Build succeeds
-- Security audit passes
-
-No exceptions.
+Run quality gates per `code-quality.md` — all must pass. No exceptions.
 
 ## Coordination Protocol
 
@@ -90,23 +83,8 @@ Workers do not have direct access to the native task list — the orchestrator o
 
 1. Report any remaining or follow-up work to the orchestrator (orchestrator files it via `TaskCreate`)
 2. Run quality gates (if code changed)
-3. Report completion status back to the orchestrator (orchestrator marks the task completed via `TaskUpdate`)
-4. **PUSH TO REMOTE** (mandatory):
-   ```bash
-   git pull --rebase
-   git push
-   ```
-5. Report completion to orchestrator
-
-**Critical**: Workers must push changes to remote. Work is NOT complete until `git push` succeeds.
-
-## Git Push Protocol
-
-Work is NOT complete until pushed:
-1. Stage and commit with descriptive message
-2. Pull with rebase
-3. Push to remote
-4. Verify: `git status` must show "up to date with origin"
+3. Push to remote per AGENTS.md "Landing the Plane" (mandatory — see Core Directives "Constraints" for the Ship It rule)
+4. Report completion status back to the orchestrator (orchestrator marks the task completed via `TaskUpdate`)
 
 ## Checkpointing
 

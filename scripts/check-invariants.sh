@@ -179,6 +179,10 @@ else
   report evals-json 0 "(no python3 — parse check skipped)"
 fi
 
+# 20. claudemd-lines: CLAUDE.md must stay a short summary layer (<= 200 lines)
+n=$(wc -l < CLAUDE.md | tr -d ' ')
+report claudemd-lines "$([ "${n:-9999}" -le 200 ]; echo $?)" "CLAUDE.md is $n lines (budget 200)"
+
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"
 exit "$FAIL"
