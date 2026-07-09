@@ -1,0 +1,60 @@
+{
+  "$schema": "self-describing — no external schema; see README.md in this directory",
+  "skill": "testing",
+  "skill_path": ".claude/skills/core-engineering/testing/SKILL.md",
+  "description": "Exemplar eval set for the testing skill. Each case is a prompt plus assertions about the resulting behavior, not the resulting text. Run with skill-creator (/plugin install skill-creator@claude-plugins-official) in a fresh session per the eval-first policy in CONTRIBUTING.md.",
+  "cases": [
+    {
+      "id": "tdd-red-before-green",
+      "category": "positive",
+      "prompt": "Add a function that calculates the discount percentage between an original price and a sale price, and use it in the checkout summary.",
+      "expected": {
+        "assertions": [
+          "writes a failing test for the discount-percentage behavior before writing the implementation",
+          "the test is observed or described as failing (red) prior to the implementation existing",
+          "implementation is added only after the failing test is in place, and is the minimum code to pass it",
+          "test covers at least one edge case (e.g. sale price equal to or greater than original price) in addition to the happy path"
+        ]
+      }
+    },
+    {
+      "id": "regression-test-before-bugfix",
+      "category": "positive",
+      "prompt": "There's a bug: passing an empty list to calculateAverage() throws an unhandled exception instead of returning 0.",
+      "expected": {
+        "assertions": [
+          "adds a regression test that reproduces the reported bug (empty list input) before changing implementation code",
+          "confirms or describes the regression test failing against the current (buggy) implementation",
+          "fixes the implementation only after the regression test exists",
+          "regression test passes after the fix, and is not deleted or skipped afterward"
+        ]
+      }
+    },
+    {
+      "id": "edge-case-and-determinism-coverage",
+      "category": "positive",
+      "prompt": "Write tests for a function that parses a duration string like \"2h30m\" into seconds.",
+      "expected": {
+        "assertions": [
+          "covers the happy path plus boundary/edge cases (e.g. zero duration, missing unit, malformed input)",
+          "tests are deterministic — no reliance on wall-clock time, random values, or external state without control/mocking",
+          "tests are isolated from each other (no shared mutable state between test cases)",
+          "test names describe the behavior under test, not just the function name"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-run-suite-should-not-trigger-methodology",
+      "category": "negative",
+      "prompt": "Run the test suite and tell me if anything is failing.",
+      "expected": {
+        "assertions": [
+          "does not invoke TDD red-green-refactor guidance — there is no new code or bug to drive a test for",
+          "does not lecture on test pyramid structure, AAA pattern, or regression-test policy",
+          "simply runs the existing test command and reports results",
+          "the skill's methodology content is a near-miss here: the request is about executing tests, not authoring or fixing them"
+        ]
+      }
+    }
+  ]
+}
