@@ -175,6 +175,13 @@ copy_file_with_diff() {
     fi
 }
 
+# Remove machine-local / runtime files that must never ship to a target project
+scrub_local_files() {
+    local dst="$1"
+    find "$dst" \( -name 'settings.local.json' -o -name '.file-tracker.log' -o -name '.DS_Store' \) -type f -delete 2>/dev/null || true
+    find "$dst" -type d \( -name '.locks' -o -name '.state' -o -name 'worktrees' -o -name 'node_modules' \) -prune -exec rm -rf {} + 2>/dev/null || true
+}
+
 # Function to copy directory with diff prompt
 copy_dir_with_diff() {
     local src="$1"
@@ -203,6 +210,7 @@ copy_dir_with_diff() {
         if confirm "  Overwrite $name/?"; then
             rm -rf "$dst"
             cp -r "$src" "$dst"
+            scrub_local_files "$dst"
             print_success "$name/ updated"
         else
             print_info "Skipped $name/"
@@ -210,6 +218,7 @@ copy_dir_with_diff() {
     else
         print_info "Copying $name/..."
         cp -r "$src" "$dst"
+        scrub_local_files "$dst"
         print_success "$name/ installed"
     fi
 }
@@ -273,7 +282,7 @@ else
 fi
 
 # Copy config files with diff support
-copy_file_with_diff "$FRAMEWORK_DIR/.gitattributes" "$TARGET_DIR/.gitattributes" ".gitattributes"
+copy_file_with_diff "$FRAMEWORK_DIR/.gitattributes" "$TARGET_DIR/.gitattributes" ".gitattributes" "true"
 copy_file_with_diff "$FRAMEWORK_DIR/.mcp.json" "$TARGET_DIR/.mcp.json" ".mcp.json"
 
 # Copy CLAUDE.md and AGENTS.md with diff support

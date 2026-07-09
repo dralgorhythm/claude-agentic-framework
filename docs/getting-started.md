@@ -3,8 +3,9 @@
 ## Install
 
 ```bash
+git clone https://github.com/dralgorhythm/claude-agentic-framework.git
 cd your-project
-curl -sSL https://raw.githubusercontent.com/dralgorhythm/claude-agentic-framework/main/scripts/init-framework.sh | bash -s .
+../claude-agentic-framework/scripts/init-framework.sh .
 ```
 
 The script copies the framework files and prompts before overwriting anything. The framework is zero-install — no dependencies to fetch.
@@ -19,6 +20,17 @@ cp claude-agentic-framework/CLAUDE.md your-project/
 cp claude-agentic-framework/AGENTS.md your-project/
 mkdir -p your-project/artifacts
 ```
+
+## Install as a plugin
+
+For a lighter-weight, in-session install (skills, agents, and hooks only — no cloning):
+
+```
+/plugin marketplace add dralgorhythm/claude-agentic-framework
+/plugin install agentic-framework@agentic-framework
+```
+
+Skills are namespaced (`/agentic-framework:architect`, not `/architect`). The plugin does **not** ship `.claude/settings.json` permission rules or `.claude/rules/` — those are repo-level and only come from the raw drop-in above. See [README.md — Two ways to adopt](../README.md#two-ways-to-adopt) for the full comparison.
 
 ## What Gets Installed
 

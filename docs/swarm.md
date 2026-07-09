@@ -20,14 +20,16 @@ Lightweight agents that work in parallel. Use them for big tasks.
 
 ## Available Workers
 
-| Worker | Model | Best For |
-|--------|-------|----------|
-| `worker-explorer` | Haiku | Fast codebase search, dependency mapping |
-| `worker-builder` | Sonnet | Implementation, testing, refactoring |
-| `worker-reviewer` | Opus | Code review, security analysis |
-| `worker-researcher` | Sonnet | Quick web research, API docs |
-| `worker-research` | Opus | Deep multi-source investigation |
-| `worker-architect` | Opus | Complex design decisions, ADRs |
+| Worker | Best For |
+|--------|----------|
+| `worker-explorer` | Fast codebase search, dependency mapping |
+| `worker-builder` | Implementation, testing, refactoring |
+| `worker-reviewer` | Code review, security analysis |
+| `worker-researcher` | Quick web research, API docs |
+| `worker-research` | Deep multi-source investigation |
+| `worker-architect` | Complex design decisions, ADRs |
+
+Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth.
 
 ## When to Use
 

@@ -1,0 +1,28 @@
+{
+  "name": "agentic-framework",
+  "displayName": "Claude Agentic Framework",
+  "version": "3.0.0-dev",
+  "description": "Drop-in Claude Code framework: swarm orchestration workflows, curated knowledge skills, tiered worker agents, and fail-soft guardrail hooks.",
+  "author": {
+    "name": "dralgorhythm"
+  },
+  "repository": "https://github.com/dralgorhythm/claude-agentic-framework",
+  "keywords": [
+    "workflow",
+    "swarm",
+    "orchestration",
+    "skills",
+    "hooks",
+    "agents"
+  ],
+  "skills": "./.claude/skills",
+  "agents": [
+    "./.claude/agents/worker-architect.md",
+    "./.claude/agents/worker-builder.md",
+    "./.claude/agents/worker-explorer.md",
+    "./.claude/agents/worker-research.md",
+    "./.claude/agents/worker-researcher.md",
+    "./.claude/agents/worker-reviewer.md"
+  ],
+  "hooks": "./hooks/hooks.json"
+}
