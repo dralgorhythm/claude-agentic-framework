@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Add entries under Breaking / Added / Changed / Deprecated / Removed / Fixed / Security. scripts/release.sh stamps this section with a version and date at release time. -->
 
+## [3.1.0] - 2026-07-09
+
 ### Added
 
 - `maxTurns` bound on every agent's frontmatter (`worker-explorer: 30`, `worker-builder: 90`, `worker-reviewer: 60`, `worker-research: 80`, `worker-architect: 40`; builder and reviewer values retuned upward after observed ceiling hits during this release's own build), plus `isolation: worktree` on `worker-builder` so it runs in its own throwaway git worktree instead of the shared checkout
