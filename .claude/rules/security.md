@@ -2,9 +2,20 @@
 
 Deep-dive reference for security reviews. See Core Principle 3 ("Keep It Safe") in CLAUDE.md for the essentials.
 
+## Enforcement Ladder
+
+This file states requirements. It does not, by itself, enforce them. Enforcement strength increases down this ladder:
+
+1. **Prose rules** (this file, CLAUDE.md, `.claude/rules/*`) — advisory. Read by agents as instructions; nothing mechanically checks compliance.
+2. **Skills** (`.claude/skills/*`) — on-demand advisory. Surfaced when a task matches, but an agent can still proceed without invoking one.
+3. **Hooks** (`.claude/hooks/*`) — deterministic guardrails, not a security boundary. This repo's hooks are **fail-open by design**: if `jq` is missing or input can't be parsed, the check is skipped and the tool call proceeds. See `docs/hooks.md` for the full security model.
+4. **`permissions.deny` + CI** — boundaries. `permissions.deny` in `settings.json` cannot be overridden by any allow rule at any scope. CI checks (`.github/workflows/`) run outside the agent's control and block merges on failure.
+
+Only the mechanically checkable items on this page have enforcement below step 1. The checklist states what must be true; it is the hooks, `permissions.deny` entries, and CI jobs cited in each line's parenthetical that actually verify it.
+
 ## Security Checklist
 
-- [ ] No hardcoded secrets or credentials (enforce via pre-commit secret scanner + CI)
+- [ ] No hardcoded secrets or credentials (enforced via `pre-tool-use-validator.sh` hook secret detection + CI secret-scan job, Trivy `fs --scanners secret`, blocking)
 - [ ] All user input is validated and sanitized (enforce via input validation middleware)
 - [ ] SQL queries use parameterized statements
 - [ ] Authentication and authorization are properly implemented

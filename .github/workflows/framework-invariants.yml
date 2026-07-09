@@ -17,3 +17,37 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run invariant checks
         run: ./scripts/check-invariants.sh
+
+  secret-scan:
+    name: Secret scan (Trivy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy secret scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scanners: secret
+          exit-code: 1
+
+  diff-size:
+    name: Diff size advisory
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Report changed LOC (non-blocking)
+        run: |
+          total=$(git diff --numstat "origin/${{ github.base_ref }}...HEAD" | awk '{added+=$1; deleted+=$2} END {print added+deleted+0}')
+          echo "Changed LOC: $total"
+          if [ "$total" -gt 400 ]; then
+            echo "::warning::PR changes $total lines (added+deleted), exceeding the ~400 LOC guidance. Code-review effectiveness drops beyond ~400 changed LOC (SmartBear/Cisco). Consider splitting into smaller, independently reviewable PRs."
+          fi

@@ -44,6 +44,8 @@ Respect the handoff requirements between commands. Every handoff must include an
 
 ## Decision Hierarchy
 
+Note: precedence between rule *sources* is decided below. For how strongly any single rule is *enforced* (prose < skill < hook < deny/CI), see the Enforcement Ladder in `.claude/rules/security.md`.
+
 When rules conflict, resolve using this order of precedence:
 
 ```
