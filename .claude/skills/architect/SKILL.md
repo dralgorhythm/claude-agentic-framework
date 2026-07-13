@@ -1,7 +1,7 @@
 ---
 name: architect
 description: Design systems and record architecture decisions as ADRs — a user-invoked Principal Architect workflow.
-argument-hint: [design-topic]
+argument-hint: "[design-topic]"
 disable-model-invocation: true
 ---
 

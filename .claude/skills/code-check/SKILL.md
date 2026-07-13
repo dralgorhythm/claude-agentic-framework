@@ -1,7 +1,7 @@
 ---
 name: code-check
 description: Audit a codebase holistically for SOLID, DRY, and consistency violations — a user-invoked Codebase Auditor workflow.
-argument-hint: [scope: all | path/to/dir | glob]
+argument-hint: "[scope: all | path/to/dir | glob]"
 disable-model-invocation: true
 ---
 
