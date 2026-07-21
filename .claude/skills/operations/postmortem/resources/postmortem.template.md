@@ -5,7 +5,7 @@ Incident Post-Mortem Report
 Filename: artifacts/postmortem_[incident-id].md
 Owner: Engineering / SRE
 Handoff to: Engineering for design changes and fixes
-Related Skills: testing
+Related Skills: postmortem, testing
 
 Blameless culture: Focus on systems and processes, not individuals.
 -->
