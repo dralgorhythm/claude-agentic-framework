@@ -1,7 +1,7 @@
 ---
 name: swarm-research
 description: Coordinate parallel research workers to investigate a topic deeply and synthesize citation-backed findings — a user-invoked Research Orchestrator workflow.
-argument-hint: [research-topic-or-question]
+argument-hint: "[research-topic-or-question]"
 disable-model-invocation: true
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: [skill-name]
 description: [Clear description of what this skill does and when Claude should use it. Include trigger phrases like "Use when..." to help with skill invocation.]
-argument-hint: [optional-arg-description]
+argument-hint: "[optional-arg-description]"
 disable-model-invocation: false
 ---
 

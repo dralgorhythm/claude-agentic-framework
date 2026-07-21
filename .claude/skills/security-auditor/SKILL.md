@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 description: Assess vulnerabilities and audit for security compliance using OWASP and STRIDE methodology — a user-invoked Security Auditor workflow.
-argument-hint: [scope-or-component]
+argument-hint: "[scope-or-component]"
 disable-model-invocation: true
 ---
 

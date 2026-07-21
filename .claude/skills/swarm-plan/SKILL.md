@@ -1,7 +1,7 @@
 ---
 name: swarm-plan
 description: Decompose a feature into an actionable implementation plan using parallel worker-explorer swarms — a user-invoked Planning Orchestrator workflow.
-argument-hint: [feature-or-task-description]
+argument-hint: "[feature-or-task-description]"
 disable-model-invocation: true
 ---
 
