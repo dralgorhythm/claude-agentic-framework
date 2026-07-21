@@ -7,46 +7,36 @@ Skills are structured workflows that Claude suggests based on what you're doing.
 You don't invoke skills directly. Just describe what you need:
 
 ```
-"I need to design an API for user management"
+"We need to record the decision about our database choice"
 ```
 
-Claude sees relevant skills suggested (like `designing-apis`) and uses them to give you a better response.
+Claude sees relevant skills suggested (like `writing-adrs`) and uses them to give you a better response.
 
 ## Available Skills
 
-14 skills across 6 categories.
+6 library skills across 5 categories. (Generic-knowledge skills were retired in the 2026-07 rationalization after base-model evals showed the model produces that content unaided — see `artifacts/evals_catalog_rationalization.md` and MIGRATION.md for where each one's guidance lives now.)
 
 ### Architecture
-- `designing-systems` — Design scalable, reliable software systems
-- `designing-apis` — Design clean, consistent APIs
+- `designing-systems` — Produce this framework's ADR and system-design artifacts with trade-off analysis
 - `writing-adrs` — Document architectural decisions
 
 ### Core Engineering
-- `debugging` — Troubleshoot and fix bugs systematically
-- `testing` — Write effective tests for code quality and reliability
-
-### Design
-- `accessibility` — Ensure digital accessibility
-- `interface-design` — Design user interfaces
+- `testing` — Verification-loop-first testing discipline: red-green, regression per bugfix, deterministic suites
 
 ### Operations
 - `swarm-coordination` — Coordinate multi-agent swarm workflows
-- `observability` — Implement observability solutions
 
 ### Product
-- `writing-pr-faqs` — Write Press Release / FAQ documents
-- `writing-prds` — Create Product Requirements Documents
-- `execution-roadmaps` — Create execution roadmaps for projects
+- `planning-artifacts` — PR-FAQ, PRD, and execution-roadmap artifacts from bundled templates
 
 ### Security
-- `application-security` — Secure applications against common vulnerabilities
-- `threat-modeling` — Identify and analyze security threats
+- `threat-modeling` — STRIDE threat-analysis procedure with Grep-backed data-flow tracing
 
 ## Workflow skills (invoked as /name)
 
-10 additional skills, one per command, live directly under `.claude/skills/<name>/SKILL.md`. Unlike the 14 knowledge skills above, these are typed explicitly as slash commands (e.g. `/architect`) rather than relied on for auto-discovery.
+10 additional skills, one per command, live directly under `.claude/skills/<name>/SKILL.md`. Unlike the 6 library skills above, these are typed explicitly as slash commands (e.g. `/architect`) rather than relied on for auto-discovery.
 
-- `architect`, `builder`, `qa-engineer`, `security-auditor`, `ui-ux-designer`, `code-check`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research` — all gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer`) are thin entry points that delegate methodology to the always-on library skills above (e.g. `architect` delegates to `designing-systems`); Claude reaches those library skills on its own, so the role skill's overlapping description doesn't need to stay in the always-loaded listing too.
+- `architect`, `builder`, `qa-engineer`, `security-auditor`, `ui-ux-designer`, `code-check`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research` — all gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer`) are user-invoked entry points: `architect` delegates methodology to the always-on `designing-systems` and `writing-adrs` library skills, while the others carry their procedures inline (accessibility gates in `qa-engineer`/`ui-ux-designer`) or lean on the always-loaded rules (`security.md`, `debugging-protocol.md`) — nothing auto-discovery needed is hidden behind the gate.
 
 See [commands.md](commands.md) for the full command reference.
 
@@ -54,7 +44,7 @@ See [commands.md](commands.md) for the full command reference.
 
 This framework ships only high-value, single-responsibility skills — one skill per durable workflow, not one per topic. It deliberately does **not** duplicate the model's training data: generic language and framework guidance (TypeScript idioms, React patterns, Terraform syntax, and similar) has been removed, because Claude already knows it. For version-specific or fast-moving detail, use Context7 or the official docs instead of a skill — a skill would only go stale.
 
-Every skill's `name` and `description` is loaded into context on every session, regardless of relevance, at a cost of roughly ~100 tokens each. Claude Code caps the total listing at a small budget of the context window; exceed it and descriptions start getting dropped or truncated, silently breaking discovery for whichever skill lost the coin flip. Keeping the catalog at 14 skills means the full listing comfortably fits — no description is ever dropped from the budget.
+Every skill's `name` and `description` is loaded into context on every session, regardless of relevance, at a cost of roughly ~100 tokens each. Claude Code caps the total listing at a small budget of the context window; exceed it and descriptions start getting dropped or truncated, silently breaking discovery for whichever skill lost the coin flip. Keeping the catalog this small — 6 ungated library skills after the 2026-07 rationalization — means the full listing comfortably fits with headroom for the adopter's own skills; no description is ever dropped from the budget.
 
 ### Adding your own project-specific skills
 
@@ -118,11 +108,11 @@ This means the `description` field is the entire activation mechanism. Write it 
 
 Every skill's name + description is **always loaded**, regardless of whether it's relevant to the current prompt — budget roughly **~100 tokens per skill**. The full set of listings is capped at a **listing budget of ~1% of the context window**. If you add enough skills to exceed that budget, Claude Code drops or truncates descriptions to fit.
 
-Measured 2026-07 for this repo: the 10 workflow skills carry `disable-model-invocation: true` and cost nothing in the listing until invoked, leaving 14 ungated library skills at roughly **~1.4k tokens** of always-loaded listing — against a **~2k-token budget on a 200K-context session** (**~10k on a 1M-context session**; state whichever denominator your session actually uses). Both figures move as the catalog or platform changes — treat them as a snapshot, not a guarantee.
+Measured 2026-07 for this repo: the 10 workflow skills carry `disable-model-invocation: true` and cost nothing in the listing until invoked, leaving 6 ungated library skills at roughly **~0.6k tokens** of always-loaded listing — against a **~2k-token budget on a 200K-context session** (**~10k on a 1M-context session**; state whichever denominator your session actually uses). Both figures move as the catalog or platform changes — treat them as a snapshot, not a guarantee.
 
 - Run `/doctor` to see which skill descriptions were dropped or truncated.
 - Run `/context` to see how much of the context window the skill listing is currently consuming.
-- Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom. The catalog's budget headroom is enforced in CI as a static character-count proxy (`scripts/check-invariants.sh` desc-budget — it sums all 24 skill descriptions, gated and ungated, currently ~3.6k chars against a 6,000-char budget; the always-loaded listing is just the 14 ungated descriptions, ~2.3k chars); run `/doctor` and `/context` in a live session for the authoritative measurement on your setup.
+- Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom. The catalog's budget headroom is enforced in CI as a static character-count proxy (`scripts/check-invariants.sh` desc-budget — it sums all 16 skill descriptions, gated and ungated, currently ~2.7k chars against a 6,000-char budget; the always-loaded listing is just the 6 ungated descriptions, ~1.3k chars); run `/doctor` and `/context` in a live session for the authoritative measurement on your setup.
 
 Caveat: on large-context models, the ~1% budget is currently computed against a ~200K-token baseline rather than the model's true context window (an upstream tracking issue) — so budget math is conservative and the effective allowance may be smaller than 1% of the real window.
 
