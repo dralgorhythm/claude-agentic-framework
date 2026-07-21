@@ -82,3 +82,7 @@ When handing off to development:
 - [ ] Component states (default, hover, active, disabled)
 - [ ] Responsive behavior
 - [ ] Animations/transitions
+
+## Resources
+
+- [Design Framework Template](./resources/design-framework.template.md)

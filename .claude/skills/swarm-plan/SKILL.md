@@ -48,7 +48,7 @@ Decompose features into actionable plans using parallel exploration swarms.
 **Large Feature (2+ weeks)**
 - `pr_faq_[feature].md` — Vision and customer value
 - `prd_[feature].md` — Detailed requirements
-- `adr_[key-decision].md` — Architectural decisions (use ADR template from `skills/architecture/writing-adrs`)
+- `adr_[key-decision].md` — Architectural decisions (format: `writing-adrs` skill; template bundled with `designing-systems` at `resources/adr.template.md`)
 - `plan_[feature].md` — Implementation steps
 
 ## Worker Types
