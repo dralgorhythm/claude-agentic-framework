@@ -1,6 +1,6 @@
 # Claude Agentic Framework
 
-A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized workflow skills, 14 reusable knowledge skills, and safety hooks — all configured through a single install command.
+A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized workflow skills, 14 reusable library skills, and safety hooks — all configured through a single install command.
 
 ## Two ways to adopt
 
@@ -56,6 +56,10 @@ Plugin content updates at each tagged release — run `/plugin update` to pull t
 For maintainers: validate packaging with `claude plugin validate --strict .` (marketplace) and `claude plugin validate .claude-plugin/plugin.json` (plugin — reports one expected warning that the repo-level `CLAUDE.md` is not loaded as plugin context; that is by design, per the caveats above).
 
 This repo currently ships with no `LICENSE` file; nothing here should be read as a license grant.
+
+### Works beyond Claude Code
+
+`.claude/skills/` isn't a Claude-only format anymore. Agent Skills is an open standard now supported by 40+ Agent Skills clients (see [agentskills.io](https://agentskills.io)) — the GitHub Copilot agent family (cloud agent, code review, CLI, VS Code/JetBrains agent mode) and standalone VS Code all discover and read skills from `.claude/skills/` in place, no conversion step required. That means the catalog travels with the repo regardless of which client opens it. Claude Code-specific frontmatter (`model`, `argument-hint`, `disable-model-invocation`, and similar) sits outside the shared spec; non-Claude readers ignore fields they don't recognize rather than failing on them, so the same files degrade gracefully across tools.
 
 ## Why This Shape
 
@@ -117,7 +121,7 @@ Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that 
 
 ### Skills
 
-14 skills across 6 categories — discovered natively from each skill's description, no hook or registry required:
+14 library skills across 6 categories — discovered natively from each skill's description, no hook or registry required:
 
 **Architecture** · **Core Engineering** · **Design** · **Operations** · **Product** · **Security**
 

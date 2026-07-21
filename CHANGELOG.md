@@ -9,8 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Add entries under Breaking / Added / Changed / Deprecated / Removed / Fixed / Security. scripts/release.sh stamps this section with a version and date at release time. -->
 
+### Added
+
+- "Portfolio doctrine" section in `docs/skills.md`: the Useful × Novel × Standard inclusion bar, Anthropic's capability-uplift vs. encoded-preference taxonomy with the base-model-eval redundancy test, the four delivery tiers (ungated core / gated workflows / opt-in packs / generated-by-tailor — the latter two marked roadmap), and the depreciation clock that schedules retirement re-evals
+- `CONTRIBUTING.md` gains "Spec portability" (the six-field Agent Skills contract, this repo's `argument-hint`/`disable-model-invocation` allowlist, quoted-YAML requirement citing PR #24) and "Retirement policy" (uplift-vs-preference intent, base-model re-eval triggers a retirement PR) sections, plus a first-party-collision checklist bullet under Scope discipline
+- README "Works beyond Claude Code" paragraph: `.claude/skills/` is read in place by the GitHub Copilot agent family, VS Code, and 40+ Agent Skills clients (agentskills.io), so the catalog travels with the repo regardless of which client opens it
+
 ### Changed
 
+- README's "14 reusable knowledge skills" vocabulary reworded to "library skills" (count unchanged) for consistency with the rest of the document
 - `agent.template.md` rewritten to the shipped agent shape: `maxTurns` is documented as required (CI `agent-maxturns`), least-privilege `tools:` allowlists replace the old advice against them, `isolation`/`skills` preload guidance added, and the `.claude-plugin/plugin.json` registration step is included; `docs/customization.md`'s worker example gains the same fields — an agent filled in from either now passes CI (smoke-tested)
 - `skill.template.md` defaults to the library frontmatter shape (command-style fields commented out) and states the CI constraints (`desc-style`, `name-eq-dir`, `desc-budget`, `skill-length`) explicitly; `hook.template.sh` opens with the canonical jq fail-open guard
 
