@@ -2,8 +2,8 @@
 name: [skill-name]
 description: [Third person: what this skill does. Use when [trigger 1] or [trigger 2].]
 # Command-style (slash-invoked, side-effecting) skills add these two lines:
-# argument-hint: [task-description]
-# disable-model-invocation: true
+# argument-hint: "[optional-arg-description]"
+# disable-model-invocation: false
 ---
 
 <!--

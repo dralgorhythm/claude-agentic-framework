@@ -1,7 +1,7 @@
 ---
 name: builder
 description: Translate plans into working, tested code through implementation, debugging, and refactoring — a user-invoked Builder workflow.
-argument-hint: [task-description]
+argument-hint: "[task-description]"
 disable-model-invocation: true
 ---
 

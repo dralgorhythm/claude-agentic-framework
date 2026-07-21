@@ -1,7 +1,7 @@
 ---
 name: swarm-execute
 description: Execute an implementation plan with parallel worker swarms, quality gates, and native task tracking — a user-invoked Execution Orchestrator workflow.
-argument-hint: [plan-artifact-or-task-id]
+argument-hint: "[plan-artifact-or-task-id]"
 disable-model-invocation: true
 ---
 

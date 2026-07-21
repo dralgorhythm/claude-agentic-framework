@@ -10,7 +10,7 @@ Commands are just skills invoked by their slash name. Create `.claude/skills/my-
 ---
 name: my-command
 description: What this command does
-argument-hint: [task-description]
+argument-hint: "[task-description]"
 disable-model-invocation: true
 ---
 ```
