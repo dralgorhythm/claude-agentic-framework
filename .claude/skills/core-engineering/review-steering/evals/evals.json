@@ -1,0 +1,73 @@
+{
+  "$schema": "self-describing — no external schema; see README.md in this directory",
+  "skill": "review-steering",
+  "skill_path": ".claude/skills/core-engineering/review-steering/SKILL.md",
+  "description": "Eval set for the review-steering skill. Each case is a prompt plus assertions about the resulting behavior, not the resulting text. Run with skill-creator (/plugin install skill-creator@claude-plugins-official) in a fresh session per the eval-first policy in CONTRIBUTING.md.",
+  "cases": [
+    {
+      "id": "compile-review-md-from-rules",
+      "category": "positive",
+      "prompt": "Set up REVIEW.md for this repo so automated code review actually enforces our standards.",
+      "expected": {
+        "assertions": [
+          "reads .claude/rules/code-quality.md and .claude/rules/security.md as the source of the compiled content, rather than inventing generic reviewer instructions from scratch",
+          "produces REVIEW.md content as terse reviewer imperatives (e.g. 'block on Critical/High', 'flag unparameterized queries') rather than prose explanations of the rules",
+          "distinguishes REVIEW.md (review-only, managed-pipeline-only, injected at highest priority) from CLAUDE.md (project context read by both the local /code-review command and the managed service) rather than treating them as interchangeable",
+          "does not duplicate CLAUDE.md's project-context content into REVIEW.md — only review-specific instructions land there",
+          "includes at least one repo-specific invariant a generic reviewer could not infer from a diff alone, such as artifact naming or enforcement-ladder placement"
+        ]
+      }
+    },
+    {
+      "id": "regenerate-review-md-after-rules-change",
+      "category": "positive",
+      "prompt": "Our security rules just changed — update the review config so it matches.",
+      "expected": {
+        "assertions": [
+          "regenerates REVIEW.md from the updated .claude/rules/security.md (and code-quality.md if relevant) rather than hand-patching an isolated line",
+          "checks the existing REVIEW.md for content that now contradicts the updated rules and corrects or removes it, rather than leaving stale policy alongside the new",
+          "treats REVIEW.md as a build artifact of the rules files, not an independently maintained document",
+          "keeps the regenerated content terse reviewer imperatives rather than expanding into prose",
+          "does the regeneration in the same change as the rules update rather than deferring it to a follow-up"
+        ]
+      }
+    },
+    {
+      "id": "two-surface-diagnosis-for-missing-conventions",
+      "category": "positive",
+      "prompt": "Why does automated code review keep missing our conventions even though CLAUDE.md documents them?",
+      "expected": {
+        "assertions": [
+          "diagnoses that REVIEW.md (not CLAUDE.md) is the missing or stale piece, because the managed Code Review service treats REVIEW.md as a separate, review-only, highest-priority surface",
+          "explains that CLAUDE.md alone cannot steer the managed reviewer's priorities the way REVIEW.md does, since REVIEW.md is injected into every managed review run at highest priority",
+          "does not recommend simply adding more content to CLAUDE.md as the fix",
+          "proposes generating or updating REVIEW.md, compiled from .claude/rules/, as the remediation"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-performing-a-review-is-not-configuring-one",
+      "category": "negative",
+      "prompt": "Review this PR and tell me what's wrong with it.",
+      "expected": {
+        "assertions": [
+          "does not invoke the REVIEW.md/CLAUDE.md generation workflow — there is no request to create, update, or diagnose review configuration",
+          "performs an actual review of the PR's changes instead of talking about compiling rules into REVIEW.md",
+          "the skill's generation methodology is a near-miss here: the request is about consuming a review, not steering the review tool's configuration"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-linter-rule-is-a-different-enforcement-layer",
+      "category": "negative",
+      "prompt": "Add a rule to our linter config that bans console.log in production code.",
+      "expected": {
+        "assertions": [
+          "does not invoke REVIEW.md/CLAUDE.md generation — a linter rule is a deterministic CI/hook-layer gate, a different rung of the enforcement ladder than reviewer-instruction steering",
+          "edits the linter configuration directly rather than proposing a REVIEW.md entry for it",
+          "if the enforcement ladder comes up at all, treats duplicating the rule into REVIEW.md as the wrong move once a deterministic check exists — a CI/linter gate beats a reviewer instruction, so it should not also be re-flagged as a review imperative"
+        ]
+      }
+    }
+  ]
+}
