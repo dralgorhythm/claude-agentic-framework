@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Add entries under Breaking / Added / Changed / Deprecated / Removed / Fixed / Security. scripts/release.sh stamps this section with a version and date at release time. -->
 
+### Changed
+
+- `agent.template.md` rewritten to the shipped agent shape: `maxTurns` is documented as required (CI `agent-maxturns`), least-privilege `tools:` allowlists replace the old advice against them, `isolation`/`skills` preload guidance added, and the `.claude-plugin/plugin.json` registration step is included; `docs/customization.md`'s worker example gains the same fields — an agent filled in from either now passes CI (smoke-tested)
+- `skill.template.md` defaults to the library frontmatter shape (command-style fields commented out) and states the CI constraints (`desc-style`, `name-eq-dir`, `desc-budget`, `skill-length`) explicitly; `hook.template.sh` opens with the canonical jq fail-open guard
+
+### Removed
+
+- Five orphaned artifact templates that duplicated skill-bundled `resources/` copies (`adr`, `prd`, `pr_faq`, `roadmap`, `system_design`); the four artifact types without an owning skill (`plan`, `design_spec`, `postmortem`, `security_audit`) remain in `.claude/templates/artifacts/`, now documented in `docs/customization.md`
+
+### Fixed
+
+- `swarm-plan` pointed at an ADR template location that bundles none (`writing-adrs`); it now cites the real home (`designing-systems/resources/`). `interface-design` links its previously unreachable design-framework template
+- Stale "Related Skills" references to pre-3.0 skills in the remaining artifact templates; leftover "commands" directory wording in `AGENTS.md` and `docs/getting-started.md`; the mislabeled desc-budget figure in `docs/skills.md`; a nonexistent GitHub MCP package name in `docs/mcp-servers.md`; `worker-research` frontmatter normalized to the canonical field order
+
 ## [3.1.0] - 2026-07-09
 
 ### Added

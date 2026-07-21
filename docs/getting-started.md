@@ -39,7 +39,7 @@ Plugin content updates at each tagged release — run `/plugin update` to pull t
 ## What Gets Installed
 
 ```
-.claude/         Commands, skills, rules, hooks, agents, templates
+.claude/         Skills (command-style + library), rules, hooks, agents, templates
 .mcp.json        MCP server configuration
 artifacts/       Where generated docs go (empty at first)
 CLAUDE.md        Project context — customize this

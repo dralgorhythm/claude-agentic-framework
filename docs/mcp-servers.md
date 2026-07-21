@@ -50,7 +50,7 @@ Edit `.mcp.json`:
 
 | Server | Purpose | When to Add |
 |--------|---------|-------------|
-| GitHub | PRs, issues, code search | GitHub-heavy workflows (requires `GITHUB_TOKEN`) |
+| GitHub | PRs, issues, code search | GitHub-heavy workflows (requires `GITHUB_PERSONAL_ACCESS_TOKEN`) |
 | PostgreSQL | Database queries | Working with Postgres |
 | Brave Search | Web search | Research-heavy work |
 | Slack | Team messaging | Team coordination |
@@ -61,9 +61,9 @@ Edit `.mcp.json`:
 ```json
 "github": {
   "command": "npx",
-  "args": ["@anthropic-ai/mcp-server-github"],
+  "args": ["-y", "@modelcontextprotocol/server-github"],
   "env": {
-    "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
   }
 }
 ```

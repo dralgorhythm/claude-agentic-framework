@@ -1,10 +1,10 @@
 ---
-model: sonnet
-tools: Read, Grep, Glob, WebFetch, WebSearch, Write
 name: worker-research
-description: "Deep research and investigation worker. Use for multi-source analysis, technology evaluation, competitive research, and comprehensive documentation."
+description: Deep research and investigation worker. Use for multi-source analysis, technology evaluation, competitive research, and comprehensive documentation.
 permissionMode: acceptEdits
+model: sonnet
 maxTurns: 80
+tools: Read, Grep, Glob, WebFetch, WebSearch, Write
 ---
 
 # Research Worker
