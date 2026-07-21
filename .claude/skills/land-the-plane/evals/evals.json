@@ -1,0 +1,75 @@
+{
+  "$schema": "self-describing — no external schema; see README.md in this directory",
+  "skill": "land-the-plane",
+  "skill_path": ".claude/skills/land-the-plane/SKILL.md",
+  "description": "Exemplar eval set for the land-the-plane skill. Each case is a prompt plus assertions about the resulting behavior, not the resulting text. Run with skill-creator (/plugin install skill-creator@claude-plugins-official) in a fresh session per the eval-first policy in CONTRIBUTING.md.",
+  "cases": [
+    {
+      "id": "dirty-tree-gates-before-commit",
+      "category": "positive",
+      "prompt": "Land the plane — I've got a handful of changed and untracked files from this session and I'm ready to wrap up.",
+      "expected": {
+        "assertions": [
+          "runs git status first and accounts for every modified and untracked file before taking any other action",
+          "runs the project's full quality gates (tests, linter, type checker, build) before committing anything",
+          "stages files with explicit pathspecs naming each file or directory — does not run `git add -A` or `git add .`",
+          "commits as its own standalone command, not chained with `&&` after staging or other commands",
+          "after pushing, verifies the push with `git status` and reports the pushed commit SHA rather than just asserting it pushed"
+        ]
+      }
+    },
+    {
+      "id": "failing-gate-stops-landing",
+      "category": "positive",
+      "prompt": "Land the plane on this branch — go ahead and ship what we've got.",
+      "expected": {
+        "assertions": [
+          "runs the project's quality gates before attempting to commit or push",
+          "when a gate (e.g. the test suite) fails, stops the landing sequence immediately rather than proceeding to commit",
+          "does not commit or push past the failing gate",
+          "reports the failing command's output verbatim rather than paraphrasing or summarizing it away",
+          "either proposes a fix for the failure or explicitly hands it off (e.g. an issue) instead of silently retrying or ignoring it"
+        ]
+      }
+    },
+    {
+      "id": "clean-tree-still-verifies-remote-sync",
+      "category": "positive",
+      "prompt": "Land the plane — I don't think I have any uncommitted changes, just double-check everything's landed.",
+      "expected": {
+        "assertions": [
+          "runs git status and confirms the working tree is clean rather than assuming it based on the user's statement",
+          "does not exit silently just because there is nothing to commit",
+          "still runs the sync verification steps (git pull --rebase and git status) to confirm the local branch is up to date with origin",
+          "explicitly states that the tree was already clean and is in sync with remote, rather than reporting nothing"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-plain-single-file-commit",
+      "category": "negative",
+      "prompt": "Commit this file for me: src/utils/formatDate.ts",
+      "expected": {
+        "assertions": [
+          "does not invoke the full land-the-plane finish-line sequence (no rebase, no push, no PR, no remote-sync verification)",
+          "does not demand a full quality-gate run (tests/linter/types/build) as a precondition for this narrow request",
+          "stages only the named file with an explicit pathspec and creates a single atomic commit for it",
+          "the full landing workflow is a near-miss here — the request is a scoped, single-file commit, not a session finish-line"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-informational-branching-question",
+      "category": "negative",
+      "prompt": "What's our branching strategy — do we always branch off main?",
+      "expected": {
+        "assertions": [
+          "answers the question about branching strategy informationally, without executing any git state-changing commands",
+          "does not run git status, quality gates, staging, commit, rebase, or push",
+          "does not walk through the land-the-plane checklist — there is no in-flight work to land, only a question to answer",
+          "the finish-line workflow is a near-miss here — the request is informational, not a request to ship anything"
+        ]
+      }
+    }
+  ]
+}
