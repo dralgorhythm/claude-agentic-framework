@@ -5,6 +5,10 @@ description: Write effective tests for code quality and reliability. Use when im
 
 # Testing Software
 
+## Verification Loop First
+
+Give every change a check it can run before calling it done: red-then-green for new logic, a failing-then-passing regression test for bug fixes, or the existing suite for anything else. No change ships without one.
+
 ## MCP Tools
 
 **Chrome DevTools** (E2E testing):
@@ -13,20 +17,14 @@ description: Write effective tests for code quality and reliability. Use when im
 - Run Lighthouse for accessibility testing
 - Profile performance during test runs
 
-## Testing Pyramid
-
-1. **Unit Tests** (Many): Fast, isolated, test single units
-2. **Integration Tests** (Some): Test component interactions
-3. **E2E Tests** (Few): Test complete user flows — use Chrome DevTools
-
-## Workflows
+## Workflow
 
 - [ ] **Analyze**: Use Glob and Grep to identify untested code
 - [ ] **Unit Tests**: Cover all public functions
 - [ ] **Edge Cases**: Test boundaries and error conditions
 - [ ] **Integration**: Test external dependencies
 - [ ] **E2E**: Use Chrome DevTools for browser automation
-- [ ] **Regression**: Add test for each bug fix
+- [ ] **Regression**: Add a test that reproduces the bug, confirm it fails against the current code, then fix — keep it passing and in the suite afterward (never delete or skip it)
 
 ## Test-Driven Development
 
@@ -47,63 +45,10 @@ When writing new logic, default to red-green-refactor:
 ## Test Quality Standards
 
 ### Deterministic
-Tests must produce the same result every time.
+Tests must produce the same result every time — no reliance on wall-clock time, random values, or uncontrolled external state.
 
 ### Isolated
-Tests should not depend on each other or shared state.
+Tests must not depend on each other or share mutable state.
 
 ### Clear
-Test names should describe the behavior being tested.
-
-## Test Patterns
-
-### Arrange-Act-Assert (AAA) (TypeScript Example)
-
-```typescript
-test("user registration sends welcome email", async () => {
-  // Arrange
-  const emailService = new MockEmailService();
-  const userService = new UserService(emailService);
-
-  // Act
-  await userService.register("test@example.com");
-
-  // Assert
-  expect(emailService.sentEmails).toContainEqual({
-    to: "test@example.com",
-    subject: "Welcome!"
-  });
-});
-```
-
-## E2E Testing with Chrome DevTools
-
-```javascript
-// Use Chrome DevTools MCP for browser automation
-// - Navigate to pages
-// - Fill forms and click buttons
-// - Capture screenshots for visual regression
-// - Run Lighthouse accessibility audits
-// - Check console for errors
-```
-
-## Commands (Examples by Language)
-
-```bash
-# Run tests
-npm test
-pytest
-go test ./...
-
-# With coverage
-npm test -- --coverage
-pytest --cov=src
-go test -cover ./...
-```
-
-## Finding Untested Code
-
-Use Glob and Grep to identify gaps:
-1. Use Glob to find all source files and test files
-2. Check which source files have corresponding test files
-3. Use Grep to see if functions are referenced in tests
+Test names describe the behavior under test, not just the function name.

@@ -50,7 +50,7 @@
       "expected": {
         "assertions": [
           "does not invoke TDD red-green-refactor guidance — there is no new code or bug to drive a test for",
-          "does not lecture on test pyramid structure, AAA pattern, or regression-test policy",
+          "does not lecture on test-quality standards, verification-loop framing, or regression-test policy",
           "simply runs the existing test command and reports results",
           "the skill's methodology content is a near-miss here: the request is about executing tests, not authoring or fixing them"
         ]
