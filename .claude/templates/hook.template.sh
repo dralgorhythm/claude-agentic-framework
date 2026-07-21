@@ -11,6 +11,10 @@
 # Read JSON input from stdin
 INPUT=$(cat)
 
+# jq is required to parse tool input; fail open if unavailable (hooks are
+# guardrails, not a security boundary — see docs/hooks.md)
+command -v jq >/dev/null 2>&1 || exit 0
+
 # ============================================================
 # COMMON INPUT FIELDS (all events)
 # ============================================================
@@ -67,8 +71,8 @@ INPUT=$(cat)
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
-# Parse common fields
-SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty')
+# Parse common fields (fail soft: never let a parse error kill the hook)
+SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
 
 # ============================================================
 # HOOK-SPECIFIC LOGIC EXAMPLES

@@ -1,8 +1,9 @@
 ---
 name: [skill-name]
-description: [Clear description of what this skill does and when Claude should use it. Include trigger phrases like "Use when..." to help with skill invocation.]
-argument-hint: "[optional-arg-description]"
-disable-model-invocation: false
+description: [Third person: what this skill does. Use when [trigger 1] or [trigger 2].]
+# Command-style (slash-invoked, side-effecting) skills add these two lines:
+# argument-hint: "[optional-arg-description]"
+# disable-model-invocation: false
 ---
 
 <!--
@@ -12,7 +13,13 @@ skill invoked as /name instead of (or in addition to) auto-discovery.
 
 Required fields:
   - name: lowercase, hyphens only, max 64 chars, must match directory name
-  - description: max 1024 chars, CRITICAL for auto-discovery
+    (CI: name-eq-dir)
+  - description: CRITICAL for auto-discovery. CI (desc-style) enforces:
+    non-empty, <=500 chars (the platform allows 1024; CI does not), third
+    person — must not open with "I", "You", "This skill", or "A skill" —
+    and, for ungated skills, it MUST contain the phrase "Use when". CI
+    (desc-budget) also caps the sum of all skill descriptions at 6,000
+    chars, so keep it tight.
 
 Optional fields:
   - argument-hint: help text shown for a command-style skill's arguments
@@ -20,12 +27,17 @@ Optional fields:
   - disable-model-invocation: set to true when the skill's workflow has side
     effects (writes files, runs shell commands, pushes to git, launches
     workers) — this restricts invocation to a user explicitly typing
-    /skill-name and stops Claude from triggering it on its own. Leave false
-    (or omit) for advisory/knowledge skills where auto-discovery is safe.
+    /skill-name and stops Claude from triggering it on its own. Omit the
+    field entirely for library skills where auto-discovery is safe — do not
+    write "false" explicitly (no shipped skill does). When true, the
+    "Use when" requirement is waived: the description becomes /skill-name
+    menu text rather than an auto-invocation trigger.
 
 Description best practices:
   GOOD: "API design skill. Use when designing REST APIs, GraphQL schemas, or gRPC services."
   BAD:  "Helps with APIs"
+
+Body: keep under 500 lines (CI: skill-length).
 
 Supporting files (auto-discovered):
   - FORMS.md: Input templates

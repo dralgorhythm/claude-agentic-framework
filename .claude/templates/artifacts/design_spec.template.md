@@ -5,7 +5,7 @@ Visual/UI Design Specification
 Filename: artifacts/design_spec_[component].md
 Owner: UI/UX Designer (/ui-ux-designer)
 Handoff to: Engineering (implementation), /code-check for accessibility review
-Related Skills: interface-design, accessibility, design-systems, visual-assets
+Related Skills: interface-design, accessibility
 
 Design Principles:
 - Mobile-first responsive design

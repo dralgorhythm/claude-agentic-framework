@@ -5,7 +5,7 @@ Implementation Plan
 Filename: artifacts/plan_[task].md
 Owner: Engineering
 Handoff to: Engineering (implementation), /code-check (review), /swarm-review (audit)
-Related Skills: implementing-code, debugging, testing, test-driven-development
+Related Skills: debugging, testing
 -->
 
 ## Overview

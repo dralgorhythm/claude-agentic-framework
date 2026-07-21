@@ -87,7 +87,7 @@ Measured 2026-07 for this repo: the 10 workflow skills carry `disable-model-invo
 
 - Run `/doctor` to see which skill descriptions were dropped or truncated.
 - Run `/context` to see how much of the context window the skill listing is currently consuming.
-- Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom. The catalog's budget headroom is enforced in CI as a static character-count proxy (`scripts/check-invariants.sh` desc-budget, ~2.3k chars for the shipped 14 skills); run `/doctor` and `/context` in a live session for the authoritative measurement on your setup.
+- Raise the cap with the `skillListingBudgetFraction` setting if you have many skills and need more headroom. The catalog's budget headroom is enforced in CI as a static character-count proxy (`scripts/check-invariants.sh` desc-budget — it sums all 24 skill descriptions, gated and ungated, currently ~3.6k chars against a 6,000-char budget; the always-loaded listing is just the 14 ungated descriptions, ~2.3k chars); run `/doctor` and `/context` in a live session for the authoritative measurement on your setup.
 
 Caveat: on large-context models, the ~1% budget is currently computed against a ~200K-token baseline rather than the model's true context window (an upstream tracking issue) — so budget math is conservative and the effective allowance may be smaller than 1% of the real window.
 

@@ -4,7 +4,7 @@ This repository is a drop-in framework for Claude Code: specialized commands, re
 
 ## Where Things Live
 
-- `.claude/` — commands, skills, rules, hooks, and agent/worker definitions
+- `.claude/` — skills (command-style workflows + knowledge library), rules, hooks, and agent/worker definitions
 - `./artifacts/` — durable planning documents (PR-FAQs, PRDs, ADRs, design specs, plans); committed to the repo
 - `./scratchpad/` — ephemeral working notes and draft content; gitignored, disposable
 
