@@ -1,6 +1,6 @@
 # Customization
 
-Add your own command-style skills, skills, rules, and hooks.
+Add your own command-style skills, skills, rules, hooks, and swarm workers.
 
 ## Adding a Command-Style Skill
 
@@ -18,7 +18,7 @@ disable-model-invocation: true
 - `name` — must match the directory name.
 - `description` — shown in autocomplete; also what Claude matches against if model-invocation is left enabled.
 - `argument-hint` — optional help text shown for the command's arguments.
-- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset for purely advisory workflows (e.g. an architecture or review skill) where model-invocation is safe.
+- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset only for purely advisory workflows where model-invocation is safe (e.g. a knowledge/library skill — this repo gates all ten of its shipped workflow skills).
 
 Add command instructions below the frontmatter, and end the file with `$ARGUMENTS` so the user's trailing text is passed through:
 
@@ -37,7 +37,7 @@ See `.claude/templates/skill.template.md` for the full format.
 ```yaml
 ---
 name: my-skill
-description: What it does
+description: Reviews database migrations for safety. Use when adding or editing migration files.
 ---
 ```
 
@@ -85,15 +85,29 @@ Create `.claude/agents/worker-mytype.md`:
 ```yaml
 ---
 name: worker-mytype
-description: What it does
+description: What it does, third person. Use for [task type].
 permissionMode: acceptEdits
 model: haiku
+maxTurns: 30
+tools: Read, Grep, Glob
 ---
 ```
 
-Models: `haiku` (fast), `sonnet` (capable), `opus` (complex reasoning)
+- `maxTurns` — required: CI (`agent-maxturns`) fails any agent without a positive integer turn bound. Shipped values range from 30 (`worker-explorer`) to 90 (`worker-builder`); start low and raise only from observed ceiling hits.
+- `tools` — least-privilege allowlist; add `Write`, `Edit`, or `Bash` only if the worker genuinely needs them.
+- Models: `haiku` (fast), `sonnet` (capable). CI (`model-tiering`) reserves `opus` for `worker-architect`, so new workers use `haiku` or `sonnet`.
+- Use `permissionMode: default` for workers that should prompt before editing (e.g., explorers).
 
-Use `permissionMode: default` for workers that should prompt before editing (e.g., explorers).
+Then register the file in `.claude-plugin/plugin.json`'s `agents` array — CI (`plugin-agents-sync`) requires that list to exactly match `.claude/agents/*.md`:
+
+```json
+"agents": [
+  "...existing entries...",
+  "./.claude/agents/worker-mytype.md"
+]
+```
+
+See `.claude/templates/agent.template.md` for the full format, and [swarm.md](swarm.md) for the model-tier table.
 
 ## Required: Configure Your Tech Stack
 
