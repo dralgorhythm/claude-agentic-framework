@@ -68,6 +68,10 @@ Rules auto-load. No registration needed.
 
 The framework intentionally ships no stack-specific frontend rule (React, Vue, etc.) — that choice belongs to the adopter, not the template. Add your own under `.claude/rules/` using `.claude/templates/rule.template.md` as the starting point.
 
+## Artifact Templates
+
+Skills that produce planning artifacts bundle their templates inside the owning skill's `resources/` directory, so each skill stays self-contained (e.g. `.claude/skills/architecture/designing-systems/resources/adr.template.md`, `.claude/skills/product/writing-prds/resources/prd.template.md`). Four artifact types have no owning library skill; starter templates for those live in `.claude/templates/artifacts/`: `plan`, `design_spec`, `postmortem`, `security_audit`. Output naming for all artifact types is defined in CLAUDE.md's artifact table.
+
 ## Adding a Hook
 
 See [hooks.md](hooks.md) for the full guide.
