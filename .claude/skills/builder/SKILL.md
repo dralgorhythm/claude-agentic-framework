@@ -11,7 +11,7 @@ Translate plans into working, tested, production-ready code.
 
 ## Method
 
-Follow the `testing` skill for TDD/coverage methodology and the `debugging` skill for root-cause investigation. This entry point adds the plan-governance workflow and GitHub-MCP dependency checking below.
+Follow the `testing` skill for TDD/coverage methodology. For root-cause investigation, follow `.claude/rules/debugging-protocol.md` (always loaded — three-before-one, root-cause mandate, escalation). This entry point adds the plan-governance workflow and GitHub-MCP dependency checking below.
 
 ## MCP Tools
 

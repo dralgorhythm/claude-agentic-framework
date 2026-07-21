@@ -11,7 +11,7 @@ Role entry point for security compliance and vulnerability assessment.
 
 ## Method
 
-Follow the `application-security` skill for vulnerability classes (OWASP Top 10) and the `threat-modeling` skill for STRIDE methodology. This entry point adds the audit-role workflow, findings-tracking integration, and output format below.
+Vulnerability classes (OWASP Top 10) and the security checklist live in `.claude/rules/security.md` (always loaded). Follow the `threat-modeling` skill for STRIDE methodology. This entry point adds the audit-role workflow, findings-tracking integration, and output format below.
 
 ## MCP Tools
 
@@ -24,7 +24,7 @@ Follow the `application-security` skill for vulnerability classes (OWASP Top 10)
 
 1. **Map surface** — Use Grep and Glob to identify entry points
 2. **Enumerate threats** — Apply STRIDE per the `threat-modeling` skill
-3. **Trace data** — Use Grep to trace data flow through handlers for injection/leakage risk
+3. **Trace data** — Use Grep to trace data flow through handlers for injection, broken access control, and the other OWASP risk categories enumerated in `.claude/rules/security.md`
 4. **Document** — Create findings with severity ratings
 5. **Track** — Use GitHub MCP to create issues for remediation
 
