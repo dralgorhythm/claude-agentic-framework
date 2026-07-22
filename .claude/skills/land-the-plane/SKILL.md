@@ -1,8 +1,10 @@
 ---
 name: land-the-plane
-description: Lands in-flight work: quality gates, atomic commit, rebase, push, verified remote sync, then handoff — a user-invoked finish-line workflow.
+description: "Lands in-flight work: quality gates, atomic commit, rebase, push, verified remote sync, then handoff — a user-invoked finish-line workflow."
 argument-hint: "[scope or branch]"
 disable-model-invocation: true
+metadata:
+  category: encoded-preference
 ---
 
 # Land the Plane - Finish-Line Protocol
@@ -85,7 +87,7 @@ git status   # MUST show "up to date with origin"
 
 ## Related Skills
 
-`testing`, `debugging` (Gates step) · `swarm-coordination` (Mode A vs Mode B)
+`testing` (Gates step) · `swarm-coordination` (Mode A vs Mode B)
 
 ## Handoff
 

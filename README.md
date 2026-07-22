@@ -95,7 +95,7 @@ Multi-agent commands that fan work out across parallel workers:
 | `/swarm-review` | Launches 5 parallel reviewers (security, performance, architecture, tests, quality) — run 2-3 times |
 | `/swarm-research` | Deep multi-source investigation with verification tiers |
 
-All 10 workflow skills — `/architect`, `/builder`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`, `/code-check`, `/swarm-plan`, `/swarm-execute`, `/swarm-review`, and `/swarm-research` — carry `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`/architect`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`) are user-invoked entry points: `/architect` delegates methodology to the always-on `designing-systems` and `writing-adrs` library skills, and the others carry their procedures inline or lean on the always-loaded rules (`security.md`, `debugging-protocol.md`) — so gating them costs nothing that auto-discovery needed.
+All 11 workflow skills — `/architect`, `/builder`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`, `/code-check`, `/land-the-plane`, `/swarm-plan`, `/swarm-execute`, `/swarm-review`, and `/swarm-research` — carry `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`/architect`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`) are user-invoked entry points: `/architect` delegates methodology to the always-on `designing-systems` and `writing-adrs` library skills, and the others carry their procedures inline or lean on the always-loaded rules (`security.md`, `debugging-protocol.md`) — so gating them costs nothing that auto-discovery needed.
 
 ### The Full Cycle
 
@@ -121,7 +121,7 @@ Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that 
 
 ### Skills
 
-6 library skills across 5 categories — discovered natively from each skill's description, no hook or registry required:
+9 library skills across 5 categories — discovered natively from each skill's description, no hook or registry required:
 
 **Architecture** · **Core Engineering** · **Operations** · **Product** · **Security**
 
@@ -129,7 +129,7 @@ A deliberately lean catalog: high-value, single-responsibility skills that don't
 
 Catalog size is a defended design decision, not an oversight. Every skill's name and description loads into every session's context regardless of relevance, and the skill-listing context budget is shared across *everything* an adopter has installed — this framework's skills plus their own. Growing the catalog without discipline degrades discovery for every skill sharing that budget, including ones this repo didn't add. New skill proposals go through CONTRIBUTING.md's eval-first bar, not "this seems useful."
 
-Measured 2026-07: after gating the 10 workflow skills (`disable-model-invocation: true`), only the 6 library skills are ungated and auto-discoverable, at roughly ~0.6k tokens of always-loaded listing — against a ~2k-token listing budget on 200K-context sessions (~10k on 1M-context sessions). Separately, CLAUDE.md (104 lines) plus `.claude/rules/` (409 lines) run roughly ~5k tokens of always-loaded instructions — a different budget line item from the skill listing. Both numbers move as the platform and catalog change; run `/doctor` to check for dropped or truncated skill descriptions and `/context` to see live context-window consumption on your own setup rather than trusting a static figure.
+Measured 2026-07: after gating the 11 workflow skills (`disable-model-invocation: true`), only the 9 library skills are ungated and auto-discoverable, at roughly ~0.9k tokens of always-loaded listing — against a ~2k-token listing budget on 200K-context sessions (~10k on 1M-context sessions). Separately, CLAUDE.md (104 lines) plus `.claude/rules/` (409 lines) run roughly ~5k tokens of always-loaded instructions — a different budget line item from the skill listing. Both numbers move as the platform and catalog change; run `/doctor` to check for dropped or truncated skill descriptions and `/context` to see live context-window consumption on your own setup rather than trusting a static figure.
 
 ### Safety Hooks
 

@@ -1,6 +1,8 @@
 ---
 name: dependency-upgrade
 description: Sequences safe dependency upgrades — verified pins, staged rollout, changelog gates. Use when upgrading or bumping a dependency, reviewing a Dependabot or Renovate PR, resolving a lockfile conflict, applying a CVE-driven update, or pinning a GitHub Action or git tag.
+metadata:
+  category: encoded-preference
 ---
 
 # Dependency Upgrade
@@ -24,6 +26,9 @@ Run every step, in order, for every upgrade. Urgency (CVE) changes queue positio
 2. **Verify the target version or tag exists upstream. Never trust a version string** typed from memory, a doc, or a bot's PR title.
    - Git refs (GitHub Actions, git dependencies): `git ls-remote --tags <repo-url>` and confirm the exact tag string.
    - Registry packages: check the registry directly (`npm view <pkg> versions`, `pip index versions <pkg>`, etc.).
+   - For GitHub Actions, prefer resolving the verified tag to its full 40-char commit SHA and pinning that, with
+     the version as a trailing comment (`uses: owner/action@<sha>  # vX.Y.Z`) — tags are mutable and can be
+     retargeted upstream; a SHA cannot. Tag verification still applies to what the SHA was resolved from.
    - **Lesson from this repo**: a CI workflow once pinned `aquasecurity/trivy-action@0.28.0` — the real tag was `v0.28.0`. Offline/text review graded the missing `v` a style nit ("should SHA-pin"); only a live run failing with "unable to resolve action" caught that the ref didn't exist at all. Text review can't catch this — network verification can.
 3. **For composite/meta packages, inspect their own internal pins.** A pin at the top level is not a pin all the way down.
    - Read the action's `action.yml` (or the package's manifest) for dependencies it resolves at run/install time; prefer releases that SHA-pin their own internals.

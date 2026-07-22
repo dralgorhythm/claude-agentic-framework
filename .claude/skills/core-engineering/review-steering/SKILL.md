@@ -1,6 +1,8 @@
 ---
 name: review-steering
 description: Compiles REVIEW.md and keeps CLAUDE.md accurate as the two sanctioned surfaces for steering Anthropic's managed Code Review service, translating this repo's rules into terse reviewer imperatives. Use when creating or updating REVIEW.md, configuring or steering automated code review, or reconciling review instructions after rules change.
+metadata:
+  category: capability-uplift
 ---
 
 # Review Steering

@@ -1,6 +1,8 @@
 ---
 name: postmortem
 description: Runs this framework's blameless postmortem workflow — reconstruct the incident timeline from evidence, drive five-whys to a mechanism-level root cause, and produce owner-and-due-date action items with a regression guard. Use when an incident just resolved, running an outage retrospective, writing a postmortem, or doing a "what went wrong" analysis.
+metadata:
+  category: encoded-preference
 ---
 
 # Postmortem
@@ -34,4 +36,4 @@ Work through `resources/postmortem.template.md` section by section — reference
 
 ## Related Skills
 
-`testing`, `debugging`, `swarm-coordination`
+`testing`, `swarm-coordination`

@@ -70,7 +70,7 @@ The framework intentionally ships no stack-specific frontend rule (React, Vue, e
 
 ## Artifact Templates
 
-Skills that produce planning artifacts bundle their templates inside the owning skill's `resources/` directory, so each skill stays self-contained (e.g. `.claude/skills/architecture/designing-systems/resources/adr.template.md`, `.claude/skills/product/planning-artifacts/resources/prd.template.md`). Four artifact types have no owning library skill; starter templates for those live in `.claude/templates/artifacts/`: `plan`, `design_spec`, `postmortem`, `security_audit`. Output naming for all artifact types is defined in CLAUDE.md's artifact table.
+Skills that produce planning artifacts bundle their templates inside the owning skill's `resources/` directory, so each skill stays self-contained (e.g. `.claude/skills/architecture/designing-systems/resources/adr.template.md`, `.claude/skills/product/planning-artifacts/resources/prd.template.md`). Three artifact types have no owning library skill; starter templates for those live in `.claude/templates/artifacts/`: `plan`, `design_spec`, `security_audit`. (The postmortem template moved into the `postmortem` skill's `resources/` when that skill was added.) Output naming for all artifact types is defined in CLAUDE.md's artifact table.
 
 ## Adding a Hook
 
