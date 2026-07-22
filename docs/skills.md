@@ -37,9 +37,9 @@ Claude sees relevant skills suggested (like `writing-adrs`) and uses them to giv
 
 ## Workflow skills (invoked as /name)
 
-11 additional skills, one per command, live directly under `.claude/skills/<name>/SKILL.md`. Unlike the 9 library skills above, these are typed explicitly as slash commands (e.g. `/architect`) rather than relied on for auto-discovery.
+12 additional skills, one per command, live directly under `.claude/skills/<name>/SKILL.md`. Unlike the 9 library skills above, these are typed explicitly as slash commands (e.g. `/architect`) rather than relied on for auto-discovery.
 
-- `architect`, `builder`, `qa-engineer`, `security-auditor`, `ui-ux-designer`, `code-check`, `land-the-plane`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research` — all gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer`) are user-invoked entry points: `architect` delegates methodology to the always-on `designing-systems` and `writing-adrs` library skills, while the others carry their procedures inline (accessibility gates in `qa-engineer`/`ui-ux-designer`) or lean on the always-loaded rules (`security.md`, `debugging-protocol.md`) — nothing auto-discovery needed is hidden behind the gate.
+- `architect`, `builder`, `qa-engineer`, `security-auditor`, `ui-ux-designer`, `code-check`, `land-the-plane`, `tailor`, `swarm-plan`, `swarm-execute`, `swarm-review`, `swarm-research` — all gated with `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`architect`, `qa-engineer`, `security-auditor`, `ui-ux-designer`) are user-invoked entry points: `architect` delegates methodology to the always-on `designing-systems` and `writing-adrs` library skills, while the others carry their procedures inline (accessibility gates in `qa-engineer`/`ui-ux-designer`) or lean on the always-loaded rules (`security.md`, `debugging-protocol.md`) — nothing auto-discovery needed is hidden behind the gate.
 
 See [commands.md](commands.md) for the full command reference.
 
@@ -111,7 +111,7 @@ This means the `description` field is the entire activation mechanism. Write it 
 
 Every skill's name + description is **always loaded**, regardless of whether it's relevant to the current prompt — budget roughly **~100 tokens per skill**. The full set of listings is capped at a **listing budget of ~1% of the context window**. If you add enough skills to exceed that budget, Claude Code drops or truncates descriptions to fit.
 
-Measured 2026-07 for this repo: the 11 workflow skills carry `disable-model-invocation: true` and cost nothing in the listing until invoked, leaving 9 ungated library skills at roughly **~0.9k tokens** of always-loaded listing — against a **~2k-token budget on a 200K-context session** (**~10k on a 1M-context session**; state whichever denominator your session actually uses). Both figures move as the catalog or platform changes — treat them as a snapshot, not a guarantee.
+Measured 2026-07 for this repo: the 12 workflow skills carry `disable-model-invocation: true` and cost nothing in the listing until invoked, leaving 9 ungated library skills at roughly **~0.9k tokens** of always-loaded listing — against a **~2k-token budget on a 200K-context session** (**~10k on a 1M-context session**; state whichever denominator your session actually uses). Both figures move as the catalog or platform changes — treat them as a snapshot, not a guarantee.
 
 - Run `/doctor` to see which skill descriptions were dropped or truncated.
 - Run `/context` to see how much of the context window the skill listing is currently consuming.
