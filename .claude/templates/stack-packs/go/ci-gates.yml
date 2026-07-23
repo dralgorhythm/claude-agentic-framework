@@ -1,0 +1,24 @@
+# Merge this job into your repo's own GitHub Actions workflow (e.g.
+# .github/workflows/ci.yml) under its `jobs:` key — not meant to run standalone.
+#
+# Tags verified upstream via `git ls-remote --tags <repo>` (2026-07):
+#   actions/checkout v7.0.1 · actions/setup-go v7.0.0 · golangci-lint-action v9.3.0
+# golangci-lint-action requires actions/setup-go to run first (its README's
+# "Compatibility" section: v4.0.0+); its own `version:` input pins the *linter's*
+# release (v2.12, matching the action's own README example) — a separate axis
+# from the action's own tag pinned above.
+
+gates:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: actions/setup-go@v7.0.0
+      with:
+        go-version-file: go.mod
+        cache: true
+    - uses: golangci/golangci-lint-action@v9.3.0
+      with:
+        version: v2.12
+    - run: go test ./...
+    - run: go vet ./...
+    - run: go build ./...
