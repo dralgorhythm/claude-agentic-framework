@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Trunk-based development is now the stated branching policy (core-directives Constraints, CLAUDE.md Workflow, AGENTS.md landing rules, swarm-plan/swarm-execute orchestration guidance): every PR targets `main` and must be independently mergeable; stacked PR chains and integration branches are disallowed — dependent work sequences by merge order on `main`
 - `agent.template.md` rewritten to the shipped agent shape: `maxTurns` is documented as required (CI `agent-maxturns`), least-privilege `tools:` allowlists replace the old advice against them, `isolation`/`skills` preload guidance added, and the `.claude-plugin/plugin.json` registration step is included; `docs/customization.md`'s worker example gains the same fields — an agent filled in from either now passes CI (smoke-tested)
 - `skill.template.md` defaults to the library frontmatter shape (command-style fields commented out) and states the CI constraints (`desc-style`, `name-eq-dir`, `desc-budget`, `skill-length`) explicitly; `hook.template.sh` opens with the canonical jq fail-open guard
 

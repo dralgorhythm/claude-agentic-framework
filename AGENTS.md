@@ -59,3 +59,4 @@ Three failure cases and how the orchestrator recovers from each:
 - Never stop before pushing — that leaves work stranded locally
 - Never say "ready to push when you are" — push it yourself
 - If push fails, resolve and retry until it succeeds
+- PRs target `main` — trunk-based: a dependent unit waits for its prerequisite to merge to `main` and branches from there, rather than stacking on the prerequisite's branch
