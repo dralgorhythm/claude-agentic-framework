@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README "Works beyond Claude Code" paragraph: `.claude/skills/` is read in place by the GitHub Copilot agent family, VS Code, and 40+ Agent Skills clients (agentskills.io), so the catalog travels with the repo regardless of which client opens it
 - `spec-portability` CI invariant (check 19, `scripts/check-invariants.sh`): SKILL.md frontmatter keys must be the Agent Skills spec's six fields or this repo's two deliberate Claude Code extensions; descriptions capped at the spec's 1024 chars; top-level values may not start with unquoted `[`/`{` — the PR #24 Copilot CLI breakage class, now mechanically prevented
 
+
 ### Changed
 
 - README's "14 reusable knowledge skills" vocabulary reworded to "library skills" (count unchanged) for consistency with the rest of the document
