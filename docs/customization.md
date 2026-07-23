@@ -72,6 +72,14 @@ The framework intentionally ships no stack-specific frontend rule (React, Vue, e
 
 Skills that produce planning artifacts bundle their templates inside the owning skill's `resources/` directory, so each skill stays self-contained (e.g. `.claude/skills/architecture/designing-systems/resources/adr.template.md`, `.claude/skills/product/planning-artifacts/resources/prd.template.md`). Three artifact types have no owning library skill; starter templates for those live in `.claude/templates/artifacts/`: `plan`, `design_spec`, `security_audit`. (The postmortem template moved into the `postmortem` skill's `resources/` when that skill was added.) Output naming for all artifact types is defined in CLAUDE.md's artifact table.
 
+## Stack Packs
+
+`.claude/templates/stack-packs/<stack>/` holds concrete, working exemplar files for one stack's golden path: a README, the one skill `/tailor` renders into your repo (`golden-path.skill.md`), and a CI job snippet (`ci-gates.yml`) — zero placeholder tokens, real commands.
+
+Run `/tailor instantiate` once your stack is detectable; it adapts the exemplar to your repo's actual package manager, test runner, and framework, every substitution evidence-cited, and never renders a stack it didn't detect.
+
+TypeScript/JavaScript ships today; Python and Go are planned. See `.claude/templates/stack-packs/README.md` for the full convention.
+
 ## Adding a Hook
 
 See [hooks.md](hooks.md) for the full guide.
