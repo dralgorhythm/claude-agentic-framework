@@ -1,0 +1,21 @@
+# Merge this job into your repo's own GitHub Actions workflow (e.g.
+# .github/workflows/ci.yml) under its `jobs:` key — not meant to run standalone.
+#
+# Tags verified upstream via `git ls-remote --tags <repo>` (2026-07):
+#   actions/checkout v7.0.1 · actions-rust-lang/setup-rust-toolchain v1.17.0
+# No toolchain input is set: setup-rust-toolchain reads rust-toolchain.toml from
+# the repo root automatically when no `toolchain:` value is given — see its
+# README's Inputs section. Caching is built in (Swatinem/rust-cache under the
+# hood, `cache: true` by default) — no separate cache action needed.
+
+gates:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+      with:
+        components: clippy, rustfmt
+    - run: cargo test        # test suite
+    - run: cargo clippy      # lint
+    - run: cargo fmt --check # format check
+    - run: cargo build       # build
