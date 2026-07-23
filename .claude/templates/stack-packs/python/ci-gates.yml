@@ -1,0 +1,21 @@
+# Merge this job into your repo's own GitHub Actions workflow (e.g.
+# .github/workflows/ci.yml) under its `jobs:` key — not meant to run standalone.
+#
+# Tags verified upstream via `git ls-remote --tags <repo>` (2026-07):
+#   actions/checkout v7.0.1 · astral-sh/setup-uv v9.0.0
+# No python-version input is set: astral-sh/setup-uv reads `requires-python` from
+# pyproject.toml and provisions a matching interpreter automatically — see its
+# README FAQ "Do I still need actions/setup-python alongside setup-uv?"
+
+gates:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: astral-sh/setup-uv@v9.0.0
+      with:
+        enable-cache: true
+    - run: uv sync --locked
+    - run: uv run pytest
+    - run: uv run ruff check .
+    - run: uv run ruff format --check .
+    - run: uv run mypy .
