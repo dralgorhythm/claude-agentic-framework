@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Trunk-based development is now the stated branching policy (core-directives Constraints, CLAUDE.md Workflow, AGENTS.md landing rules, swarm-plan/swarm-execute orchestration guidance): every PR targets `main` and must be independently mergeable; stacked PR chains and integration branches are disallowed — dependent work sequences by merge order on `main`
 - `designing-systems`, `testing`, and `threat-modeling` trimmed to encoded preference (49–75% smaller): textbook exposition removed, workflows/templates/eval-asserted directives kept; `designing-systems`' description re-anchored on this framework's artifact flow to avoid colliding with the first-party cowork skill of the same name
 - Role skills absorb their retired delegates: `qa-engineer` and `ui-ux-designer` gain inline Accessibility Gate sections, `ui-ux-designer` bundles the design-framework template, `security-auditor` points at `rules/security.md`, `builder` points at `rules/debugging-protocol.md`
 - Catalog docs (README, docs/skills.md, MIGRATION.md, agent template) regenerated for the 16-skill catalog with remeasured listing figures (~0.6k tokens ungated listing; ~2.7k chars total descriptions against the 6k CI budget)
