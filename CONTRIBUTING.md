@@ -57,7 +57,48 @@ Before proposing a new skill:
 - Check for description overlap against existing skills first (`docs/skills.md` has the
   full list). Overlapping descriptions cause the wrong skill to load, or the right one to
   get silently dropped from the budget.
+- Check for first-party collision before proposing anything: run `/skills` to see what's
+  already bundled or plugin-installed in your session, and check
+  [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)
+  and [anthropics/skills](https://github.com/anthropics/skills) for trigger- or name-overlap.
+  A skill that restates a first-party built-in or plugin isn't novel, no matter how useful it is.
 - Prefer extending an existing skill over adding a new one if the workflows are related.
+
+## Spec portability
+
+`.claude/skills/` isn't Claude-only anymore: skills are read in place by other tools
+through the Agent Skills standard, not just Claude Code. That constrains what belongs
+in `SKILL.md` frontmatter.
+
+The spec defines exactly six fields: `name` (must equal the parent directory),
+`description`, and the optional `license`, `compatibility`, `metadata`, and
+`allowed-tools`. Everything else is unrecognized by non-Claude readers. This repo
+maintains one deliberate, small allowlist on top of the spec for fields Claude Code
+actually functions on — currently `argument-hint` and `disable-model-invocation` —
+rather than letting arbitrary keys accumulate. A new field needs one of two
+justifications: Claude Code reads it directly (add it to the allowlist, deliberately),
+or it's genuinely spec-portable metadata (nest it under `metadata`).
+
+YAML values that could parse as something other than a plain string — most commonly
+one starting with `[` or containing `: ` — must be quoted. PR #24 is the precedent: an
+unquoted `argument-hint` value broke skill loading on Copilot CLI ≥1.0.65, because its
+YAML parser read the value as a list where Claude Code's own parser didn't. Quote
+defensively; don't assume your own client is the most permissive one that will ever
+read the file.
+
+## Retirement policy
+
+Every skill records which of the two legitimate reasons it exists for — capability
+uplift or encoded preference — see `docs/skills.md`'s Portfolio doctrine section for
+the taxonomy. Uplift depreciates as models improve; encoded preference doesn't, but
+only as long as the workflow it encodes stays current.
+
+That's why uplift-flavored skills carry a standing re-eval expectation instead of an
+indefinite one. Periodically — at minimum, each model-generation bump — rerun the
+skill's own eval scenarios against the bare base model with the skill unloaded. If it
+passes unaided, that's the redundancy test from the eval-first policy catching up with
+reality, not a flaw in the skill: open a retirement PR citing the run, the same way
+you'd cite evidence to add a skill in the first place.
 
 ## Getting started
 
