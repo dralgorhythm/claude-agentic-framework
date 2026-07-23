@@ -138,10 +138,10 @@ Every planning session MUST produce:
 ## Product Planning
 
 ### PR-FAQ
-Use `writing-pr-faqs` skill for structure and template.
+Use `planning-artifacts` skill for structure and template.
 
 ### PRD
-Use `writing-prds` skill for structure and template.
+Use `planning-artifacts` skill for structure and template.
 
 ### Architecture Design Process
 1. **Understand** — Map existing system with Grep and Glob
@@ -151,7 +151,7 @@ Use `writing-prds` skill for structure and template.
 
 ## Related Skills
 
-`swarm-coordination`, `writing-adrs`, `designing-systems`, `designing-apis`, `writing-pr-faqs`, `writing-prds`
+`swarm-coordination`, `writing-adrs`, `designing-systems`, `planning-artifacts`
 
 ## Handoff
 

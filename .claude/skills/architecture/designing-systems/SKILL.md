@@ -1,69 +1,34 @@
 ---
 name: designing-systems
-description: Design scalable, reliable software systems. Use when planning new systems, major features, or architecture changes. Covers C4 diagrams, trade-off analysis, and system decomposition.
+description: Produces this framework's ADR and system-design artifacts from bundled templates with trade-off analysis. Use when designing a system or component, choosing between architectures, or recording an architecture decision in the planning flow.
 ---
 
 # Designing Systems
 
-## Workflows
+## Artifact Selection
+
+- **ADR** (`./artifacts/adr_[topic].md`, [template](./resources/adr.template.md)): one decision — a choice among alternatives with rationale and consequences.
+- **System Design Doc** (`./artifacts/system_design_[component].md`, [template](./resources/system-design.template.md)): a whole system or component — architecture, data model, API, NFRs, phased plan.
+
+A new system usually needs both: the system design doc for the overall shape, plus an ADR for each decision worth justifying independently (e.g., "why Postgres over DynamoDB").
+
+## Workflow
 
 - [ ] **Requirements**: Gather functional and non-functional requirements
-- [ ] **Diagrams**: Create C4 diagrams (Context, Container)
-- [ ] **Data**: Define data model and storage strategy
-- [ ] **API**: Define interfaces and contracts
+- [ ] **Diagram**: Draft a Mermaid diagram showing components and their boundaries
+- [ ] **Data & API**: Define the data model, storage strategy, and interface contracts
+- [ ] **Trade-offs**: For each major decision, table Option A vs Option B — pros, cons, when to choose
 - [ ] **Risks**: Identify single points of failure
-- [ ] **Document**: Save to `./artifacts/adr_[topic].md`
+- [ ] **Tech Strategy**: Confirm every technology choice matches `.claude/rules/tech-strategy.md` — no deviation without explicit instruction
+- [ ] **Document**: Fill in the matching template and save under `./artifacts/`
 
-## Feedback Loops
+## Design-Validation Loop
 
-1. Draft design document
+1. Draft the artifact from the template
 2. Review with stakeholders
-3. Create POC for risky components
-4. Refine design based on POC
-5. Finalize ADR
-
-## Blueprint Template
-
-Every system design should include:
-
-1. **High-Level Diagram**: Mermaid graph showing components
-2. **Component Boundaries**: Clear responsibility definitions
-3. **API Definitions**: OpenAPI or GraphQL specs
-4. **Data Models**: Schema definitions
-5. **Trade-off Analysis**: Rationale for key decisions
-
-## C4 Model Levels
-
-### Level 1: Context
-Who uses the system? What external systems does it interact with?
-
-### Level 2: Container
-What are the major deployable units? (APIs, databases, queues)
-
-### Level 3: Component
-What are the major building blocks within each container?
-
-### Level 4: Code
-Class/function level (usually not needed in architecture docs)
-
-## Trade-off Analysis
-
-For major decisions, explicitly document:
-
-| Decision | Option A | Option B |
-|----------|----------|----------|
-| Pros | ... | ... |
-| Cons | ... | ... |
-| When to Choose | ... | ... |
-
-## Non-Functional Requirements
-
-Always consider:
-- **Scalability**: Expected load, growth rate
-- **Availability**: SLA targets, failure modes
-- **Latency**: P50, P95, P99 requirements
-- **Security**: Authentication, authorization, data protection
-- **Cost**: Infrastructure, operational overhead
+3. Build a POC for the riskiest component
+4. Refine the design from POC findings
+5. Finalize the artifact
 
 ## Resources
 

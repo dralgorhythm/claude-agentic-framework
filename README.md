@@ -1,6 +1,6 @@
 # Claude Agentic Framework
 
-A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized workflow skills, 14 reusable knowledge skills, and safety hooks — all configured through a single install command.
+A drop-in template for Claude Code projects. Adds coordinated multi-agent swarms, specialized workflow skills, a lean core of reusable library skills, and safety hooks — all configured through a single install command.
 
 ## Two ways to adopt
 
@@ -57,6 +57,10 @@ For maintainers: validate packaging with `claude plugin validate --strict .` (ma
 
 This repo currently ships with no `LICENSE` file; nothing here should be read as a license grant.
 
+### Works beyond Claude Code
+
+`.claude/skills/` isn't a Claude-only format anymore. Agent Skills is an open standard now supported by 40+ Agent Skills clients (see [agentskills.io](https://agentskills.io)) — the GitHub Copilot agent family (cloud agent, code review, CLI, VS Code/JetBrains agent mode) and standalone VS Code all discover and read skills from `.claude/skills/` in place, no conversion step required. That means the catalog travels with the repo regardless of which client opens it. Claude Code-specific frontmatter (`model`, `argument-hint`, `disable-model-invocation`, and similar) sits outside the shared spec; non-Claude readers ignore fields they don't recognize rather than failing on them, so the same files degrade gracefully across tools.
+
 ## Why This Shape
 
 Three findings anchor the design, dated because the evidence base moves:
@@ -91,7 +95,7 @@ Multi-agent commands that fan work out across parallel workers:
 | `/swarm-review` | Launches 5 parallel reviewers (security, performance, architecture, tests, quality) — run 2-3 times |
 | `/swarm-research` | Deep multi-source investigation with verification tiers |
 
-All 10 workflow skills — `/architect`, `/builder`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`, `/code-check`, `/swarm-plan`, `/swarm-execute`, `/swarm-review`, and `/swarm-research` — carry `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`/architect`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`) are thin entry points that delegate methodology to always-on library skills (e.g. `designing-systems`, `accessibility`) — Claude still reaches those on its own, so the underlying knowledge stays discoverable even though the role wrapper is gated.
+All 12 workflow skills — `/architect`, `/builder`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`, `/code-check`, `/land-the-plane`, `/tailor`, `/swarm-plan`, `/swarm-execute`, `/swarm-review`, and `/swarm-research` — carry `disable-model-invocation: true`: only a user typing the slash name can invoke them. The four role skills (`/architect`, `/qa-engineer`, `/security-auditor`, `/ui-ux-designer`) are user-invoked entry points: `/architect` delegates methodology to the always-on `designing-systems` and `writing-adrs` library skills, and the others carry their procedures inline or lean on the always-loaded rules (`security.md`, `debugging-protocol.md`) — so gating them costs nothing that auto-discovery needed.
 
 ### The Full Cycle
 
@@ -117,15 +121,15 @@ Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that 
 
 ### Skills
 
-14 skills across 6 categories — discovered natively from each skill's description, no hook or registry required:
+9 library skills across 5 categories — discovered natively from each skill's description, no hook or registry required:
 
-**Architecture** · **Core Engineering** · **Design** · **Operations** · **Product** · **Security**
+**Architecture** · **Core Engineering** · **Operations** · **Product** · **Security**
 
-A deliberately lean catalog: high-value, single-responsibility skills that don't duplicate what the model already knows, from `designing-systems` and `debugging` to `swarm-coordination` and `application-security`. See [docs/skills.md](docs/skills.md) for the full list.
+A deliberately lean catalog: high-value, single-responsibility skills that don't duplicate what the model already knows, from `designing-systems` and `testing` to `swarm-coordination` and `threat-modeling`. Generic-knowledge skills (API textbook patterns, OWASP lists, WCAG tables) were retired in the 2026-07 rationalization after base-model evals showed current models produce that content unaided — evidence in [artifacts/evals_catalog_rationalization.md](artifacts/evals_catalog_rationalization.md). See [docs/skills.md](docs/skills.md) for the full list.
 
 Catalog size is a defended design decision, not an oversight. Every skill's name and description loads into every session's context regardless of relevance, and the skill-listing context budget is shared across *everything* an adopter has installed — this framework's skills plus their own. Growing the catalog without discipline degrades discovery for every skill sharing that budget, including ones this repo didn't add. New skill proposals go through CONTRIBUTING.md's eval-first bar, not "this seems useful."
 
-Measured 2026-07: after gating the 10 workflow skills (`disable-model-invocation: true`), only the 14 library skills are ungated and auto-discoverable, at roughly ~1.4k tokens of always-loaded listing — against a ~2k-token listing budget on 200K-context sessions (~10k on 1M-context sessions). Separately, CLAUDE.md (104 lines) plus `.claude/rules/` (409 lines) run roughly ~5k tokens of always-loaded instructions — a different budget line item from the skill listing. Both numbers move as the platform and catalog change; run `/doctor` to check for dropped or truncated skill descriptions and `/context` to see live context-window consumption on your own setup rather than trusting a static figure.
+Measured 2026-07: after gating the 12 workflow skills (`disable-model-invocation: true`), only the 9 library skills are ungated and auto-discoverable, at roughly ~0.9k tokens of always-loaded listing — against a ~2k-token listing budget on 200K-context sessions (~10k on 1M-context sessions). Separately, CLAUDE.md (104 lines) plus `.claude/rules/` (409 lines) run roughly ~5k tokens of always-loaded instructions — a different budget line item from the skill listing. Both numbers move as the platform and catalog change; run `/doctor` to check for dropped or truncated skill descriptions and `/context` to see live context-window consumption on your own setup rather than trusting a static figure.
 
 ### Safety Hooks
 

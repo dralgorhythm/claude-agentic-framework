@@ -168,7 +168,44 @@ while IFS= read -r f; do
 done < <(git ls-files '*SKILL.md')
 report desc-style "$([ -z "$bad" ]; echo $?)" "violations:$bad"
 
-# 19. evals-json: every evals.json under .claude/skills/ must parse as valid JSON
+# 19. spec-portability: SKILL.md frontmatter stays portable to the Agent Skills spec (agentskills.io) —
+#     every top-level key is one of the spec's six fields (name, description, license, compatibility,
+#     metadata, allowed-tools) or this repo's two deliberate Claude-Code extensions (argument-hint,
+#     disable-model-invocation); description stays under the spec's 1024-char cap (the stricter
+#     500-char style cap is desc-style, above — a separate, unrelated bound); and no top-level value
+#     starts unquoted with [ or { — the exact PR #24 class of breakage, where an unquoted
+#     `argument-hint: [foo]` YAML-parsed as an array and broke Copilot CLI >=1.0.65.
+bad=""
+while IFS= read -r f; do
+  while IFS=$'\t' read -r key val; do
+    [ -z "$key" ] && continue
+    case "$key" in
+      name|description|license|compatibility|metadata|allowed-tools|argument-hint|disable-model-invocation) ;;
+      *) bad="$bad $f(key=$key: nest under metadata: or extend the deliberate allowlist in this check)" ;;
+    esac
+    first="${val:0:1}"
+    if [ "$first" = "[" ] || [ "$first" = "{" ]; then
+      bad="$bad $f(key=$key unquoted flow-style value: $val)"
+    fi
+    if [ "$key" = "description" ] && [ "${#val}" -gt 1024 ]; then
+      bad="$bad $f(description len=${#val}, spec cap 1024)"
+    fi
+  done < <(awk '
+    /^---$/ { c++; next }
+    c==1 && /^[A-Za-z0-9_-]+:/ {
+      line = $0
+      colon = index(line, ":")
+      key = substr(line, 1, colon - 1)
+      val = substr(line, colon + 1)
+      gsub(/^[ \t]+/, "", val)
+      gsub(/[ \t]+$/, "", val)
+      print key "\t" val
+    }
+  ' "$f")
+done < <(git ls-files '*SKILL.md')
+report spec-portability "$([ -z "$bad" ]; echo $?)" "violations:$bad"
+
+# 20. evals-json: every evals.json under .claude/skills/ must parse as valid JSON
 if command -v python3 >/dev/null 2>&1; then
   bad=""
   while IFS= read -r f; do
@@ -179,7 +216,7 @@ else
   report evals-json 0 "(no python3 — parse check skipped)"
 fi
 
-# 20. claudemd-lines: CLAUDE.md must stay a short summary layer (<= 200 lines)
+# 21. claudemd-lines: CLAUDE.md must stay a short summary layer (<= 200 lines)
 n=$(awk 'END{print NR}' CLAUDE.md | tr -d ' ')
 report claudemd-lines "$([ "${n:-9999}" -le 200 ]; echo $?)" "CLAUDE.md is $n lines (budget 200)"
 

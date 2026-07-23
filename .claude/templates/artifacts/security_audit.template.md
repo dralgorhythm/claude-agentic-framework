@@ -5,7 +5,7 @@ Security Audit Report
 Filename: artifacts/security_audit_[date].md
 Owner: Security / Engineering
 Handoff to: Engineering for remediation, Architecture review for design changes
-Related Skills: application-security, threat-modeling
+Related Skills: threat-modeling
 
 Methodology:
 - STRIDE threat modeling (Spoofing, Tampering, Repudiation, Information Disclosure, DoS, Elevation)

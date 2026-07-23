@@ -1,0 +1,76 @@
+{
+  "$schema": "self-describing — no external schema; see README.md in this directory",
+  "skill": "dependency-upgrade",
+  "skill_path": ".claude/skills/core-engineering/dependency-upgrade/SKILL.md",
+  "description": "Exemplar eval set for the dependency-upgrade skill. Each case is a prompt plus assertions about the resulting behavior, not the resulting text. Run with skill-creator (/plugin install skill-creator@claude-plugins-official) in a fresh session per the eval-first policy in CONTRIBUTING.md.",
+  "cases": [
+    {
+      "id": "major-bump-one-at-a-time",
+      "category": "positive",
+      "prompt": "Bump Django from 4.2 to 5.1, and while you're in there also update Pillow from 9.5 to 11.0.",
+      "expected": {
+        "assertions": [
+          "reads the changelog/breaking-notes for the Django 5.1 major bump before making any change to that dependency",
+          "reads the changelog/breaking-notes for the Pillow 11.0 major bump separately before making any change to that dependency",
+          "treats the Django major bump and the Pillow major bump as two separate, isolated upgrades rather than one combined change",
+          "each major upgrade lands in its own commit",
+          "runs the full quality gate suite (tests, linter, type checker, build) after each individual major upgrade, before starting the next one",
+          "does not begin the second major upgrade if the first one's gate run fails, without first root-causing the failure"
+        ]
+      }
+    },
+    {
+      "id": "action-pin-ls-remote-and-internal-pins",
+      "category": "positive",
+      "prompt": "Pin the aquasecurity/trivy-action GitHub Action we use in CI to a specific version instead of a floating tag.",
+      "expected": {
+        "assertions": [
+          "verifies the target tag actually exists upstream (e.g. via `git ls-remote --tags`) before writing the pin, rather than trusting a version string from memory or documentation",
+          "does not skip that verification just because the version string looks plausible",
+          "inspects the action's own action.yml or release notes for internal/transitive dependencies it resolves at run time, since trivy-action is a composite action",
+          "prefers or flags a release of the action that itself SHA-pins its own internal dependencies over one whose internals reference floating or deletable tags",
+          "pins with a SHA plus a human-readable version comment, not a bare version tag alone"
+        ]
+      }
+    },
+    {
+      "id": "dependabot-pr-review-breaking-notes-gate",
+      "category": "positive",
+      "prompt": "Here's a Dependabot PR bumping `requests` from 2.31.0 to 3.0.0 with CI green. Should I merge it?",
+      "expected": {
+        "assertions": [
+          "treats reviewing the bot-opened PR as an upgrade decision rather than a rubber-stamp approval of a green CI check",
+          "reads or explicitly checks the changelog/release/breaking notes for the 3.0.0 major version before recommending a merge decision",
+          "flags that this is a major version bump and should be isolated (its own merge/commit and gate run) rather than batched with other pending bumps",
+          "does not recommend merging on CI-green alone without the changelog-read and tag-verification steps"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-new-install-not-upgrade",
+      "category": "negative",
+      "prompt": "Add the `zod` package to this project for schema validation — it's not in package.json yet.",
+      "expected": {
+        "assertions": [
+          "treats this as a new installation, not an upgrade — does not apply the major/minor staged-rollout ordering to it",
+          "does not require changelog/breaking-notes reading framed as an upgrade gate, since there is no prior installed version to diff against",
+          "does not invoke the git ls-remote tag-verification protocol as upgrade-pin verification (a normal package install via the ecosystem's manager is fine)",
+          "the skill's upgrade methodology is a near-miss here: the request introduces a new dependency, it does not change an existing one's version"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-performance-question-not-upgrade",
+      "category": "negative",
+      "prompt": "Why is importing lodash making our bundle size so much bigger than expected? Can you look into it?",
+      "expected": {
+        "assertions": [
+          "treats this as a bundle-size/performance investigation, not a dependency-upgrade task",
+          "does not propose bumping, pinning, or re-verifying lodash's version as the first response",
+          "does not walk through the per-upgrade protocol (changelog read, tag verification, lockfile regen, gate run) since no version change is being requested",
+          "the skill's upgrade methodology is a near-miss here: the request is about diagnosing current bundle/runtime behavior, not changing a dependency's version"
+        ]
+      }
+    }
+  ]
+}

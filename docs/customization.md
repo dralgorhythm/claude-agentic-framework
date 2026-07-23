@@ -70,7 +70,7 @@ The framework intentionally ships no stack-specific frontend rule (React, Vue, e
 
 ## Artifact Templates
 
-Skills that produce planning artifacts bundle their templates inside the owning skill's `resources/` directory, so each skill stays self-contained (e.g. `.claude/skills/architecture/designing-systems/resources/adr.template.md`, `.claude/skills/product/writing-prds/resources/prd.template.md`). Four artifact types have no owning library skill; starter templates for those live in `.claude/templates/artifacts/`: `plan`, `design_spec`, `postmortem`, `security_audit`. Output naming for all artifact types is defined in CLAUDE.md's artifact table.
+Skills that produce planning artifacts bundle their templates inside the owning skill's `resources/` directory, so each skill stays self-contained (e.g. `.claude/skills/architecture/designing-systems/resources/adr.template.md`, `.claude/skills/product/planning-artifacts/resources/prd.template.md`). Three artifact types have no owning library skill; starter templates for those live in `.claude/templates/artifacts/`: `plan`, `design_spec`, `security_audit`. (The postmortem template moved into the `postmortem` skill's `resources/` when that skill was added.) Output naming for all artifact types is defined in CLAUDE.md's artifact table.
 
 ## Adding a Hook
 
@@ -117,7 +117,9 @@ See `.claude/templates/agent.template.md` for the full format, and [swarm.md](sw
 
 **IMPORTANT**: The framework will not align with your project without this step.
 
-Edit `.claude/rules/tech-strategy.md` to match your actual technology choices:
+The fast path: once your repo has committed manifests/lockfiles, run `/tailor` — it detects your stack, proposes filled golden-path tables (plus REVIEW.md review steering and a prune list of framework pieces your stack doesn't need) as a reviewable plan, and you apply what you approve. Nothing is written without your sign-off.
+
+The manual path: edit `.claude/rules/tech-strategy.md` to match your actual technology choices:
 
 ```markdown
 ### TypeScript

@@ -50,9 +50,8 @@ Optional fields:
     See worker-builder and AGENTS.md.
   - skills: comma-separated skill names to preload. Names must be existing
     skill directory names and must be UNGATED library skills — CI
-    (preload-ungated) fails on gated or unknown names. Real examples:
-    "designing-systems, writing-adrs, designing-apis" (worker-architect),
-    "application-security" (worker-reviewer).
+    (preload-ungated) fails on gated or unknown names. Real example:
+    "designing-systems, writing-adrs" (worker-architect).
 
 Register the new agent (required in this repo): add
 "./.claude/agents/worker-[type].md" to the "agents" array in

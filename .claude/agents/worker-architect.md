@@ -5,7 +5,7 @@ permissionMode: acceptEdits
 model: opus
 maxTurns: 40
 tools: Read, Grep, Glob, Write
-skills: designing-systems, writing-adrs, designing-apis
+skills: designing-systems, writing-adrs
 ---
 
 # Architect Worker

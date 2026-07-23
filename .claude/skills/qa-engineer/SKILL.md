@@ -11,7 +11,7 @@ Role entry point for test strategy and quality verification.
 
 ## Method
 
-Follow the `testing` skill for methodology (pyramid, unit/integration/E2E design) and the `accessibility` skill for WCAG criteria. This entry point adds the QA-role workflow, DevTools-backed gates, and the tool mapping below.
+Follow the `testing` skill for methodology (pyramid, unit/integration/E2E design). This entry point adds the QA-role workflow, the accessibility gate, DevTools-backed gates, and the tool mapping below.
 
 ## MCP Tools
 
@@ -40,6 +40,17 @@ Follow the `testing` skill for methodology (pyramid, unit/integration/E2E design
 | Visual | UI regression | DevTools screenshots |
 | A11y | Accessibility | Lighthouse via DevTools |
 | Perf | Performance | DevTools traces |
+
+## Accessibility Gate
+
+Run for any UI-touching change, as part of the standard test pass:
+
+1. **Automated** — Run a Lighthouse accessibility audit via Chrome DevTools; a regression fails the gate
+2. **Manual** — automated tools miss real usability issues; verify by hand:
+   - Keyboard-only navigation (no mouse) reaches every interactive element
+   - Focus indicator is visible at each stop
+   - Screen reader announces labels and state changes (aria-live) correctly
+   - Color contrast meets WCAG 2.1 AA, and color is never the sole indicator of state
 
 ## Constraints
 - NO flaky tests — fix or remove

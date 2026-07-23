@@ -12,6 +12,8 @@ Commands are expert modes invoked via slash commands (e.g., `/architect`), defin
 | `/security-auditor` | Security | Audits, threat models |
 | `/ui-ux-designer` | Interface design | Design specs, wireframes |
 | `/code-check` | Codebase audit | SOLID/DRY violations, health report |
+| `/land-the-plane` | Finish-line protocol | Gated commit, verified push, clean handoff |
+| `/tailor` | Configuration tailor | Stack fingerprint, proposed tech-strategy fill, REVIEW.md draft, prune list |
 | `/swarm-plan` | Planning orchestrator | Parallel exploration, task decomposition |
 | `/swarm-execute` | Execution orchestrator | Parallel workers, quality gates |
 | `/swarm-review` | Adversarial reviewer | Multi-perspective code review |
