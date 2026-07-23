@@ -86,6 +86,7 @@ Two-tier convention:
 | `/ui-ux-designer` | UI/UX Designer | Interface design, a11y |
 | `/code-check` | Codebase Auditor | SOLID, DRY, consistency audits |
 | `/land-the-plane` | Finish-Line Protocol | Gates, commit, push, verified handoff |
+| `/tailor` | Configuration Tailor | Stack detection → proposed golden paths, review steering, prunes |
 | `/swarm-plan` | Planning Orchestrator | Parallel exploration, decomposition |
 | `/swarm-execute` | Execution Orchestrator | Parallel workers, quality gates |
 | `/swarm-review` | Adversarial Reviewer | Multi-perspective code review |

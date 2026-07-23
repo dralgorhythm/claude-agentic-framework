@@ -1,0 +1,73 @@
+{
+  "$schema": "self-describing — no external schema; see README.md in this directory",
+  "skill": "tailor",
+  "skill_path": ".claude/skills/tailor/SKILL.md",
+  "description": "Eval set for the tailor skill. Each case is a prompt plus assertions about the resulting behavior, not the resulting text. Run with skill-creator (/plugin install skill-creator@claude-plugins-official) in a fresh session per the eval-first policy in CONTRIBUTING.md.",
+  "cases": [
+    {
+      "id": "ts-only-repo-detect-fill-and-prune",
+      "category": "positive",
+      "prompt": "This repo only has package.json, pnpm-lock.yaml, biome.json, and a vitest.config.ts — run /tailor and propose the tech-strategy fill.",
+      "expected": {
+        "assertions": [
+          "produces a stack-fingerprint table where every claim (e.g. Package Manager: pnpm, Hygiene: Biome, Testing: Vitest) cites the specific evidence file it came from, not an unsupported assertion",
+          "fills only the TypeScript/JavaScript golden-path section with the detected choices, leaving no invented rows for languages with no manifest present",
+          "proposes deleting/pruning the Python, Go, Rust, Swift, and Kotlin golden-path sections since no corresponding manifest was detected, rather than leaving them unaddressed or silently deleting them",
+          "writes the proposal to scratchpad/tailor-proposal.md and does not directly edit .claude/rules/tech-strategy.md"
+        ]
+      }
+    },
+    {
+      "id": "mixed-ts-python-repo-both-sections-filled",
+      "category": "positive",
+      "prompt": "This repo has both package.json/pnpm-lock.yaml and pyproject.toml/uv.lock with [tool.ruff] configured — run /tailor fill.",
+      "expected": {
+        "assertions": [
+          "detects and fills both the TypeScript/JavaScript and Python golden-path sections, each row cited to its own manifest evidence",
+          "does not invent rows for fields with no detected signal — e.g. does not assert a specific Python web framework or database if neither appears in pyproject.toml dependencies, and notes the gap instead of guessing",
+          "keeps the two language sections independent — does not cross-apply a TypeScript tool choice into the Python section or vice versa",
+          "produces the proposal as a reviewable plan (scratchpad/tailor-proposal.md) rather than editing tech-strategy.md directly"
+        ]
+      }
+    },
+    {
+      "id": "conflicting-customized-row-flagged-not-overwritten",
+      "category": "positive",
+      "prompt": "tech-strategy.md already lists Jest as our testing tool under TypeScript, but package.json only has vitest installed and no jest dependency anywhere — reconcile it with /tailor.",
+      "expected": {
+        "assertions": [
+          "classifies the existing Jest row as already-customized rather than treating it as the shipped placeholder example",
+          "detects the conflict between the customized row (Jest) and the manifest evidence (vitest in package.json, no jest) and flags it explicitly as conflicting-with-detection",
+          "does not delete or silently overwrite the existing tech-strategy.md content on its own — presents the conflict as a decision for the user in the proposal",
+          "cites evidence for both sides of the conflict: the existing tech-strategy.md row and the package.json signal"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-database-choice-is-architecture-not-tailoring",
+      "category": "negative",
+      "prompt": "Which database should we choose for this new service, Postgres or MySQL?",
+      "expected": {
+        "assertions": [
+          "does not invoke the tailor detect/assess/propose workflow — this is an architecture recommendation question, not a request to detect an existing stack and propose framework configuration",
+          "does not scan for manifest files or produce a stack-fingerprint table",
+          "answers the architecture question directly (e.g. reasoning about trade-offs or citing the Data golden path in tech-strategy.md) rather than redirecting to a tailor proposal",
+          "the tailor workflow is a near-miss here: no repo configuration is being detected or proposed, just a technology recommendation"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-install-framework-is-not-post-install-tailoring",
+      "category": "negative",
+      "prompt": "Install this framework into my repo.",
+      "expected": {
+        "assertions": [
+          "does not invoke the tailor workflow — installation (copying the framework's files into a target repo) is a distinct, prior step from post-install stack detection and configuration proposal",
+          "does not attempt to scan for stack signals or produce a tailor-proposal.md before the framework is even installed",
+          "treats this as an installation request and points at the framework's install mechanism rather than tailoring config for an already-installed framework",
+          "tailor is a near-miss here: it assumes the framework is already present and customizes it, it does not perform the initial install"
+        ]
+      }
+    }
+  ]
+}

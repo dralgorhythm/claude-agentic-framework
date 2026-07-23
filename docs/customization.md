@@ -117,7 +117,9 @@ See `.claude/templates/agent.template.md` for the full format, and [swarm.md](sw
 
 **IMPORTANT**: The framework will not align with your project without this step.
 
-Edit `.claude/rules/tech-strategy.md` to match your actual technology choices:
+The fast path: once your repo has committed manifests/lockfiles, run `/tailor` — it detects your stack, proposes filled golden-path tables (plus REVIEW.md review steering and a prune list of framework pieces your stack doesn't need) as a reviewable plan, and you apply what you approve. Nothing is written without your sign-off.
+
+The manual path: edit `.claude/rules/tech-strategy.md` to match your actual technology choices:
 
 ```markdown
 ### TypeScript
