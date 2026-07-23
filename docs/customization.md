@@ -78,7 +78,7 @@ Skills that produce planning artifacts bundle their templates inside the owning 
 
 Run `/tailor instantiate` once your stack is detectable; it adapts the exemplar to your repo's actual package manager, test runner, and framework, every substitution evidence-cited, and never renders a stack it didn't detect.
 
-TypeScript/JavaScript ships today; Python and Go are planned. See `.claude/templates/stack-packs/README.md` for the full convention.
+TypeScript/JavaScript and Python ship today; Go is planned. See `.claude/templates/stack-packs/README.md` for the full convention.
 
 ## Adding a Hook
 
