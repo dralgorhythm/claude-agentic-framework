@@ -1,0 +1,22 @@
+# Merge this job into your repo's own GitHub Actions workflow (e.g.
+# .github/workflows/ci.yml) under its `jobs:` key — not meant to run standalone.
+#
+# Tags verified upstream via `git ls-remote --tags <repo>` (2026-07):
+#   actions/checkout v7.0.1 · pnpm/action-setup v6.0.9 · actions/setup-node v7.0.0
+# pnpm's own version comes from this repo's package.json "packageManager" field —
+# action-setup reads it automatically, so no version is pinned here.
+
+gates:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: pnpm/action-setup@v6.0.9
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version: lts/*
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm test        # vitest run
+    - run: pnpm lint        # biome check .
+    - run: pnpm typecheck   # tsc --noEmit
+    - run: pnpm build       # vite build

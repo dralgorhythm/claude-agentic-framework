@@ -68,6 +68,20 @@
           "tailor is a near-miss here: it assumes the framework is already present and customizes it, it does not perform the initial install"
         ]
       }
+    },
+    {
+      "id": "mixed-repo-instantiates-only-detected-packs",
+      "category": "positive",
+      "prompt": "This repo has package.json/pnpm-lock.yaml/vitest.config.ts AND pyproject.toml/uv.lock with [tool.ruff] configured, but no go.mod, Cargo.toml, or Package.swift anywhere — run /tailor instantiate.",
+      "expected": {
+        "assertions": [
+          "renders the TypeScript pack's golden-path.skill.md, adapted with the detected pnpm/vitest evidence, at its adopter-repo target path .claude/skills/typescript-golden-path/SKILL.md",
+          "renders the Python pack's golden-path.skill.md, adapted with the detected uv/ruff evidence, at its own adopter-repo target path, independently of the TypeScript rendering",
+          "does not render a Go, Rust, or Swift pack — Detect found no go.mod, Cargo.toml, or Package.swift, so no pack for those stacks is instantiated, invented, or hallucinated",
+          "cites the specific evidence file behind every substitution in each rendered file (e.g. pnpm-lock.yaml, uv.lock) rather than asserting an adaptation with no cited source",
+          "adds both rendered files to the scratchpad/tailor-proposal.md plan rather than writing directly into .claude/skills/"
+        ]
+      }
     }
   ]
 }

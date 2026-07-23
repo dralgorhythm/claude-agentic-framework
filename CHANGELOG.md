@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Add entries under Breaking / Added / Changed / Deprecated / Removed / Fixed / Security. scripts/release.sh stamps this section with a version and date at release time. -->
 
+### Added
+
+- Stack packs (`.claude/templates/stack-packs/`): concrete, working exemplar files per stack — one `README.md`, one `golden-path.skill.md`, one `ci-gates.yml`, zero placeholder tokens — that operationalize `tech-strategy.md`'s choices, `code-quality.md`'s gates, and `pre-commit-verification.sh`'s detection instead of restating them (see `artifacts/adr_stack_packs.md`). TypeScript/JavaScript ships first (pnpm/Vite/Biome/Vitest/React 19/Node LTS); Python and Go follow as pure per-stack additions under the same three-file convention
+- `/tailor` v2: new `Propose: Instantiate` phase and `instantiate` mode — for each pack whose stack Detect actually found, adapts the exemplar to the fingerprint (evidence-cited substitutions, flagged defaults, never an undetected stack) and joins the rendered files to the existing proposal; `references/packs.md` documents the discovery/adaptation rules and the adopter listing-budget cost of every rendered skill. New eval case `mixed-repo-instantiates-only-detected-packs`
+- `docs/customization.md` "Stack Packs" section under Artifact Templates, pointing adopters at `/tailor instantiate` and the pack convention doc
+
 ## [4.0.0] - 2026-07-23
 
 ### Added
