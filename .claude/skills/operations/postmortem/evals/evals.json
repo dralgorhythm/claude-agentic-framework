@@ -1,0 +1,76 @@
+{
+  "$schema": "self-describing — no external schema; see README.md in this directory",
+  "skill": "postmortem",
+  "skill_path": ".claude/skills/operations/postmortem/SKILL.md",
+  "description": "Eval set for the postmortem skill. Each case is a prompt plus assertions about the resulting behavior, not the resulting text. Run with skill-creator (/plugin install skill-creator@claude-plugins-official) in a fresh session per the eval-first policy in CONTRIBUTING.md.",
+  "cases": [
+    {
+      "id": "resolved-incident-triggers-blameless-postmortem",
+      "category": "positive",
+      "prompt": "We just resolved the API outage from this afternoon, can you write the postmortem?",
+      "expected": {
+        "assertions": [
+          "invokes the postmortem workflow and works section-by-section against resources/postmortem.template.md rather than inventing a parallel structure",
+          "reconstructs the timeline from evidence (logs, deploys, alerts, dashboards) and cites a source for each entry instead of asserting times from memory",
+          "root cause analysis is a five-whys chain that terminates at a mechanism (a missing check, an untested path, an alert gap), not at an individual's action",
+          "framing is blameless throughout — no person is named or blamed as the cause, only systems, processes, or mechanisms",
+          "every action item lists an owner, a due date, and a tracking issue — none of the three left blank",
+          "names or produces the artifact at the path artifacts/postmortem_[incident-id].md, consistent with CLAUDE.md's artifact table"
+        ]
+      }
+    },
+    {
+      "id": "outage-retrospective-action-items-and-regression-guard",
+      "category": "positive",
+      "prompt": "Let's do the outage retrospective for last night's payment processor incident.",
+      "expected": {
+        "assertions": [
+          "produces action items each with an owner, a due date, and a tracking issue link",
+          "proposes a regression guard tied to the incident's specific trigger (a test, an alert, or a hook) rather than only a written policy reminder",
+          "the regression guard choice reflects the enforcement ladder (prose rule < skill < hook < CI) — favors a mechanically enforced guard over a prose-only one when the trigger supports it",
+          "quantifies impact (e.g. users affected, duration, error rate) with real values rather than leaving impact vague or unquantified",
+          "framing stays blameless — contributing factors are described as process or system gaps, not individual mistakes"
+        ]
+      }
+    },
+    {
+      "id": "what-went-wrong-analysis-uses-five-whys-mechanism",
+      "category": "positive",
+      "prompt": "The deploy this morning knocked out checkout for 20 minutes. What went wrong?",
+      "expected": {
+        "assertions": [
+          "performs a five-whys root cause analysis that terminates at a process/system mechanism, not at \"the engineer who ran the deploy\"",
+          "if a contributing factor resembles human error, restates it as the missing guardrail or process gap that allowed the mistake, per blameless framing",
+          "reconstructs the incident timeline from concrete evidence (deploy logs, alerts) rather than an unsupported narrative",
+          "treats the write-up as a postmortem artifact bound for artifacts/postmortem_[incident-id].md, not an ephemeral chat answer"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-summarize-runbook-should-not-trigger",
+      "category": "negative",
+      "prompt": "Summarize what this incident-response runbook says.",
+      "expected": {
+        "assertions": [
+          "does not invoke the postmortem workflow — no timeline reconstruction, five-whys analysis, or action-item table",
+          "does not create or scaffold an artifacts/postmortem_*.md file",
+          "simply summarizes the runbook's existing content",
+          "the words 'incident' and 'runbook' are a near-miss for the skill's trigger vocabulary, but there is no resolved-incident retrospective being requested, so the postmortem methodology does not fire"
+        ]
+      }
+    },
+    {
+      "id": "near-miss-add-error-handling-should-not-trigger",
+      "category": "negative",
+      "prompt": "Add error handling so this doesn't crash again.",
+      "expected": {
+        "assertions": [
+          "does not invoke the postmortem workflow or five-whys mechanism analysis",
+          "does not create or reference an artifacts/postmortem_*.md file",
+          "treats this as an ordinary defensive-coding / bug-fix task, following the debugging and testing skills' regression-test practice instead",
+          "'doesn't crash again' is a near-miss for the skill's regression-guard vocabulary, but there is no resolved incident being retrospectively analyzed, so the postmortem workflow does not fire"
+        ]
+      }
+    }
+  ]
+}
