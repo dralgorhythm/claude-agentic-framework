@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Portfolio doctrine" section in `docs/skills.md`: the Useful × Novel × Standard inclusion bar, Anthropic's capability-uplift vs. encoded-preference taxonomy with the base-model-eval redundancy test, the four delivery tiers (ungated core / gated workflows / opt-in packs / generated-by-tailor — the latter two marked roadmap), and the depreciation clock that schedules retirement re-evals
 - `CONTRIBUTING.md` gains "Spec portability" (the six-field Agent Skills contract, this repo's `argument-hint`/`disable-model-invocation` allowlist, quoted-YAML requirement citing PR #24) and "Retirement policy" (uplift-vs-preference intent, base-model re-eval triggers a retirement PR) sections, plus a first-party-collision checklist bullet under Scope discipline
 - README "Works beyond Claude Code" paragraph: `.claude/skills/` is read in place by the GitHub Copilot agent family, VS Code, and 40+ Agent Skills clients (agentskills.io), so the catalog travels with the repo regardless of which client opens it
+- `spec-portability` CI invariant (check 19, `scripts/check-invariants.sh`): SKILL.md frontmatter keys must be the Agent Skills spec's six fields or this repo's two deliberate Claude Code extensions; descriptions capped at the spec's 1024 chars; top-level values may not start with unquoted `[`/`{` — the PR #24 Copilot CLI breakage class, now mechanically prevented
+
 
 ### Changed
 
