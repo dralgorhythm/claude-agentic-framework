@@ -235,4 +235,27 @@ Additional v3 changes will land in subsequent updates. Entries documenting
 those changes, and any further migration steps they require, will be
 appended below.
 
+## v3.1.x → next release
+
+### Six library skills retired, three consolidated (catalog 24 → 16)
+
+Base-model evals ([artifacts/evals_catalog_rationalization.md](artifacts/evals_catalog_rationalization.md),
+32/32 baseline assertion coverage at both haiku and sonnet tiers) confirmed six library skills restated
+knowledge current models produce unaided. Where each one's guidance lives now:
+
+| Removed skill | Where the guidance lives now |
+|---|---|
+| `designing-apis` | The model's own API-design competence (eval-verified); dropped from `worker-architect`'s preload |
+| `application-security` | `.claude/rules/security.md` (always loaded) + `security-auditor`'s Grep data-flow tracing |
+| `observability` | Model competence; the OTel golden path stays in `.claude/rules/tech-strategy.md` |
+| `interface-design` | `ui-ux-designer` role skill — its design-framework template moved to that skill's `resources/` |
+| `accessibility` | Inline "Accessibility Gate" sections in `qa-engineer` and `ui-ux-designer` |
+| `debugging` | `.claude/rules/debugging-protocol.md` (always loaded, unchanged) |
+
+`writing-pr-faqs`, `writing-prds`, and `execution-roadmaps` merged into a single `planning-artifacts`
+skill carrying all three templates byte-identical — update any references to the old names.
+`designing-systems`, `testing`, and `threat-modeling` were trimmed to their workflows (names, templates,
+and triggers unchanged). If your own agents preloaded `designing-apis` or `application-security` via
+`skills:` frontmatter, drop those entries — CI's `preload-ungated` check fails on unknown names.
+
 <!-- Future v3 migration notes appended here. -->

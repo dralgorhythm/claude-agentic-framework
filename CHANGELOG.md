@@ -16,20 +16,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README "Works beyond Claude Code" paragraph: `.claude/skills/` is read in place by the GitHub Copilot agent family, VS Code, and 40+ Agent Skills clients (agentskills.io), so the catalog travels with the repo regardless of which client opens it
 - `spec-portability` CI invariant (check 19, `scripts/check-invariants.sh`): SKILL.md frontmatter keys must be the Agent Skills spec's six fields or this repo's two deliberate Claude Code extensions; descriptions capped at the spec's 1024 chars; top-level values may not start with unquoted `[`/`{` — the PR #24 Copilot CLI breakage class, now mechanically prevented
 
-
 ### Changed
 
+- `designing-systems`, `testing`, and `threat-modeling` trimmed to encoded preference (49–75% smaller): textbook exposition removed, workflows/templates/eval-asserted directives kept; `designing-systems`' description re-anchored on this framework's artifact flow to avoid colliding with the first-party cowork skill of the same name
+- Role skills absorb their retired delegates: `qa-engineer` and `ui-ux-designer` gain inline Accessibility Gate sections, `ui-ux-designer` bundles the design-framework template, `security-auditor` points at `rules/security.md`, `builder` points at `rules/debugging-protocol.md`
+- Catalog docs (README, docs/skills.md, MIGRATION.md, agent template) regenerated for the 16-skill catalog with remeasured listing figures (~0.6k tokens ungated listing; ~2.7k chars total descriptions against the 6k CI budget)
 - README's "14 reusable knowledge skills" vocabulary reworded to "library skills" (count unchanged) for consistency with the rest of the document
 - `agent.template.md` rewritten to the shipped agent shape: `maxTurns` is documented as required (CI `agent-maxturns`), least-privilege `tools:` allowlists replace the old advice against them, `isolation`/`skills` preload guidance added, and the `.claude-plugin/plugin.json` registration step is included; `docs/customization.md`'s worker example gains the same fields — an agent filled in from either now passes CI (smoke-tested)
 - `skill.template.md` defaults to the library frontmatter shape (command-style fields commented out) and states the CI constraints (`desc-style`, `name-eq-dir`, `desc-budget`, `skill-length`) explicitly; `hook.template.sh` opens with the canonical jq fail-open guard
 
 ### Removed
 
+- Six library skills retired after base-model evals (`artifacts/evals_catalog_rationalization.md`, 32/32 baseline assertion coverage at haiku and sonnet tiers) showed their content is redundant with model training and/or the always-loaded rules: `designing-apis`, `application-security`, `observability`, `interface-design`, `accessibility`, `debugging`. Unique procedural slivers moved into the role skills (accessibility gates in `qa-engineer`/`ui-ux-designer`, Grep data-flow tracing in `security-auditor`); `debugging`'s discipline remains canonical in `.claude/rules/debugging-protocol.md`. See MIGRATION.md for the full where-it-lives-now table
+- `writing-pr-faqs`, `writing-prds`, and `execution-roadmaps` consolidated into a single `planning-artifacts` skill carrying all three templates byte-identical (catalog: 24 → 16 skills; ungated listing: 14 → 6)
 - Five orphaned artifact templates that duplicated skill-bundled `resources/` copies (`adr`, `prd`, `pr_faq`, `roadmap`, `system_design`); the four artifact types without an owning skill (`plan`, `design_spec`, `postmortem`, `security_audit`) remain in `.claude/templates/artifacts/`, now documented in `docs/customization.md`
 
 ### Fixed
 
-- `swarm-plan` pointed at an ADR template location that bundles none (`writing-adrs`); it now cites the real home (`designing-systems/resources/`). `interface-design` links its previously unreachable design-framework template
+- `swarm-plan` pointed at an ADR template location that bundles none (`writing-adrs`); it now cites the real home (`designing-systems/resources/`). The design-framework template, previously unreachable, now ships with `ui-ux-designer`
 - Stale "Related Skills" references to pre-3.0 skills in the remaining artifact templates; leftover "commands" directory wording in `AGENTS.md` and `docs/getting-started.md`; the mislabeled desc-budget figure in `docs/skills.md`; a nonexistent GitHub MCP package name in `docs/mcp-servers.md`; `worker-research` frontmatter normalized to the canonical field order
 
 ## [3.1.0] - 2026-07-09

@@ -124,7 +124,7 @@ Apply until reaching systemic cause (may be 3-7 whys):
 
 ## Related Skills
 
-`testing`, `application-security`, `swarm-coordination`
+`testing`, `swarm-coordination`
 
 ## Handoff
 
