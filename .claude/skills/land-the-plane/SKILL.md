@@ -60,9 +60,10 @@ git status   # MUST show "up to date with origin"
 
 ## 5. Handoff — Leave a Clean Trail
 
-- Open a PR if the branch flow calls for one; pass the body via a file
-  (heredoc or temp file), never as an inline string — avoids quoting and
-  escaping failures.
+- Open a PR targeting `main` (trunk-based: every PR merges to `main`
+  independently — never stack on another unit's branch); pass the body via
+  a file (heredoc or temp file), never as an inline string — avoids
+  quoting and escaping failures.
 - File remaining work as issues or task-list entries, each referencing the
   relevant artifact under `./artifacts/`.
 - Release working state: drop stashes, remove temp files, release any
