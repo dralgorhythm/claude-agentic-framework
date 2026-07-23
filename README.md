@@ -123,6 +123,7 @@ Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that 
 
 6 library skills across 5 categories — discovered natively from each skill's description, no hook or registry required:
 
+
 **Architecture** · **Core Engineering** · **Operations** · **Product** · **Security**
 
 A deliberately lean catalog: high-value, single-responsibility skills that don't duplicate what the model already knows, from `designing-systems` and `testing` to `swarm-coordination` and `threat-modeling`. Generic-knowledge skills (API textbook patterns, OWASP lists, WCAG tables) were retired in the 2026-07 rationalization after base-model evals showed current models produce that content unaided — evidence in [artifacts/evals_catalog_rationalization.md](artifacts/evals_catalog_rationalization.md). See [docs/skills.md](docs/skills.md) for the full list.
