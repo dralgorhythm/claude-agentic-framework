@@ -25,7 +25,7 @@ Decompose features into actionable plans using parallel exploration swarms.
 1. **Explore** — Launch 3-6 worker-explorer agents to research existing patterns, dependencies, constraints, and prior art
 2. **Classify** — Determine decision reversibility (Two-Way Door vs One-Way Door)
 3. **Document** — Create appropriate artifacts based on scope
-4. **Decompose** — Break into right-sized tasks: roughly 200-400 changed LOC or 15-45 minutes of focused work each — review effectiveness collapses beyond ~400 LOC (SmartBear/Cisco)
+4. **Decompose** — Break into right-sized tasks: roughly 200-400 changed LOC or 15-45 minutes of focused work each — review effectiveness collapses beyond ~400 LOC (SmartBear/Cisco). Shape every unit to be independently mergeable to `main` (trunk-based, per core-directives): dependencies resolve by merge order, not by stacking branches
 5. **Track** — Record tasks in the native task list for implementation tracking
 
 ## Decision Framework
@@ -125,6 +125,7 @@ Link dependencies with `TaskUpdate` (addBlockedBy): Task 2 gets Task 1 added to 
 - ALWAYS store artifacts in `./artifacts/`
 - ALWAYS record implementation tasks with acceptance criteria before declaring planning complete
 - ALWAYS validate arguments before using in commands
+- NO plans that require stacked PR chains or integration branches — every planned unit merges to `main` on its own; a dependent unit branches from `main` after its prerequisite lands
 
 ## Output
 

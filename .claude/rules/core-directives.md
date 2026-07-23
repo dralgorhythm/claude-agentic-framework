@@ -8,7 +8,7 @@ These directives translate the Core Principles into concrete, day-to-day operati
 
 ## Constraints
 
-- Always branch from `main` — never commit directly to the main branch
+- Trunk-based development: `main` is the only long-lived branch. Branch short-lived units off `main`, and every PR targets `main` and must be **independently mergeable** — no stacked PR chains, and no integration branches that accumulate work for a later bulk merge. Sequence dependent work by merge order (land the prerequisite to `main`, then branch the dependent unit from `main`), never by basing one unit's branch on another's. Never commit directly to `main`.
 - Verify artifacts exist before proceeding to the next phase in the planning flow
 - Consult `tech-strategy.md` for all technology choices — do not deviate without explicit instruction
 - Ship It: work is not complete until pushed to remote — mechanical protocol lives in AGENTS.md "Landing the Plane" (canonical detail-level home)

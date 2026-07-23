@@ -42,7 +42,7 @@ Defined in `.claude/rules/tech-strategy.md` — auto-loaded for every session.
 
 ## Workflow
 
-**Branching**: Always branch from `main`. Never commit directly to `main`.
+**Branching**: Trunk-based — short-lived branches off `main`, every PR independently mergeable back to `main` (no stacked chains, no integration branches). Never commit directly to `main`.
 
 **Planning flow**: PR-FAQ → PRD → ADR → Design Spec → Plan → Implementation Tasks — ceremony scales with scope (see `core-directives.md` Rule 6): skip phases a change genuinely doesn't need.
 
