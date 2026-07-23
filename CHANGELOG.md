@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Add entries under Breaking / Added / Changed / Deprecated / Removed / Fixed / Security. scripts/release.sh stamps this section with a version and date at release time. -->
 
+## [4.0.0] - 2026-07-23
+
 ### Added
 
 - "Portfolio doctrine" section in `docs/skills.md`: the Useful × Novel × Standard inclusion bar, Anthropic's capability-uplift vs. encoded-preference taxonomy with the base-model-eval redundancy test, the four delivery tiers (ungated core / gated workflows / opt-in packs / generated-by-tailor — the latter two marked roadmap), and the depreciation clock that schedules retirement re-evals
