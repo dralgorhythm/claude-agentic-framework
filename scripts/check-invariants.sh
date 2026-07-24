@@ -246,6 +246,19 @@ while IFS= read -r f; do
 done < <(git ls-files ':(glob).claude/rules/*.md')
 report rules-lines "$([ "$rules_total" -le 500 ]; echo $?)" "always-loaded rules total ${rules_total} lines (budget 500; paths:-scoped files excluded)"
 
+# 23. review-freshness: a tracked REVIEW.md's rules-hash footer must match the current
+#     .claude/rules/code-quality.md + security.md content (review-steering's generation
+#     step 8 stamps this footer). No tracked REVIEW.md -> skip cleanly via the existing
+#     skipped() mechanism (this repo ships none; adopters get one via review-steering).
+if git ls-files --error-unmatch REVIEW.md >/dev/null 2>&1; then
+  actual=$(cat .claude/rules/code-quality.md .claude/rules/security.md | shasum -a 256 | cut -d' ' -f1)
+  stamped=$(tail -n1 REVIEW.md | sed -n 's/.*rules-hash:[[:space:]]*\([0-9a-f]*\).*/\1/p')
+  report review-freshness "$([ -n "$stamped" ] && [ "$stamped" = "$actual" ]; echo $?)" "REVIEW.md rules-hash ${stamped:-missing} != current $actual"
+else
+  SKIP="$SKIP review-freshness"
+  report review-freshness 0 ""
+fi
+
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"
 exit "$FAIL"
