@@ -15,7 +15,8 @@ if ! command -v jq >/dev/null 2>&1; then
 jq is not installed — the following guardrails are degraded for this session:
 - Secret detection & file-lock coordination (pre-tool-use-validator.sh): skipped entirely
 - Dangerous-command warnings (dangerous-command-guard.sh): skipped entirely
-- Pre-commit verification reminders (pre-commit-verification.sh): skipped entirely
+- Commit quality gate (pre-commit-verification.sh): skipped entirely — commits are not gate-blocked
+- Task-completion quality gate (task-quality-gate.sh): skipped entirely
 Unaffected: pre-push-main-blocker.sh's branch-block does not depend on jq and
 keeps working either way; permissions.deny (.claude/settings.json) is
 enforced at the permission layer regardless of jq or any hook.

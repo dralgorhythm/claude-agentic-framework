@@ -128,13 +128,12 @@ fi
 # Gates detected: run each one under its own timeout, from PROJECT_DIR,
 # logging to its own file. Fail-fast on the first red or timed-out gate —
 # the reason names exactly one gate, matching the plan's fixtures.
-# `timeout` is GNU coreutils: present on Linux/CI, absent on stock macOS
-# (Homebrew installs it as `gtimeout`). Without either, gates run unbounded
-# inside the hook's own settings.json ceiling — bounded worse, never broken.
+# Portable timeout-binary resolution (timeout/gtimeout/unbounded) now lives
+# in gate-lib.sh's gate_lib_timeout_bin (unit U5c) — shared verbatim with
+# task-quality-gate.sh, the same justified-DRY pattern gate_lib_detect itself
+# set in U5a. Behavior here is unchanged: same three outcomes, same order.
 GATE_TIMEOUT="${CLAUDE_GATE_TIMEOUT_SECS:-120}"
-if command -v timeout >/dev/null 2>&1; then TIMEOUT_BIN="timeout"
-elif command -v gtimeout >/dev/null 2>&1; then TIMEOUT_BIN="gtimeout"
-else TIMEOUT_BIN=""; fi
+TIMEOUT_BIN=$(gate_lib_timeout_bin)
 FAILED_LABEL=""
 FAILED_LOG=""
 TIMED_OUT_LABEL=""

@@ -5,10 +5,13 @@
 # given a project directory, detect which quality gates apply and emit, per
 # detected gate, an INVOCABLE command string plus the short human label the
 # pre-commit advisory has always shown. Detection lives here once; each
-# caller decides what to DO with a gate — today, pre-commit-verification.sh
-# only reads the labels for its advisory text; a later enforcement hook can
-# read GATE_COMMANDS to actually run them (open/closed — plan's Design
-# Principles).
+# caller decides what to DO with a gate — pre-commit-verification.sh (U5b)
+# and task-quality-gate.sh (U5c) both run GATE_COMMANDS under a per-gate
+# timeout on their respective trigger events (open/closed — plan's Design
+# Principles). This lib also centralizes the one bit of machinery both gate
+# *enforcers* need identically — portable timeout-binary resolution — in
+# gate_lib_timeout_bin (U5c: moved out of pre-commit-verification.sh, the
+# same justified-DRY pattern this file's own U5a extraction set).
 #
 # Usage:
 #   # shellcheck source=gate-lib.sh
@@ -17,6 +20,7 @@
 #   # then read the parallel arrays it populates:
 #   #   GATE_LABELS[i]    human label, unchanged wording, e.g. "lint(pnpm)"
 #   #   GATE_COMMANDS[i]  invocable command, e.g. "pnpm run lint"
+#   bin=$(gate_lib_timeout_bin)  # "timeout", "gtimeout", or "" (run unbounded)
 #
 # Adapting: add a stack by appending one `if [ -f "$dir/<manifest>" ]` block
 # with its own `_gate_add` calls — never by editing an existing block.
@@ -104,5 +108,22 @@ gate_lib_detect() {
     _gate_add "cargo-test" "cargo test"
     _gate_add "cargo-clippy" "cargo clippy"
     _gate_add "cargo-fmt" "cargo fmt --check"
+  fi
+}
+
+# gate_lib_timeout_bin — echo the portable per-gate timeout binary to use, or
+# an empty string if neither exists (unit U5c). `timeout` is GNU coreutils:
+# present on Linux/CI, absent on stock macOS (Homebrew installs it as
+# `gtimeout`). A caller that gets "" back should run its gate command
+# unbounded rather than fail the whole hook — bounded worse, never broken.
+# Shared verbatim by pre-commit-verification.sh (U5b) and task-quality-gate.sh
+# (U5c) so the resolution logic — and any future third case — lives once.
+gate_lib_timeout_bin() {
+  if command -v timeout >/dev/null 2>&1; then
+    printf 'timeout'
+  elif command -v gtimeout >/dev/null 2>&1; then
+    printf 'gtimeout'
+  else
+    printf ''
   fi
 }
