@@ -34,7 +34,7 @@ Regenerate `go.sum` with `go mod tidy` after every dependency change — never h
 
 ## Gates Wiring
 
-`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `go.mod` and reminds you to run these commands before a commit lands. CI runs the identical gates — see this pack's `ci-gates.yml`.
+`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `go.mod` and reminds you to run these commands before a commit lands. CI runs the same gates plus a dependency-audit step (`govulncheck ./...`) that has no local pre-commit equivalent — see this pack's `ci-gates.yml`.
 
 ## Related Skills
 

@@ -324,4 +324,12 @@ This is a deliberate doctrine change, not an oversight — see `artifacts/adr_de
 - To skip gate enforcement for one task completion, set `CLAUDE_SKIP_GATE_HOOK=1` — the same escape hatch the commit gate honors (one variable disables both).
 - If you don't want this hook running at all, remove the `TaskCompleted` entry from `.claude/settings.json`'s `hooks` block — see `docs/hooks.md`'s "How to disable a hook."
 
+### Dependency-audit step added to CI (repo Trivy scan + stack-pack `ci-gates.yml`)
+
+**Who is affected:** anyone whose repo's CI workflow was built by pasting a stack-pack `ci-gates.yml` snippet (TypeScript/JavaScript, Python, Go, or Rust); at the framework-repo level, anyone who forks this repo and later adds a dependency manifest.
+
+**What breaks:** nothing — purely additive. This repo's own `framework-invariants.yml` Trivy job now scans `secret,vuln` instead of `secret` only (trivially green today: this repo carries no dependency manifests, real for any fork that adds one). Each stack pack's `ci-gates.yml` gains one blocking audit step using that stack's native tool (`pnpm audit --audit-level high`, `uvx pip-audit`, `govulncheck ./...`, `cargo audit`) — see `.claude/rules/security.md`'s Dependency Safety section. Each pack's `golden-path.skill.md` "Gates Wiring" sentence is corrected to name this CI-only step, since it has no local pre-commit equivalent.
+
+**Action required:** if you previously pasted a pack's `ci-gates.yml` block into your own workflow, re-paste it (or add the one new audit step by hand) to pick up the gate — these are exemplars, not live includes, so nothing updates automatically in an already-copied file.
+
 <!-- Future migration notes appended here. -->

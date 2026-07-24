@@ -34,7 +34,7 @@ Cargo regenerates `Cargo.lock` automatically on any command that resolves depend
 
 ## Gates Wiring
 
-`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `Cargo.toml` and reminds you to run these commands before a commit lands. CI runs the identical gates — see this pack's `ci-gates.yml`.
+`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `Cargo.toml` and reminds you to run these commands before a commit lands. CI runs the same gates plus a dependency-audit step (`cargo audit`) that has no local pre-commit equivalent — see this pack's `ci-gates.yml`.
 
 ## Related Skills
 
