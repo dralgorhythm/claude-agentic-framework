@@ -32,7 +32,7 @@ echo "{\"session_id\": \"$SESSION_ID\", \"started\": \"$(date -Iseconds)\", \"so
 CONTEXT=""
 
 # Check for active swarm agents
-ACTIVE_AGENTS=$(ls -1 "$STATE_DIR"/session_*.json 2>/dev/null | wc -l | tr -d ' ')
+ACTIVE_AGENTS=$(find "$STATE_DIR" -maxdepth 1 -name 'session_*.json' -type f 2>/dev/null | wc -l | tr -d ' ')
 if [ "$ACTIVE_AGENTS" -gt 1 ]; then
     CONTEXT="$CONTEXT
 

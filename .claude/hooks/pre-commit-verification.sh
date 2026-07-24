@@ -42,7 +42,6 @@ if [ -f "$VERIFICATION_FILE" ]; then
 fi
 
 # Detect project type and available tools
-VERIFICATION_COMMANDS=""
 DETECTED_TOOLS=""
 
 # TypeScript/JavaScript (pnpm preferred per tech strategy)
@@ -74,12 +73,6 @@ fi
 
 # Python (uv preferred per tech strategy)
 if [ -f "$PROJECT_DIR/pyproject.toml" ]; then
-    if command -v uv &> /dev/null; then
-        PY_MGR="uv run"
-    else
-        PY_MGR="python -m"
-    fi
-
     # Ruff (preferred per tech strategy)
     if grep -q "ruff" "$PROJECT_DIR/pyproject.toml" 2>/dev/null; then
         DETECTED_TOOLS="$DETECTED_TOOLS ruff"
