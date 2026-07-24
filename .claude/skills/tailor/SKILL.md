@@ -11,7 +11,7 @@ metadata:
 
 The framework's environment-triggered customization engine. Once an adopter's stack is detectable — manifests and lockfiles committed — `/tailor` proposes the configuration the framework should take: filled `tech-strategy.md` golden paths, `REVIEW.md`/`CLAUDE.md` review steering, and a prune list of unused framework pieces.
 
-**`/tailor` proposes only. It never silently writes to `.claude/rules/`, `.claude/settings.json`, `CLAUDE.md`, or any other tracked config file.** Every run ends in a reviewable plan at `scratchpad/tailor-proposal.md` — nothing lands in a tracked file until the user approves it (see Output Contract).
+**`/tailor` proposes only. It never silently writes to `.claude/rules/`, `.claude/settings.json`, `CLAUDE.md`, or any other tracked config file.** Every run ends in a reviewable plan at `scratchpad/tailor-proposal.md` — nothing lands in a tracked file until the user approves it (see Output Contract). This promise is now hook-backed at the `ask` tier: `pre-tool-use-validator.sh` asks for confirmation before any direct Write/Edit to these same paths, rather than leaving the propose-only contract as convention alone.
 
 ## Detect
 

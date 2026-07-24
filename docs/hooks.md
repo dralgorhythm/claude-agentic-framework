@@ -7,12 +7,12 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | Hook | Event | Purpose |
 |------|-------|---------|
 | `session-start-loader.sh` | SessionStart | Load session context, detect active swarm agents, process handoffs, cleanup stale sessions |
-| `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection, protected file enforcement |
+| `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection (Write/Edit + Bash redirects/heredocs), protected file enforcement, config-write ask-gate |
 | `dangerous-command-guard.sh` | PreToolUse (Bash) | Guard against dangerous shell commands (force push, rm -rf, etc.) |
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
 | `pre-commit-verification.sh` | PreToolUse (Bash) | Pre-commit quality checks |
 | `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
-| `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted changes |
+| `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted and unpushed work |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
 | `post-edit-lint.sh` | PostToolUse | Auto-format after edits; surfaces only unfixable issues |
 | `branch-pr-discipline.sh` | PreToolUse (Bash) | Warn-only branch/PR hygiene checks |
@@ -39,7 +39,9 @@ Scans Write/Edit content for 6 secret patterns:
 5. GitHub personal access tokens (`ghp_...`)
 6. Private keys (PEM format)
 
-Test files (`*.test.ts`, `*.spec.ts`, etc.) are excluded to reduce false positives.
+Test files (`*.test.ts`, `*.spec.ts`, etc.) are excluded to reduce false positives. The same 6 patterns also scan `Bash` commands that redirect or heredoc content into a file (`>`, `>>`, `<<`) — closing the gap where a heredoc'd `.env` write bypassed Write/Edit-only detection entirely.
+
+**Limitation**: this is a Write/Edit + Bash-redirect matcher, not a general secret scanner — it can't see secrets written by any other means (a script invoked some other way, an MCP tool, etc.), and pattern matching always has false negatives. Trivy's CI secret-scan job (`framework-invariants.yml`) is the actual backstop; treat this hook as an early, partial warning, not the guarantee.
 
 ### Protected Files (pre-tool-use-validator.sh)
 
@@ -47,6 +49,15 @@ Blocks modifications to critical system files:
 - `.git/`
 - `.env`
 - `.mcp.json`
+
+### Config-Write Ask-Gate (pre-tool-use-validator.sh)
+
+Asks for confirmation (not a hard block) before a direct Write/Edit to:
+- `.claude/settings.json`
+- `.claude/rules/*`
+- root `CLAUDE.md`
+
+These are the same paths `/tailor` proposes changes to rather than writing directly (see `tailor/SKILL.md`'s Output Contract) — this hook backs that contract mechanically instead of leaving it as convention only.
 
 ### Push Blocking (pre-push-main-blocker.sh)
 
@@ -62,6 +73,7 @@ Enforces trunk-based development by blocking pushes to main/master:
 - Supports handoff messages between sessions
 - Auto-cleans stale sessions older than 24 hours
 - Warns about uncommitted changes on session stop
+- Warns about unpushed commits too, remote-aware: ahead-of-upstream count (with the push command) or `git push -u` guidance when no upstream is configured — silent in repos with no `git remote` configured at all
 - Releases file locks before exit
 
 ## Creating a Hook
@@ -157,6 +169,16 @@ Hooks are one rung on a broader enforcement ladder, from weakest to strongest:
 prose rules (advisory) < skills (on-demand advisory) < hooks (deterministic guardrails, fail-open by design in this repo) < `permissions.deny` + CI (boundaries).
 
 See `.claude/rules/security.md` for the full ladder and rationale. In short: nothing below `permissions.deny` and CI is guaranteed to run, and hooks specifically are guaranteed to skip rather than block when they can't parse their input.
+
+### Degradation visibility
+
+"Fails open" used to also mean "fails silently." `session-start-loader.sh` now checks for `jq` before anything else and, when it's absent, prints a `[HOOK DEGRADATION]` block at session start naming exactly what's degraded instead of just skipping quietly:
+
+- Secret detection & file-lock coordination (`pre-tool-use-validator.sh`)
+- Dangerous-command warnings (`dangerous-command-guard.sh`)
+- Pre-commit verification reminders (`pre-commit-verification.sh`)
+
+`pre-push-main-blocker.sh`'s branch-block is **not** on that list: its command extraction is a jq-free sed idiom, so it keeps enforcing with or without `jq`. And `permissions.deny` is unaffected either way — it's enforced at the permission layer, independent of hooks or `jq` entirely. Install `jq` to restore the degraded set above.
 
 **How to disable a hook:**
 

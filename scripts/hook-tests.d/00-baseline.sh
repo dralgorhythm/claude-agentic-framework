@@ -91,14 +91,15 @@ JSON
   "CLAUDE_PROJECT_DIR=$ssl_dir" \
   "stdout-contains:Active agents in project: 2"
 
-# --- fail-open: with jq absent, every hook this plan touches exits 0, silently
+# --- fail-open: with jq absent, hooks exit 0 without blocking. Most stay
+# silent; session-start-loader is the designated exception since U1 — it
+# announces the degraded guardrail set (that IS its jq-absent behavior now).
 nojq_path=$(path_without_jq)
 for hook in \
   ".claude/hooks/pre-commit-verification.sh" \
   ".claude/hooks/pre-push-main-blocker.sh" \
   ".claude/hooks/stop-validator.sh" \
-  ".claude/hooks/pre-tool-use-validator.sh" \
-  ".claude/hooks/session-start-loader.sh"
+  ".claude/hooks/pre-tool-use-validator.sh"
 do
   run_case \
     "fail-open: $hook exits 0 silently with jq absent" \
@@ -107,3 +108,10 @@ do
     "PATH=$nojq_path" \
     "exit0-silent"
 done
+
+run_case \
+  "fail-open: session-start-loader announces [HOOK DEGRADATION] with jq absent (U1)" \
+  ".claude/hooks/session-start-loader.sh" \
+  '{}' \
+  "PATH=$nojq_path" \
+  "stdout-contains:[HOOK DEGRADATION]"

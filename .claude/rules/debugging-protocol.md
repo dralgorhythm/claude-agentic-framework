@@ -27,6 +27,9 @@ Long sessions degrade the reliability of what you remember about a file's conten
 - If more than roughly 20 tool calls have passed since you last read a file, re-read it before editing it. Do not trust your memory of its current state.
 - After any context compaction event, re-read any file you are about to modify — compaction can silently drop the details you were relying on.
 - When in doubt about whether context is stale, the cost of re-reading is always lower than the cost of editing blind.
+- This applies at the plan level too: after compaction or on resume, re-check task-list state and re-read the active plan artifact before continuing multi-step work, not just the next file you touch.
+- Externalize any plan spanning more than a few steps to a file before starting long work, so there is something durable to re-read after compaction instead of relying on conversation history.
+- Delegate bulk exploration to workers rather than accumulating it in the orchestrator's own context — that context is exactly what compaction has to compress away first.
 
 ## Red Flags
 

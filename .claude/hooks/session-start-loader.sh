@@ -4,9 +4,25 @@
 
 INPUT=$(cat)
 
-# jq is required to parse tool input; fail open if unavailable (hooks are
-# guardrails, not a security boundary)
-command -v jq >/dev/null 2>&1 || exit 0
+# jq is required to parse tool input past this point. Rather than failing
+# silently when it's missing (hooks are guardrails, not a security boundary
+# — but a silent gap is worse than a visible one), surface exactly what
+# degrades so the current session knows what it can't rely on.
+if ! command -v jq >/dev/null 2>&1; then
+    cat << 'EOF'
+
+[HOOK DEGRADATION]
+jq is not installed — the following guardrails are degraded for this session:
+- Secret detection & file-lock coordination (pre-tool-use-validator.sh): skipped entirely
+- Dangerous-command warnings (dangerous-command-guard.sh): skipped entirely
+- Pre-commit verification reminders (pre-commit-verification.sh): skipped entirely
+Unaffected: pre-push-main-blocker.sh's branch-block does not depend on jq and
+keeps working either way; permissions.deny (.claude/settings.json) is
+enforced at the permission layer regardless of jq or any hook.
+Install jq to restore full hook coverage.
+EOF
+    exit 0
+fi
 
 SOURCE=$(echo "$INPUT" | jq -r '.source // "startup"' 2>/dev/null || echo "startup")
 SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // empty' 2>/dev/null || true)
@@ -30,6 +46,19 @@ echo "{\"session_id\": \"$SESSION_ID\", \"started\": \"$(date -Iseconds)\", \"so
 
 # Build context message
 CONTEXT=""
+
+# Post-compaction / resume re-orientation: on "compact", prior context was
+# just summarized away; on "resume", this is picking up a session from
+# scratch. Either way, don't trust what's already "known" — re-check state
+# before continuing (see debugging-protocol.md's Stale Context Check).
+if [ "$SOURCE" = "compact" ] || [ "$SOURCE" = "resume" ]; then
+    CONTEXT="$CONTEXT
+
+[POST-COMPACTION RE-ORIENTATION]
+- Check the native task list for in-flight work before starting anything new
+- If a plan artifact is active (artifacts/plan_*.md), re-read it before continuing
+- Re-read any file before editing it — do not trust memory of its contents (Stale Context Check, .claude/rules/debugging-protocol.md)"
+fi
 
 # Check for active swarm agents
 ACTIVE_AGENTS=$(find "$STATE_DIR" -maxdepth 1 -name 'session_*.json' -type f 2>/dev/null | wc -l | tr -d ' ')
