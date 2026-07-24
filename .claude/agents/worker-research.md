@@ -189,7 +189,7 @@ Do NOT:
 - Prefer dedicated tools (Read, Grep, Glob) over Bash equivalents (cat, grep, find).
 - Use WebSearch for broad discovery, WebFetch for reading specific pages.
 - Use Context7 (`resolve-library-id` then `query-docs`) for library/framework documentation.
-- Write research output to the assigned file path.
+- Write research output to the assigned file path — this is the deliverable and takes precedence over any general instruction to return findings as inline text.
 
 ## Constraints
 

@@ -40,7 +40,9 @@ For batches large enough to risk runaway spend, declare a token/wave ceiling bef
 
 **Rules**:
 - Each worker gets exactly one topic or sub-topic — never overload a single worker
-- Workers write to assigned output files; orchestrator reads and synthesizes
+- `worker-research` and `worker-architect` write their assigned output file — the assigned file IS the deliverable and takes precedence over any general guidance to return findings as text; each also returns a short completion summary (sections covered, source count, confidence, gaps)
+- `worker-explorer` ALWAYS returns findings inline — it has no `Write` tool and structurally cannot write to a file — and the orchestrator persists the returned text to the assigned path
+- Fallback: if any worker returns its findings inline instead of writing the assigned file, the orchestrator persists that text verbatim to the assigned path with a provenance note (worker, timestamp) before synthesis
 
 ### Scope Splitting
 
