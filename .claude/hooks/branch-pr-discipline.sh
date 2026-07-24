@@ -45,7 +45,9 @@ cmd=""
 if command -v jq >/dev/null 2>&1; then
     cmd="$(printf '%s' "$payload" | jq -r '.tool_input.command // empty' 2>/dev/null)"
 else
-    cmd="$(printf '%s' "$payload" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\(\([^"\\]\|\\.\)*\)".*/\1/p' | head -n1)"
+    # sed -E: the old BRE \| alternation silently never matches on BSD/macOS sed
+    # (same bug fixed in pre-push-main-blocker.sh's U1 rewrite).
+    cmd="$(printf '%s' "$payload" | sed -nE 's/.*"command"[[:space:]]*:[[:space:]]*"(([^"\\]|\\.)*)".*/\1/p' | head -n1)"
 fi
 
 [ -z "${cmd:-}" ] && exit 0
