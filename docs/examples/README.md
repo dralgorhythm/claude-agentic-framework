@@ -13,6 +13,11 @@ explicitly copy the relevant snippet into your own `.claude/settings.json`.
   deterministic layer on top of it, at the cost of a small per-turn latency
   hit. See the header comment in the script for the exact settings.json
   snippet to enable it.
+- `worker-budget-hook.sh` — a dependency-free bash hook pair (`PreToolUse`
+  on `Task` + `SubagentStop`) that counts concurrent worker dispatches and
+  warns past 8 in flight, illustrating the `swarm-coordination` skill's
+  "Budget & Waves" cost circuit-breaker convention. See the header comment
+  for the exact settings.json snippet to enable it.
 
 ## Security note
 

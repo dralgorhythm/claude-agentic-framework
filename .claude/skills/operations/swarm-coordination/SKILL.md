@@ -97,6 +97,14 @@ For independent features:
 3. Avoid editing same files across streams
 4. Merge streams at defined integration points
 
+## Budget & Waves
+
+**Cost circuit-breaker only**: this bounds runaway spend after the fact. It does not detect step-repetition or looping — that is a different failure mode, out of scope here.
+
+- Orchestrators declare a token/wave ceiling when dispatching a batch of workers — set the ceiling before launch, not after
+- On hitting the ceiling: stop dispatching, report spend so far and the remaining work, and ask the user before continuing
+- Dispatched task titles carry a `[Wave N/M]` prefix (e.g., `[Wave 1/3] Explore auth patterns`) so spend and progress can be attributed to a wave at a glance
+
 ## State Files
 
 | File | Purpose |

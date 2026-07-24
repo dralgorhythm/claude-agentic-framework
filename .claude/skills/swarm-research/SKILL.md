@@ -36,6 +36,8 @@ Coordinate parallel research workers to investigate topics deeply and synthesize
 
 Model tiers are pinned in each agent's frontmatter (`.claude/agents/`) — that is the single source of truth.
 
+For batches large enough to risk runaway spend, declare a token/wave ceiling before dispatch — see `swarm-coordination`'s Budget & Waves section (cost circuit-breaker; `[Wave N/M]` task-title prefix).
+
 **Rules**:
 - Each worker gets exactly one topic or sub-topic — never overload a single worker
 - Workers write to assigned output files; orchestrator reads and synthesizes
