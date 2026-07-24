@@ -63,10 +63,10 @@ Rules come in three tiers — use the cheapest one that fits:
 | Tier | Mechanism | Loads | Budget (CI-enforced) |
 |------|-----------|-------|-----------------------|
 | (a) Always-loaded rule | `.claude/rules/*.md`, no `paths:` frontmatter | Every session, regardless of what's touched | `rules-lines` check in `scripts/check-invariants.sh` — ≤500 lines total (measured 409 lines at implementation time) |
-| (b) `paths:`-scoped rule | `.claude/rules/*.md` with native `paths:` frontmatter — loads only when a matching file is read or edited (see [code.claude.com/docs/en/memory](https://code.claude.com/docs/en/memory)) | Only when a path under its globs is touched | Excluded from `rules-lines` entirely — free the rest of the session |
+| (b) `paths:`-scoped rule | `.claude/rules/*.md` with native `paths:` frontmatter — loads only when a matching file is read or edited (see [code.claude.com/docs/en/memory](https://code.claude.com/docs/en/memory)) — worked example: `.claude/rules/hooks-conventions.md` | Only when a path under its globs is touched | Excluded from `rules-lines` entirely — free the rest of the session |
 | (c) Skill | `.claude/skills/[category]/my-skill/SKILL.md` | Frontmatter `description` always loaded; body only when triggered | `desc-budget` check — ≤6000 chars total across all SKILL.md descriptions |
 
-Use (a) for conventions every session needs regardless of what's touched; (b) for conventions specific to one area of the tree (a hooks/scripts idiom, a package's local style); (c) for larger or occasionally-needed procedural guidance ("Adding a Skill" above).
+Use (a) for conventions every session needs regardless of what's touched; (b) for conventions specific to one area of the tree (a hooks/scripts idiom, a package's local style); (c) for larger or occasionally-needed procedural guidance ("Adding a Skill" above). Stack packs (below) MAY ship a `paths:`-scoped rule where a full skill would be heavier than the guidance warrants.
 
 Create `.claude/rules/my-rule.md`:
 
