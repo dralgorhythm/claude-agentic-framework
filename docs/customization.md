@@ -18,7 +18,9 @@ disable-model-invocation: true
 - `name` — must match the directory name.
 - `description` — shown in autocomplete; also what Claude matches against if model-invocation is left enabled.
 - `argument-hint` — optional help text shown for the command's arguments.
-- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset only for purely advisory workflows where model-invocation is safe (e.g. a knowledge/library skill — this repo gates all ten of its shipped workflow skills).
+- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset only for purely advisory workflows where model-invocation is safe (e.g. a knowledge/library skill).
+
+**Layout convention (CI-enforced by the `gating` check in `scripts/check-invariants.sh`)**: a top-level `.claude/skills/<name>/SKILL.md` is a gated, human-invoked workflow and MUST carry this flag; a nested `.claude/skills/<category>/<name>/SKILL.md` is an ungated, model-invocable library skill and must NOT carry it. The check derives the rule from directory depth rather than a maintained name list, so a new skill can't silently slip through ungated (or gated) by omission.
 
 Add command instructions below the frontmatter, and end the file with `$ARGUMENTS` so the user's trailing text is passed through:
 

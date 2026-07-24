@@ -68,15 +68,26 @@ report model-tiering "$([ -z "$bad" ]; echo $?)" "violations:$bad"
 hits=$(git grep -IniE 'worker-(reviewer|research)[^a-z].*opus' -- ':!artifacts/' ':!CHANGELOG*' ':!MIGRATION*' 2>/dev/null | wc -l | tr -d ' ')
 report no-model-drift "$([ "$hits" = 0 ]; echo $?)" "$hits stale opus pairing(s)"
 
-# 9. gating: all workflow skills must carry disable-model-invocation: true
+# 9. gating: derived from layout, not a maintained name list (a hardcoded list drifts
+#    silently as skills are added/renamed — this is exactly how land-the-plane and tailor
+#    went unchecked before). Convention: a top-level .claude/skills/NAME/SKILL.md is a
+#    gated, human-invoked workflow and MUST carry disable-model-invocation: true; a nested
+#    .claude/skills/CATEGORY/NAME/SKILL.md is an ungated, model-invocable library skill and
+#    must NOT carry it. Acknowledged tradeoff: a future *gated* workflow skill must live
+#    top-level to be caught here — flat hyphenated top-level names are already this repo's
+#    house idiom (see docs/customization.md), so this forecloses nothing real.
+#    :(glob) pathspec magic is required: git's default pathspec `*` crosses `/` (so a plain
+#    '.claude/skills/*/SKILL.md' matches nested files too), while :(glob) restores
+#    shell-style globbing where `*` stops at a path boundary — the two patterns below would
+#    otherwise both match the same superset and this check couldn't tell top-level from nested.
 bad=""
-for s in builder swarm-execute swarm-plan swarm-review swarm-research code-check architect qa-engineer security-auditor ui-ux-designer; do
-  f=".claude/skills/$s/SKILL.md"
-  if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
-    grep -q '^disable-model-invocation: true' "$f" || bad="$bad $s"
-  fi
-done
-report gating "$([ -z "$bad" ]; echo $?)" "ungated workflow skill(s):$bad"
+while IFS= read -r f; do
+  grep -q '^disable-model-invocation: true' "$f" || bad="$bad $f(top-level-must-gate)"
+done < <(git ls-files ':(glob).claude/skills/*/SKILL.md')
+while IFS= read -r f; do
+  grep -q '^disable-model-invocation: true' "$f" && bad="$bad $f(nested-must-not-gate)"
+done < <(git ls-files ':(glob).claude/skills/*/*/SKILL.md')
+report gating "$([ -z "$bad" ]; echo $?)" "layout violation(s):$bad"
 
 # 10. no-private-ids: no private-reference identifiers in tracked files
 hits=$({ git grep -IniwE 'argo|42gen' -- ':!scripts/check-invariants.sh' 2>/dev/null | grep -viE 'cargo|argocd'; git grep -InE 'ENG-[0-9]+|/Users/[a-z]+' -- ':!scratchpad/' ':!scripts/check-invariants.sh' 2>/dev/null; } | wc -l | tr -d ' ')
