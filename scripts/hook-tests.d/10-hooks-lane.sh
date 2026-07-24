@@ -214,3 +214,64 @@ run_case \
   '{"session_id":"u2-noremote","stop_hook_active":false}' \
   "CLAUDE_PROJECT_DIR=$u2_noremote_repo" \
   "exit0-silent"
+
+# ============================================================================
+# U4 — config-write ask-gate + Bash secret-write scan
+# ============================================================================
+
+u4_ptu_dir=$(_fresh_dir)
+
+run_case \
+  "pre-tool-use-validator: Write to .claude/rules/x.md asks (tailor propose-only contract)" \
+  ".claude/hooks/pre-tool-use-validator.sh" \
+  "$(cat <<'JSON'
+{"tool_name":"Write","tool_input":{"file_path":".claude/rules/x.md","content":"some rule content"}}
+JSON
+)" \
+  "CLAUDE_PROJECT_DIR=$u4_ptu_dir" \
+  "ask-json"
+
+run_case \
+  "pre-tool-use-validator: Write to .claude/settings.json asks" \
+  ".claude/hooks/pre-tool-use-validator.sh" \
+  "$(cat <<'JSON'
+{"tool_name":"Write","tool_input":{"file_path":".claude/settings.json","content":"{}"}}
+JSON
+)" \
+  "CLAUDE_PROJECT_DIR=$u4_ptu_dir" \
+  "ask-json"
+
+run_case \
+  "pre-tool-use-validator: Write to root CLAUDE.md asks" \
+  ".claude/hooks/pre-tool-use-validator.sh" \
+  "$(cat <<'JSON'
+{"tool_name":"Write","tool_input":{"file_path":"CLAUDE.md","content":"# hi"}}
+JSON
+)" \
+  "CLAUDE_PROJECT_DIR=$u4_ptu_dir" \
+  "ask-json"
+
+# Split across two vars so this fixture file's own text never contains a
+# contiguous AWS-key-shaped string (would false-positive this repo's own
+# Trivy secret-scan CI job) — same precaution as 00-baseline.sh.
+_u4_akid_prefix="AKIA"
+_u4_akid_suffix="TESTTESTTESTTEST"
+run_case \
+  "pre-tool-use-validator: Bash heredoc writing an AWS-key-shaped string asks" \
+  ".claude/hooks/pre-tool-use-validator.sh" \
+  "$(cat <<JSON
+{"tool_name":"Bash","tool_input":{"command":"cat > .env <<'EOF'\nAWS_KEY=${_u4_akid_prefix}${_u4_akid_suffix}\nEOF"}}
+JSON
+)" \
+  "CLAUDE_PROJECT_DIR=$u4_ptu_dir" \
+  "ask-json"
+
+run_case \
+  "pre-tool-use-validator: ordinary source Write is unaffected (allowed, silent)" \
+  ".claude/hooks/pre-tool-use-validator.sh" \
+  "$(cat <<'JSON'
+{"tool_name":"Write","tool_input":{"file_path":"src/u4-example.ts","content":"export const answer = 42;"}}
+JSON
+)" \
+  "CLAUDE_PROJECT_DIR=$u4_ptu_dir" \
+  "exit0-silent"

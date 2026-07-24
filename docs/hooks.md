@@ -7,7 +7,7 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | Hook | Event | Purpose |
 |------|-------|---------|
 | `session-start-loader.sh` | SessionStart | Load session context, detect active swarm agents, process handoffs, cleanup stale sessions |
-| `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection, protected file enforcement |
+| `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection (Write/Edit + Bash redirects/heredocs), protected file enforcement, config-write ask-gate |
 | `dangerous-command-guard.sh` | PreToolUse (Bash) | Guard against dangerous shell commands (force push, rm -rf, etc.) |
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
 | `pre-commit-verification.sh` | PreToolUse (Bash) | Pre-commit quality checks |
@@ -39,7 +39,9 @@ Scans Write/Edit content for 6 secret patterns:
 5. GitHub personal access tokens (`ghp_...`)
 6. Private keys (PEM format)
 
-Test files (`*.test.ts`, `*.spec.ts`, etc.) are excluded to reduce false positives.
+Test files (`*.test.ts`, `*.spec.ts`, etc.) are excluded to reduce false positives. The same 6 patterns also scan `Bash` commands that redirect or heredoc content into a file (`>`, `>>`, `<<`) — closing the gap where a heredoc'd `.env` write bypassed Write/Edit-only detection entirely.
+
+**Limitation**: this is a Write/Edit + Bash-redirect matcher, not a general secret scanner — it can't see secrets written by any other means (a script invoked some other way, an MCP tool, etc.), and pattern matching always has false negatives. Trivy's CI secret-scan job (`framework-invariants.yml`) is the actual backstop; treat this hook as an early, partial warning, not the guarantee.
 
 ### Protected Files (pre-tool-use-validator.sh)
 
@@ -47,6 +49,15 @@ Blocks modifications to critical system files:
 - `.git/`
 - `.env`
 - `.mcp.json`
+
+### Config-Write Ask-Gate (pre-tool-use-validator.sh)
+
+Asks for confirmation (not a hard block) before a direct Write/Edit to:
+- `.claude/settings.json`
+- `.claude/rules/*`
+- root `CLAUDE.md`
+
+These are the same paths `/tailor` proposes changes to rather than writing directly (see `tailor/SKILL.md`'s Output Contract) — this hook backs that contract mechanically instead of leaving it as convention only.
 
 ### Push Blocking (pre-push-main-blocker.sh)
 

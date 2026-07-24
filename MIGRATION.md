@@ -268,4 +268,12 @@ and triggers unchanged). If your own agents preloaded `designing-apis` or `appli
 
 **Action required:** none. A `[HOOK DEGRADATION]` block means `jq` isn't on `PATH` in that environment; install it to restore full hook coverage (`permissions.deny` enforcement is unaffected either way — it never depended on hooks or `jq`). A `[POST-COMPACTION RE-ORIENTATION]` block on `compact`/`resume` session starts is a reminder, not an error: check the native task list and any active plan artifact before continuing, and re-read files before editing them — per the Stale Context Check in `.claude/rules/debugging-protocol.md`.
 
+### New `ask`-tier prompts: config-file edits and Bash secret-shaped writes
+
+**Who is affected:** anyone (or any automation) that directly edits `.claude/settings.json`, any file under `.claude/rules/`, or the root `CLAUDE.md`; and anyone running a Bash command that redirects or heredocs secret-shaped content into a file (an AWS-key-shaped string, a JWT, a private-key block, etc.).
+
+**What breaks:** nothing breaks outright — both cases now pause for an explicit confirmation (`ask`, not `deny`) instead of proceeding silently. Fully automated/unattended pipelines that do either will need to handle the prompt.
+
+**Action required:** confirm the prompt to proceed as before. The config-file gate closes a mechanical-backing gap in `/tailor`'s "proposes only, never silently writes" contract (`.claude/skills/tailor/SKILL.md`); the Bash scan closes a blind spot where a heredoc'd `.env` write bypassed the existing Write/Edit secret detection entirely. Neither is a complete guarantee — see `docs/hooks.md`'s Secret Detection section for the standing limitation and the Trivy CI backstop.
+
 <!-- Future v3 migration notes appended here. -->
