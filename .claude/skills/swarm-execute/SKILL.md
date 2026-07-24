@@ -120,6 +120,7 @@ If quality gates fail: stash changes, mark the task as blocked via `TaskUpdate`,
 - Launch multiple explorers for broad searches
 - Use worker-architect for decisions, worker-builder for execution
 - Parallelize independent tasks (max 8 concurrent workers)
+- For large dispatch batches, declare a token/wave ceiling up front — see `swarm-coordination`'s Budget & Waves section
 - Keep worker prompts under 500 tokens for fast startup
 
 ## Constraints

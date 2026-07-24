@@ -98,6 +98,8 @@ Workers do not share mutable state directly — they receive a focused prompt fr
 
 Workers MUST follow the "Landing the Plane" protocol from AGENTS.md — which is two modes now, not one. `worker-builder` runs isolated (`isolation: worktree` in its frontmatter) and follows Mode A: commit on the assigned worktree branch, then report the commit SHA back to the orchestrator, which merges, re-runs gates, pushes, and cleans up the worktree. Every other worker (and any non-isolated agent or session) follows Mode B and pushes directly. Work is NOT complete until the responsible party's `git push` succeeds.
 
+Research output delivery layers a framework protocol on top of the platform default: the platform always returns a Task-tool worker's final message to the orchestrator; this repo's `swarm-research` protocol additionally directs `worker-research`/`worker-architect` to persist that output to their assigned file (the deliverable of record), while `worker-explorer` (no `Write` tool) always returns inline and the orchestrator persists it — see `swarm-research`'s Worker Dispatch rules.
+
 ## Tips
 
 - Use Haiku for read-only tasks (faster, cheaper)

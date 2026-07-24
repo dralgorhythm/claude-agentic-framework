@@ -13,6 +13,16 @@ description: Identify and analyze security threats. Use when designing a feature
 4. **Rate Severity**: Classify each threat as Critical / High / Medium / Low per the definitions in `.claude/rules/security.md` — Critical and High findings MUST be fixed before merge.
 5. **Record Findings**: Document each threat with its STRIDE category, severity, and remediation.
 
+## Agent-Specific Threats
+
+Beyond STRIDE, include this class whenever the design under review has a tool/model boundary:
+
+- **Indirect prompt injection**: a directive embedded in tool output (fetched web page, file contents, API response) that the model executes as if the user had typed it
+- **Tool poisoning**: a compromised or malicious MCP server/tool that returns crafted output designed to manipulate the calling agent
+- **Instruction-hierarchy violation**: content from a lower-trust source (tool output, retrieved document) overriding system- or developer-level instructions
+- **Over-scoped tokens**: credentials or API keys granted broader access than the task requires, widening the blast radius of a successful injection
+- **Config-as-code execution paths**: hooks, settings, and MCP definitions that execute automatically on checkout — see `.claude/rules/security.md`'s "Untrusted Content & Prompt Injection" section
+
 ## Threat Model Document
 
 ```markdown
