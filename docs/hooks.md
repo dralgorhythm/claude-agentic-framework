@@ -10,7 +10,7 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | `pre-tool-use-validator.sh` | PreToolUse | File locking, secret detection (Write/Edit + Bash redirects/heredocs), protected file enforcement, config-write ask-gate |
 | `dangerous-command-guard.sh` | PreToolUse (Bash) | Guard against dangerous shell commands (force push, rm -rf, etc.) |
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
-| `pre-commit-verification.sh` | PreToolUse (Bash) | Pre-commit quality checks |
+| `pre-commit-verification.sh` | PreToolUse (Bash) | Runs detected quality gates before `git commit`; blocks on failure, asks on timeout |
 | `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
 | `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted/unpushed work and unprocessed `scratchpad/corrections.log` entries |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
@@ -58,6 +58,18 @@ Asks for confirmation (not a hard block) before a direct Write/Edit to:
 - root `CLAUDE.md`
 
 These are the same paths `/tailor` proposes changes to rather than writing directly (see `tailor/SKILL.md`'s Output Contract) — this hook backs that contract mechanically instead of leaving it as convention only.
+
+### Quality Gates (pre-commit-verification.sh)
+
+Runs the project's detected quality gates before every `git commit` and blocks the commit if one fails (unit U5b of `artifacts/plan_framework_hardening.md`):
+
+- **Detection**: gate labels/commands come from `.claude/hooks/gate-lib.sh` (unit U5a) — per-stack: TS/JS via the detected package manager, Python, Go, Rust. No gates detected → the hook falls back to its original advisory text (manual verification guidance), unchanged.
+- **Evidence stamp**: a passing run writes `{epoch, tree-hash}` to `.claude/hooks/.state/commit-verified` — hook-authored only; nothing in this hook's own output ever instructs the agent to write it by hand. A later commit trusts the stamp only if it's BOTH ≤5 minutes old AND its recorded tree-hash matches the current `git write-tree` output — content-bound, not just time-bound, so staging an edit a second ago invalidates a minute-old stamp.
+- **On failure**: denies the commit, naming the failing gate and its log (`.claude/hooks/.state/gate-<label>.log`), plus a fixed reminder never to delete or weaken a test to force a pass.
+- **On timeout**: each gate runs under `timeout "${CLAUDE_GATE_TIMEOUT_SECS:-120}"` (default 120s per gate; set the env var to override). The hook's own registration in `settings.json` is 300s, leaving headroom above the per-gate default so ordinary (non-commit) Bash calls still return instantly via the hook's early exits. A gate that exceeds its budget produces an `ask`, never a silent kill or an indefinite hang — and no stamp is written.
+On stock macOS, GNU `timeout` is absent — the hook falls back to `gtimeout` (Homebrew coreutils) or, failing both, runs gates unbounded within its own settings.json timeout ceiling; install coreutils to restore per-gate bounding.
+- **Escape hatch**: `CLAUDE_SKIP_GATE_HOOK=1` allows the commit unconditionally; the skip is always disclosed in the hook's own `additionalContext`, never silent.
+- **jq-absent**: identical to every other hook in this repo — silent exit 0, no gates run, no advisory shown (the repo's fail-open convention, see Security model below). Broader jq-availability degradation visibility is a session-level concern (`session-start-loader.sh`), not something this specific hook re-announces per commit.
 
 ### Push Blocking (pre-push-main-blocker.sh)
 

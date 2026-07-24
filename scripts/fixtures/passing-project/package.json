@@ -1,0 +1,9 @@
+{
+  "name": "passing-project-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dependency-free fixture for hook-behavior tests: a project whose test script always succeeds (no npm install needed) — exercises the pre-commit gate's green path and hook-authored evidence-stamp write (unit U5b). Sibling of failing-project (red path) and slow-gate (timeout path).",
+  "scripts": {
+    "test": "node -e \"process.exit(0)\""
+  }
+}

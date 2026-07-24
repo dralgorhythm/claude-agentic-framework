@@ -287,3 +287,23 @@ Correction Capture convention; adopters who aren't will never see this reminder,
 empty log stays exactly as silent as before.
 
 <!-- Future v3 migration notes appended here. -->
+
+### Commits are newly blocking when a quality gate is detected
+
+**Who is affected:** any project with a detectable stack — a `package.json` with a `test`/`lint`/`typecheck`/`biome` script, a `pyproject.toml` with `pytest`/`ruff`/`mypy`, a `go.mod`, or a `Cargo.toml`. Projects with none of these see no behavior change.
+
+**What breaks:** `pre-commit-verification.sh` used to only print advisory text before a `git commit` — it never ran anything itself, and trusted a stamp the agent was instructed to write by hand after manually verifying (self-attestation). It now runs the project's detected quality gates itself (detection: `.claude/hooks/gate-lib.sh`) and blocks the commit if one fails:
+
+- A failing gate denies the commit, naming the gate and its log (`.claude/hooks/.state/gate-<label>.log`), plus a reminder never to delete or weaken a test to force a pass.
+- A passing run writes a hook-authored evidence stamp (`.claude/hooks/.state/commit-verified`) so an immediately-following commit doesn't always re-run the same gates — but the stamp is trusted only when BOTH ≤5 minutes old AND content-bound (its recorded tree-hash matches the current `git write-tree` output), so staging any change invalidates it even seconds after a fresh stamp.
+- A gate that runs longer than its timeout produces an `ask` (an honest "exceeded budget, run manually" reason), never a silent kill or an indefinite hang, and writes no stamp.
+- The hook's own registration in `.claude/settings.json` is raised from 5s to 300s to fit real gate runs; each individual gate still defaults to a 120s budget.
+
+**Action required:**
+
+- If a gate legitimately takes longer than the 120s default, set `CLAUDE_GATE_TIMEOUT_SECS` (seconds) in your environment before committing.
+- To skip gate enforcement for one commit (e.g. mid-refactor, or a known-slow environment), set `CLAUDE_SKIP_GATE_HOOK=1`. The skip is always disclosed in the hook's own output, never silent.
+- If you don't want this hook running gates at all, remove its entry from `.claude/settings.json`'s `hooks.PreToolUse` (`Bash` matcher) — see `docs/hooks.md`'s "How to disable a hook."
+- If `jq` is unavailable in your environment, this hook's behavior is unchanged from before this release (silent no-op; no gates run, no advisory shown).
+
+<!-- Future migration notes appended here. -->

@@ -1,0 +1,9 @@
+{
+  "name": "slow-gate-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Fixture whose test script shells out to gate.sh, which sleeps past a deliberately short per-gate timeout — exercises the pre-commit gate's honest 'ask' path on timeout, never a silent kill or hang (unit U5b). See gate.sh for the sleep itself.",
+  "scripts": {
+    "test": "bash gate.sh"
+  }
+}
