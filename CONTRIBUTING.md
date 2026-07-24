@@ -100,6 +100,20 @@ passes unaided, that's the redundancy test from the eval-first policy catching u
 reality, not a flaw in the skill: open a retirement PR citing the run, the same way
 you'd cite evidence to add a skill in the first place.
 
+## Standing self-improvement loop
+
+This is the loop the eval-first and retirement policies above feed into, not a separate
+program: **capture** — a mid-session correction that contradicts standing guidance lands
+in `scratchpad/corrections.log` (`core-directives.md`'s Correction Capture convention);
+**escalate** — `land-the-plane`'s retro step maps each entry to the strongest enforcement
+rung it can support (rule edit / skill edit / new hook / CI check); **verify** — promoted
+skills go through the eval-first policy above, promoted hooks/CI checks get a harness case
+(`scripts/hook-tests.d/`) that demonstrates the failure they now block; **re-audit** — at
+each model-generation bump, alongside the retirement re-evals above, re-run the
+failure-taxonomy coverage audit from `artifacts/research_ai_coding_frustrations.md` against
+the then-current framework and diff against its coverage matrix. This is how the framework
+compounds instead of re-discovering the same failure twice.
+
 ## Getting started
 
 - Read [CLAUDE.md](CLAUDE.md) and `.claude/rules/` — they define the standards this repo
