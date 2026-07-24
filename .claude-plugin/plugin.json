@@ -1,7 +1,7 @@
 {
   "name": "agentic-framework",
   "displayName": "Claude Agentic Framework",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Drop-in Claude Code framework: swarm orchestration workflows, curated knowledge skills, tiered worker agents, and fail-soft guardrail hooks.",
   "author": {
     "name": "dralgorhythm"

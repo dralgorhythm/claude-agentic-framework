@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- Add entries under Breaking / Added / Changed / Deprecated / Removed / Fixed / Security. scripts/release.sh stamps this section with a version and date at release time. -->
 
+## [5.0.0] - 2026-07-24
+
 ### Added
 
 - Stack packs (`.claude/templates/stack-packs/`): concrete, working exemplar files per stack — one `README.md`, one `golden-path.skill.md`, one `ci-gates.yml`, zero placeholder tokens — that operationalize `tech-strategy.md`'s choices, `code-quality.md`'s gates, and `pre-commit-verification.sh`'s detection instead of restating them (see `artifacts/adr_stack_packs.md`). TypeScript/JavaScript ships first (pnpm/Vite/Biome/Vitest/React 19/Node LTS); Python and Go follow as pure per-stack additions under the same three-file convention
