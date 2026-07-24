@@ -212,7 +212,7 @@ See `.claude/rules/security.md` for the full ladder and rationale. In short: not
 
 ## Opt-in recipes
 
-These recipes are **not enabled by default** — narrower guardrails whose cost/benefit is genuinely project-specific, so wiring one in is a per-project choice, not something this framework turns on for you. (The `TaskCompleted` quality-gate hook used to be documented here as an opt-in recipe; it now ships registered by default instead, because the evidence showed opt-in guardrails don't get adopted — see the "Quality Gates (task-quality-gate.sh)" subsection above and `artifacts/adr_default_quality_gate.md` for the full decision.) What remains genuinely opt-in: the forced-eval skill-activation hook below, and `docs/examples/worker-budget-hook.sh` (a concurrent-worker-budget warning documented in `docs/examples/README.md`).
+These recipes are **not enabled by default** — narrower guardrails whose cost/benefit is genuinely project-specific, so wiring one in is a per-project choice, not something this framework turns on for you. (The `TaskCompleted` quality-gate hook used to be documented here as an opt-in recipe; it now ships registered by default instead, because the evidence showed opt-in guardrails don't get adopted — see the "Quality Gates (task-quality-gate.sh)" subsection above and `artifacts/adr_default_quality_gate.md` for the full decision.) What remains genuinely opt-in: the forced-eval skill-activation hook below, the mechanical-TDD-enforcement recipe below, and `docs/examples/worker-budget-hook.sh` (a concurrent-worker-budget warning documented in `docs/examples/README.md`).
 
 ### Forced-eval skill-activation hook
 
@@ -235,6 +235,10 @@ Install (add to `.claude/settings.json`):
 ```
 
 Evidence: single disclosed-methodology test, N=50, 84% vs 20% activation (MEDIUM confidence). This is one internal test, not a peer-reviewed benchmark — treat the effect size as directional, not a guarantee, and re-validate against your own prompt mix before relying on it.
+
+### Mechanical TDD enforcement (opt-in, external)
+
+Teams that want the *hard* version of the `testing` skill's red-green-observe discipline — not just the documented workflow, but a `PreToolUse` hook that blocks an implementation edit lacking a preceding failing test — can wire one in as a project-specific choice. [nizos/tdd-guard](https://github.com/nizos/tdd-guard) is a worked external example of this pattern; this repo does not vendor it — evaluate and adopt independently. It composes with, rather than replaces, the shipped commit-time and task-completion quality gates (`pre-commit-verification.sh`, `task-quality-gate.sh`): those confirm tests *pass*, a TDD-enforcement hook additionally confirms a test *failed first*.
 
 ---
 

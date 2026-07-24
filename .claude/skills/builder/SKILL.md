@@ -28,6 +28,8 @@ Follow the `testing` skill for TDD/coverage methodology. For root-cause investig
 4. **Integrate** — Use Grep to verify integration points
 5. **Test** — Run tests to verify functionality
 
+Step 5 runs on `testing`'s red-green-observe loop: run the failing regression test and observe it fail before fixing a bug, state a falsifiable "done when" before implementing a feature, and close with cited evidence (test output, SHA) — never narration.
+
 ## Focus
 - Implement from approved plans/specs
 - Write tests alongside code (TDD)
