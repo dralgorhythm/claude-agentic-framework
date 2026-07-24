@@ -13,9 +13,11 @@
 #
 # Exits non-zero if any non-skipped case fails.
 
-# shellcheck disable=SC2329  # report/skipped/run_case/path_without_jq are a library
+# shellcheck disable=SC2329,SC2317  # report/skipped/run_case/path_without_jq are a library
 # for scripts/hook-tests.d/*.sh, called only after being source'd at runtime — invisible
-# to shellcheck's static reachability analysis of this file in isolation.
+# to shellcheck's static reachability analysis of this file in isolation. Both codes are
+# the same false positive; which one fires depends on the shellcheck version (SC2329
+# "never invoked" locally, SC2317 "unreachable" on newer CI runners).
 set -u
 cd "$(git rev-parse --show-toplevel 2>/dev/null || echo .)" || exit 1
 FAIL=0
