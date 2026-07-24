@@ -33,7 +33,7 @@ Regenerate `uv.lock` with `uv lock` (`uv sync` regenerates it implicitly too) �
 
 ## Gates Wiring
 
-`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `pyproject.toml` and reminds you to run these commands before a commit lands. CI runs the identical four gates — see this pack's `ci-gates.yml`.
+`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `pyproject.toml` and reminds you to run these commands before a commit lands. CI runs the same four gates plus a dependency-audit step (`uvx pip-audit`) that has no local pre-commit equivalent — see this pack's `ci-gates.yml`.
 
 ## Related Skills
 

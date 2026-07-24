@@ -59,7 +59,8 @@ jobs:
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0 (SHA-pins its own setup-trivy dependency; older releases referenced since-deleted setup-trivy tags)
         with:
           scan-type: fs
-          scanners: secret
+          # No manifests exist in this repo today, so vuln findings are trivially green here — the scanner is real for forks/adopters that add them.
+          scanners: secret,vuln
           exit-code: 1
 
   diff-size:

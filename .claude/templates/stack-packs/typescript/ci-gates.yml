@@ -16,6 +16,7 @@ gates:
         node-version: lts/*
         cache: pnpm
     - run: pnpm install --frozen-lockfile
+    - run: pnpm audit --audit-level high  # dependency scan — .claude/rules/security.md Dependency Safety
     - run: pnpm test        # vitest run
     - run: pnpm lint        # biome check .
     - run: pnpm typecheck   # tsc --noEmit

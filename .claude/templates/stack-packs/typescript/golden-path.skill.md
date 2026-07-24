@@ -34,7 +34,7 @@ Regenerate `pnpm-lock.yaml` with `pnpm install` — never hand-edit it. Commit i
 
 ## Gates Wiring
 
-`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `package.json` and reminds you to run these commands before a commit lands. CI runs the identical four gates — see this pack's `ci-gates.yml`.
+`.claude/hooks/pre-commit-verification.sh` auto-detects this stack from `package.json` and reminds you to run these commands before a commit lands. CI runs the same four gates plus a dependency-audit step (`pnpm audit --audit-level high`) that has no local pre-commit equivalent — see this pack's `ci-gates.yml`.
 
 ## Related Skills
 
