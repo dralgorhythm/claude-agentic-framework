@@ -58,3 +58,5 @@
 - Anything a CI check already blocks — cite the check instead of re-flagging it (see the Enforcement Ladder)
 - Naming-convention bikeshedding not tied to a correctness or security risk
 - Project context already stated in CLAUDE.md — restate only what's review-specific
+
+<!-- rules-hash: [REPLACE — run: cat .claude/rules/code-quality.md .claude/rules/security.md | shasum -a 256 | cut -d' ' -f1] -->

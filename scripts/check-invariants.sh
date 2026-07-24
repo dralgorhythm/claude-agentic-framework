@@ -68,15 +68,26 @@ report model-tiering "$([ -z "$bad" ]; echo $?)" "violations:$bad"
 hits=$(git grep -IniE 'worker-(reviewer|research)[^a-z].*opus' -- ':!artifacts/' ':!CHANGELOG*' ':!MIGRATION*' 2>/dev/null | wc -l | tr -d ' ')
 report no-model-drift "$([ "$hits" = 0 ]; echo $?)" "$hits stale opus pairing(s)"
 
-# 9. gating: all workflow skills must carry disable-model-invocation: true
+# 9. gating: derived from layout, not a maintained name list (a hardcoded list drifts
+#    silently as skills are added/renamed — this is exactly how land-the-plane and tailor
+#    went unchecked before). Convention: a top-level .claude/skills/NAME/SKILL.md is a
+#    gated, human-invoked workflow and MUST carry disable-model-invocation: true; a nested
+#    .claude/skills/CATEGORY/NAME/SKILL.md is an ungated, model-invocable library skill and
+#    must NOT carry it. Acknowledged tradeoff: a future *gated* workflow skill must live
+#    top-level to be caught here — flat hyphenated top-level names are already this repo's
+#    house idiom (see docs/customization.md), so this forecloses nothing real.
+#    :(glob) pathspec magic is required: git's default pathspec `*` crosses `/` (so a plain
+#    '.claude/skills/*/SKILL.md' matches nested files too), while :(glob) restores
+#    shell-style globbing where `*` stops at a path boundary — the two patterns below would
+#    otherwise both match the same superset and this check couldn't tell top-level from nested.
 bad=""
-for s in builder swarm-execute swarm-plan swarm-review swarm-research code-check architect qa-engineer security-auditor ui-ux-designer; do
-  f=".claude/skills/$s/SKILL.md"
-  if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
-    grep -q '^disable-model-invocation: true' "$f" || bad="$bad $s"
-  fi
-done
-report gating "$([ -z "$bad" ]; echo $?)" "ungated workflow skill(s):$bad"
+while IFS= read -r f; do
+  grep -q '^disable-model-invocation: true' "$f" || bad="$bad $f(top-level-must-gate)"
+done < <(git ls-files ':(glob).claude/skills/*/SKILL.md')
+while IFS= read -r f; do
+  grep -q '^disable-model-invocation: true' "$f" && bad="$bad $f(nested-must-not-gate)"
+done < <(git ls-files ':(glob).claude/skills/*/*/SKILL.md')
+report gating "$([ -z "$bad" ]; echo $?)" "layout violation(s):$bad"
 
 # 10. no-private-ids: no private-reference identifiers in tracked files
 hits=$({ git grep -IniwE 'argo|42gen' -- ':!scripts/check-invariants.sh' 2>/dev/null | grep -viE 'cargo|argocd'; git grep -InE 'ENG-[0-9]+|/Users/[a-z]+' -- ':!scratchpad/' ':!scripts/check-invariants.sh' 2>/dev/null; } | wc -l | tr -d ' ')
@@ -219,6 +230,34 @@ fi
 # 21. claudemd-lines: CLAUDE.md must stay a short summary layer (<= 200 lines)
 n=$(awk 'END{print NR}' CLAUDE.md | tr -d ' ')
 report claudemd-lines "$([ "${n:-9999}" -le 200 ]; echo $?)" "CLAUDE.md is $n lines (budget 200)"
+
+# 22. rules-lines: the always-loaded rules layer (.claude/rules/*.md) must stay within
+#     budget. Excludes any file whose frontmatter carries a `paths:` key — those are
+#     load-on-demand (scoped to matching file paths, see docs/customization.md's "Adding
+#     a Rule"), not part of the every-session cost this budget is guarding. :(glob) keeps
+#     this to files directly under .claude/rules/ (see check 9's comment on why plain `*`
+#     isn't enough — no nested rules exist today, but the intent is top-level-only).
+rules_total=0
+while IFS= read -r f; do
+  scoped=$(awk '/^---$/{c++;next} c==1 && /^paths:/{print;exit}' "$f")
+  [ -n "$scoped" ] && continue
+  n=$(wc -l < "$f" | tr -d ' ')
+  rules_total=$((rules_total + n))
+done < <(git ls-files ':(glob).claude/rules/*.md')
+report rules-lines "$([ "$rules_total" -le 500 ]; echo $?)" "always-loaded rules total ${rules_total} lines (budget 500; paths:-scoped files excluded)"
+
+# 23. review-freshness: a tracked REVIEW.md's rules-hash footer must match the current
+#     .claude/rules/code-quality.md + security.md content (review-steering's generation
+#     step 8 stamps this footer). No tracked REVIEW.md -> skip cleanly via the existing
+#     skipped() mechanism (this repo ships none; adopters get one via review-steering).
+if git ls-files --error-unmatch REVIEW.md >/dev/null 2>&1; then
+  actual=$(cat .claude/rules/code-quality.md .claude/rules/security.md | shasum -a 256 | cut -d' ' -f1)
+  stamped=$(tail -n1 REVIEW.md | sed -n 's/.*rules-hash:[[:space:]]*\([0-9a-f]*\).*/\1/p')
+  report review-freshness "$([ -n "$stamped" ] && [ "$stamped" = "$actual" ]; echo $?)" "REVIEW.md rules-hash ${stamped:-missing} != current $actual"
+else
+  SKIP="$SKIP review-freshness"
+  report review-freshness 0 ""
+fi
 
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"

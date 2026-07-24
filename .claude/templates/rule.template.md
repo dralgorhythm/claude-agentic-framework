@@ -1,8 +1,11 @@
 # [Rule Name]
 
 <!--
-NOTE: Rules are auto-loaded for ALL files in the project.
-There is NO path-based conditional loading.
+NOTE: Rules without a `paths:` frontmatter key are auto-loaded for ALL files in
+the project and count against the `rules-lines` CI budget. Add `paths:` frontmatter
+(e.g. `paths: ["src/api/**"]`) to load a rule only when matching files are touched —
+see docs/customization.md "Adding a Rule" for the three-tier table and
+.claude/rules/hooks-conventions.md for a worked example.
 Keep rules concise to minimize token usage.
 Place this file in: .claude/rules/[rule-name].md
 -->

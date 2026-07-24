@@ -18,7 +18,9 @@ disable-model-invocation: true
 - `name` — must match the directory name.
 - `description` — shown in autocomplete; also what Claude matches against if model-invocation is left enabled.
 - `argument-hint` — optional help text shown for the command's arguments.
-- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset only for purely advisory workflows where model-invocation is safe (e.g. a knowledge/library skill — this repo gates all ten of its shipped workflow skills).
+- `disable-model-invocation: true` — set this whenever the workflow has side effects (writes files, runs commands, pushes changes). It restricts invocation to a user explicitly typing `/my-command` and prevents Claude from triggering it on its own. Leave it unset only for purely advisory workflows where model-invocation is safe (e.g. a knowledge/library skill).
+
+**Layout convention (CI-enforced by the `gating` check in `scripts/check-invariants.sh`)**: a top-level `.claude/skills/<name>/SKILL.md` is a gated, human-invoked workflow and MUST carry this flag; a nested `.claude/skills/<category>/<name>/SKILL.md` is an ungated, model-invocable library skill and must NOT carry it. The check derives the rule from directory depth rather than a maintained name list, so a new skill can't silently slip through ungated (or gated) by omission.
 
 Add command instructions below the frontmatter, and end the file with `$ARGUMENTS` so the user's trailing text is passed through:
 
@@ -56,6 +58,16 @@ See `.claude/templates/skill.template.md` for the full format.
 
 ## Adding a Rule
 
+Rules come in three tiers — use the cheapest one that fits:
+
+| Tier | Mechanism | Loads | Budget (CI-enforced) |
+|------|-----------|-------|-----------------------|
+| (a) Always-loaded rule | `.claude/rules/*.md`, no `paths:` frontmatter | Every session, regardless of what's touched | `rules-lines` check in `scripts/check-invariants.sh` — ≤500 lines total (measured 409 lines at implementation time) |
+| (b) `paths:`-scoped rule | `.claude/rules/*.md` with native `paths:` frontmatter — loads only when a matching file is read or edited (see [code.claude.com/docs/en/memory](https://code.claude.com/docs/en/memory)) — worked example: `.claude/rules/hooks-conventions.md` | Only when a path under its globs is touched | Excluded from `rules-lines` entirely — free the rest of the session |
+| (c) Skill | `.claude/skills/[category]/my-skill/SKILL.md` | Frontmatter `description` always loaded; body only when triggered | `desc-budget` check — ≤6000 chars total across all SKILL.md descriptions |
+
+Use (a) for conventions every session needs regardless of what's touched; (b) for conventions specific to one area of the tree (a hooks/scripts idiom, a package's local style); (c) for larger or occasionally-needed procedural guidance ("Adding a Skill" above). Stack packs (below) MAY ship a `paths:`-scoped rule where a full skill would be heavier than the guidance warrants.
+
 Create `.claude/rules/my-rule.md`:
 
 ```markdown
@@ -64,7 +76,17 @@ Create `.claude/rules/my-rule.md`:
 Rules here. Keep it short — rules load on every request.
 ```
 
-Rules auto-load. No registration needed.
+Rules auto-load. No registration needed. To scope a rule to one area of the tree instead of always-loading it, add a `paths:` frontmatter key naming the globs it applies to:
+
+```markdown
+---
+paths: ["src/api/**"]
+---
+
+# API Conventions
+
+Only loads when a file under src/api/ is read or edited.
+```
 
 The framework intentionally ships no stack-specific frontend rule (React, Vue, etc.) — that choice belongs to the adopter, not the template. Add your own under `.claude/rules/` using `.claude/templates/rule.template.md` as the starting point.
 

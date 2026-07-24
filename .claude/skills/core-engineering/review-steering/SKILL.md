@@ -27,6 +27,7 @@ Do not duplicate CLAUDE.md content into REVIEW.md. REVIEW.md carries only what a
 5. Add repo-specific invariants a generic reviewer cannot infer from a diff alone — artifact-naming conventions, enforcement-ladder placement, framework-specific patterns.
 6. Confirm CLAUDE.md still states project context accurately; both surfaces depend on it being current.
 7. Scaffold from the bundled template and replace every placeholder before committing — see Resources below.
+8. Stamp the final line with `<!-- rules-hash: <hash> -->`, where `<hash>` is the output of `cat .claude/rules/code-quality.md .claude/rules/security.md | shasum -a 256 | cut -d' ' -f1`. `scripts/check-invariants.sh`'s `review-freshness` check recomputes this on every run and fails the build if a tracked REVIEW.md's footer is missing or doesn't match — see Refresh Discipline below.
 
 ## Imperative Style, Not Prose
 
@@ -39,8 +40,8 @@ Compile rules into commands, not descriptions — every line should read like an
 ## Refresh Discipline
 
 - Rules changed → regenerate REVIEW.md in the same PR. Do not defer it to a follow-up.
-- REVIEW.md is a build artifact of `.claude/rules/`, not an independently maintained document — it must never contradict the rules it was compiled from.
-- Drift means reviewers enforce stale policy against current code. Treat a contradiction as a bug, not a style disagreement.
+- REVIEW.md is a build artifact of `.claude/rules/`, not an independently maintained document. Freshness is mechanically checked, not self-attested: `scripts/check-invariants.sh`'s `review-freshness` check recomputes the step-8 hash from the current `.claude/rules/code-quality.md` + `security.md` content and fails the build if a tracked REVIEW.md's footer doesn't match.
+- Drift means reviewers enforce stale policy against current code. A `review-freshness` failure is the check telling you to regenerate and re-stamp — not a style disagreement to negotiate.
 
 ## What NOT to Put in REVIEW.md
 
