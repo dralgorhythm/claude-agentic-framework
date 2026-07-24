@@ -47,6 +47,42 @@ if [ -d "$PROJECT_DIR/.git" ]; then
 - Or track remaining work in the task tracker / GitHub Issues
 ---"
     fi
+
+    # Check for unpushed commits — remote-aware. A repo with zero remotes
+    # configured skips this section entirely: counting "commits not on any
+    # remote" without that guard warns on every commit in every local-only
+    # repo, which is noise, not a reminder.
+    REMOTES=$(git -C "$PROJECT_DIR" remote 2>/dev/null)
+    if [ -n "$REMOTES" ]; then
+        UPSTREAM_REF=$(git -C "$PROJECT_DIR" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)
+        if [ -n "$UPSTREAM_REF" ]; then
+            # Has a configured upstream: count commits it doesn't have yet.
+            AHEAD=$(git -C "$PROJECT_DIR" rev-list --count '@{upstream}..HEAD' 2>/dev/null || echo 0)
+            [[ "$AHEAD" =~ ^[0-9]+$ ]] || AHEAD=0
+            if [ "$AHEAD" -gt 0 ]; then
+                echo "
+---
+[UNPUSHED WORK REMINDER]
+- $AHEAD commit(s) ahead of $UPSTREAM_REF
+- Push before ending: git push
+---"
+            fi
+        else
+            # No upstream tracking branch configured at all: count commits
+            # unreachable from any remote-tracking ref.
+            CURRENT_BRANCH=$(git -C "$PROJECT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "your-branch")
+            UNPUSHED=$(git -C "$PROJECT_DIR" rev-list --count HEAD --not --remotes 2>/dev/null || echo 0)
+            [[ "$UNPUSHED" =~ ^[0-9]+$ ]] || UNPUSHED=0
+            if [ "$UNPUSHED" -gt 0 ]; then
+                echo "
+---
+[UNPUSHED WORK REMINDER]
+- $UNPUSHED commit(s) with no upstream tracking branch configured
+- Push and set upstream: git push -u origin $CURRENT_BRANCH
+---"
+            fi
+        fi
+    fi
 fi
 
 exit 0

@@ -139,3 +139,78 @@ run_case \
   '{"source":"startup","session_id":"44444444-0000-0000-0000-000000000000"}' \
   "CLAUDE_PROJECT_DIR=$u9_startup_dir" \
   "exit0-silent"
+
+# ============================================================================
+# U2 — stop-validator detects unpushed work, remote-aware
+# ============================================================================
+
+# Shared throwaway bare "remote" for the fixtures below — a local filesystem
+# path works fine as a git remote; no network needed.
+u2_remote=$(_fresh_dir)
+git init -q --bare "$u2_remote" >/dev/null 2>&1
+
+# --- ahead of a configured upstream: warns with count + push command ------
+u2_ahead_repo=$(_fresh_dir)
+git -C "$u2_ahead_repo" init -q >/dev/null 2>&1
+git -C "$u2_ahead_repo" -c user.email=test@example.com -c user.name=test \
+  commit -q --allow-empty -m init >/dev/null 2>&1
+git -C "$u2_ahead_repo" remote add origin "$u2_remote" >/dev/null 2>&1
+git -C "$u2_ahead_repo" push -q -u origin HEAD >/dev/null 2>&1
+git -C "$u2_ahead_repo" -c user.email=test@example.com -c user.name=test \
+  commit -q --allow-empty -m second >/dev/null 2>&1
+
+run_case \
+  "stop-validator: ahead-of-upstream reminder includes the commit count" \
+  ".claude/hooks/stop-validator.sh" \
+  '{"session_id":"u2-ahead","stop_hook_active":false}' \
+  "CLAUDE_PROJECT_DIR=$u2_ahead_repo" \
+  "stdout-contains:1 commit(s) ahead"
+
+run_case \
+  "stop-validator: ahead-of-upstream reminder includes the push command" \
+  ".claude/hooks/stop-validator.sh" \
+  '{"session_id":"u2-ahead","stop_hook_active":false}' \
+  "CLAUDE_PROJECT_DIR=$u2_ahead_repo" \
+  "stdout-contains:git push"
+
+# --- clean and pushed: silent (has a real upstream, ahead=0) ---------------
+u2_clean_repo=$(_fresh_dir)
+git -C "$u2_clean_repo" init -q >/dev/null 2>&1
+git -C "$u2_clean_repo" -c user.email=test@example.com -c user.name=test \
+  commit -q --allow-empty -m init >/dev/null 2>&1
+git -C "$u2_clean_repo" remote add origin "$u2_remote" >/dev/null 2>&1
+git -C "$u2_clean_repo" push -q -u origin HEAD >/dev/null 2>&1
+
+run_case \
+  "stop-validator: silent when pushed and up to date with a configured remote" \
+  ".claude/hooks/stop-validator.sh" \
+  '{"session_id":"u2-clean","stop_hook_active":false}' \
+  "CLAUDE_PROJECT_DIR=$u2_clean_repo" \
+  "exit0-silent"
+
+# --- remote configured but no upstream tracking branch: git push -u guidance
+u2_nostream_repo=$(_fresh_dir)
+git -C "$u2_nostream_repo" init -q >/dev/null 2>&1
+git -C "$u2_nostream_repo" -c user.email=test@example.com -c user.name=test \
+  commit -q --allow-empty -m init >/dev/null 2>&1
+git -C "$u2_nostream_repo" remote add origin "$u2_remote" >/dev/null 2>&1
+
+run_case \
+  "stop-validator: git push -u guidance when a remote exists but no upstream is configured" \
+  ".claude/hooks/stop-validator.sh" \
+  '{"session_id":"u2-nostream","stop_hook_active":false}' \
+  "CLAUDE_PROJECT_DIR=$u2_nostream_repo" \
+  "stdout-contains:git push -u"
+
+# --- zero-remote repo: no unpushed warning at all --------------------------
+u2_noremote_repo=$(_fresh_dir)
+git -C "$u2_noremote_repo" init -q >/dev/null 2>&1
+git -C "$u2_noremote_repo" -c user.email=test@example.com -c user.name=test \
+  commit -q --allow-empty -m init >/dev/null 2>&1
+
+run_case \
+  "stop-validator: silent — no unpushed warning in a zero-remote repo" \
+  ".claude/hooks/stop-validator.sh" \
+  '{"session_id":"u2-noremote","stop_hook_active":false}' \
+  "CLAUDE_PROJECT_DIR=$u2_noremote_repo" \
+  "exit0-silent"

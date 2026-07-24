@@ -12,7 +12,7 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
 | `pre-commit-verification.sh` | PreToolUse (Bash) | Pre-commit quality checks |
 | `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
-| `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted changes |
+| `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted and unpushed work |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
 | `post-edit-lint.sh` | PostToolUse | Auto-format after edits; surfaces only unfixable issues |
 | `branch-pr-discipline.sh` | PreToolUse (Bash) | Warn-only branch/PR hygiene checks |
@@ -62,6 +62,7 @@ Enforces trunk-based development by blocking pushes to main/master:
 - Supports handoff messages between sessions
 - Auto-cleans stale sessions older than 24 hours
 - Warns about uncommitted changes on session stop
+- Warns about unpushed commits too, remote-aware: ahead-of-upstream count (with the push command) or `git push -u` guidance when no upstream is configured — silent in repos with no `git remote` configured at all
 - Releases file locks before exit
 
 ## Creating a Hook
