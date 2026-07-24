@@ -111,3 +111,31 @@ run_case \
   '{"source":"startup","session_id":"11111111-0000-0000-0000-000000000000"}' \
   "CLAUDE_PROJECT_DIR=$u1_ssl_dir PATH=$u1_nojq_path" \
   "stdout-contains:[HOOK DEGRADATION]"
+
+# ============================================================================
+# U9 — post-compaction re-orientation
+# ============================================================================
+
+u9_compact_dir=$(_fresh_dir)
+run_case \
+  "session-start-loader: source=compact emits [POST-COMPACTION RE-ORIENTATION] block" \
+  ".claude/hooks/session-start-loader.sh" \
+  '{"source":"compact","session_id":"22222222-0000-0000-0000-000000000000"}' \
+  "CLAUDE_PROJECT_DIR=$u9_compact_dir" \
+  "stdout-contains:POST-COMPACTION RE-ORIENTATION"
+
+u9_resume_dir=$(_fresh_dir)
+run_case \
+  "session-start-loader: source=resume emits [POST-COMPACTION RE-ORIENTATION] block" \
+  ".claude/hooks/session-start-loader.sh" \
+  '{"source":"resume","session_id":"33333333-0000-0000-0000-000000000000"}' \
+  "CLAUDE_PROJECT_DIR=$u9_resume_dir" \
+  "stdout-contains:POST-COMPACTION RE-ORIENTATION"
+
+u9_startup_dir=$(_fresh_dir)
+run_case \
+  "session-start-loader: source=startup does not emit [POST-COMPACTION RE-ORIENTATION] (silent on a fresh project)" \
+  ".claude/hooks/session-start-loader.sh" \
+  '{"source":"startup","session_id":"44444444-0000-0000-0000-000000000000"}' \
+  "CLAUDE_PROJECT_DIR=$u9_startup_dir" \
+  "exit0-silent"

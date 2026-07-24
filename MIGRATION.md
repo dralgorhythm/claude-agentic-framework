@@ -260,12 +260,12 @@ and triggers unchanged). If your own agents preloaded `designing-apis` or `appli
 
 ## v4.0.x → next release
 
-### Session start now surfaces hook-degradation context
+### Session start now surfaces hook-degradation and post-compaction re-orientation context
 
-**Who is affected:** anyone whose environment is missing `jq`. Everyone else sees no change.
+**Who is affected:** anyone whose environment is missing `jq`, and anyone whose session resumes or continues after a context-compaction event. Everyone else sees no change.
 
-**What breaks:** nothing — this is new, additive `SessionStart` output, not a behavior change to any tool call.
+**What breaks:** nothing — both are new, additive `SessionStart` output, not a behavior change to any tool call.
 
-**Action required:** none. If you see a `[HOOK DEGRADATION]` block at session start, it means `jq` isn't on `PATH` in that environment; install `jq` to restore full hook coverage. `permissions.deny` enforcement is unaffected either way — it never depended on hooks or `jq`.
+**Action required:** none. A `[HOOK DEGRADATION]` block means `jq` isn't on `PATH` in that environment; install it to restore full hook coverage (`permissions.deny` enforcement is unaffected either way — it never depended on hooks or `jq`). A `[POST-COMPACTION RE-ORIENTATION]` block on `compact`/`resume` session starts is a reminder, not an error: check the native task list and any active plan artifact before continuing, and re-read files before editing them — per the Stale Context Check in `.claude/rules/debugging-protocol.md`.
 
 <!-- Future v3 migration notes appended here. -->

@@ -47,6 +47,19 @@ echo "{\"session_id\": \"$SESSION_ID\", \"started\": \"$(date -Iseconds)\", \"so
 # Build context message
 CONTEXT=""
 
+# Post-compaction / resume re-orientation: on "compact", prior context was
+# just summarized away; on "resume", this is picking up a session from
+# scratch. Either way, don't trust what's already "known" — re-check state
+# before continuing (see debugging-protocol.md's Stale Context Check).
+if [ "$SOURCE" = "compact" ] || [ "$SOURCE" = "resume" ]; then
+    CONTEXT="$CONTEXT
+
+[POST-COMPACTION RE-ORIENTATION]
+- Check the native task list for in-flight work before starting anything new
+- If a plan artifact is active (artifacts/plan_*.md), re-read it before continuing
+- Re-read any file before editing it — do not trust memory of its contents (Stale Context Check, .claude/rules/debugging-protocol.md)"
+fi
+
 # Check for active swarm agents
 ACTIVE_AGENTS=$(find "$STATE_DIR" -maxdepth 1 -name 'session_*.json' -type f 2>/dev/null | wc -l | tr -d ' ')
 if [ "$ACTIVE_AGENTS" -gt 1 ]; then
