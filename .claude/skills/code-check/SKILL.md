@@ -74,6 +74,9 @@ Use language-appropriate detection tools:
 
 Verify findings before deletion (false positives with dynamic imports).
 
+### Scope Adherence
+Applies `swarm-review`'s Scope adherence review lens (unrequested refactors, drive-by edits, orphaned dead code) across the whole codebase instead of one diff at a time — see that skill for the full perspective and adversarial question; this entry exists so the audit checklist doesn't have a gap, not to restate the lens.
+
 ## Output Format
 
 ```markdown

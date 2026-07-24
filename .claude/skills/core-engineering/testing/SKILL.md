@@ -9,6 +9,12 @@ description: Write effective tests for code quality and reliability. Use when im
 
 Give every change a check it can run before calling it done: red-then-green for new logic, a failing-then-passing regression test for bug fixes, or the existing suite for anything else. No change ships without one.
 
+**Red-green-observe, not red-green-assume**: "confirm it fails" (the Regression workflow item below, and TDD's "watch it fail" step) means actually *run* the test and *read* the failure output before touching the fix or the implementation — never reason your way to "this must fail" and skip the run.
+
+**Falsifiable done-when**: before writing a feature's implementation, state one concrete, checkable condition that defines done — not "should work now," a condition a test or command can confirm or refute.
+
+**Evidence over narration**: a completion claim is only as good as what it cites — a pasted test-run result, a real exit code, a pushed commit SHA. Describing what the code should now do is not evidence; re-running the check and quoting its output is.
+
 ## MCP Tools
 
 **Chrome DevTools** (E2E testing):

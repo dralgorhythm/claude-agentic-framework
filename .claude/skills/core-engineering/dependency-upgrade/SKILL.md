@@ -9,6 +9,8 @@ metadata:
 
 A version string is a claim, not a fact — verify it before you pin it. Isolate majors so a bad one is a one-line revert. Read the changelog before the diff, not after something breaks.
 
+A brand-new dependency's registry-existence check is `builder`'s Hallucination Defense step, not this skill's — this protocol begins once the dependency is already in the manifest and due for a version change.
+
 ## Order of Operations
 
 Work the queue in this order, not commit-arrival order:
