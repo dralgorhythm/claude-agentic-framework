@@ -41,68 +41,22 @@ if [ -f "$VERIFICATION_FILE" ]; then
     fi
 fi
 
-# Detect project type and available tools
+# Detect project type and available gates — detection lives in gate-lib.sh
+# (artifacts/plan_framework_hardening.md, unit U5a): one shared function
+# emits invocable commands per gate; this hook only needs the human labels
+# for its advisory text below, reconstructed here in the same order and
+# format ("<label>" tokens space-joined) as before the extraction, so the
+# advisory output stays byte-identical.
+# shellcheck source=gate-lib.sh
+# shellcheck disable=SC1091  # dynamic path (BASH_SOURCE-relative); the
+# above source= directive documents it for anyone re-running with `-x`
+source "$(dirname "${BASH_SOURCE[0]}")/gate-lib.sh"
+gate_lib_detect "$PROJECT_DIR"
+
 DETECTED_TOOLS=""
-
-# TypeScript/JavaScript (pnpm preferred per tech strategy)
-if [ -f "$PROJECT_DIR/package.json" ]; then
-    if [ -f "$PROJECT_DIR/pnpm-lock.yaml" ]; then
-        PKG_MGR="pnpm"
-    elif [ -f "$PROJECT_DIR/package-lock.json" ]; then
-        PKG_MGR="npm"
-    else
-        PKG_MGR="pnpm"
-    fi
-
-    # Check for scripts in package.json
-    if grep -q '"lint"' "$PROJECT_DIR/package.json" 2>/dev/null; then
-        DETECTED_TOOLS="$DETECTED_TOOLS lint($PKG_MGR)"
-    fi
-    if grep -q '"test"' "$PROJECT_DIR/package.json" 2>/dev/null; then
-        DETECTED_TOOLS="$DETECTED_TOOLS test($PKG_MGR)"
-    fi
-    if grep -q '"typecheck\|"tsc\|"type-check"' "$PROJECT_DIR/package.json" 2>/dev/null; then
-        DETECTED_TOOLS="$DETECTED_TOOLS typecheck($PKG_MGR)"
-    fi
-
-    # Biome (preferred per tech strategy)
-    if [ -f "$PROJECT_DIR/biome.json" ] || [ -f "$PROJECT_DIR/biome.jsonc" ]; then
-        DETECTED_TOOLS="$DETECTED_TOOLS biome"
-    fi
-fi
-
-# Python (uv preferred per tech strategy)
-if [ -f "$PROJECT_DIR/pyproject.toml" ]; then
-    # Ruff (preferred per tech strategy)
-    if grep -q "ruff" "$PROJECT_DIR/pyproject.toml" 2>/dev/null; then
-        DETECTED_TOOLS="$DETECTED_TOOLS ruff"
-    fi
-
-    # pytest
-    if grep -q "pytest" "$PROJECT_DIR/pyproject.toml" 2>/dev/null; then
-        DETECTED_TOOLS="$DETECTED_TOOLS pytest"
-    fi
-
-    # mypy
-    if grep -q "mypy" "$PROJECT_DIR/pyproject.toml" 2>/dev/null; then
-        DETECTED_TOOLS="$DETECTED_TOOLS mypy"
-    fi
-fi
-
-# Go
-if [ -f "$PROJECT_DIR/go.mod" ]; then
-    DETECTED_TOOLS="$DETECTED_TOOLS go-test go-vet"
-
-    # golangci-lint (preferred per tech strategy)
-    if command -v golangci-lint &> /dev/null || [ -f "$PROJECT_DIR/.golangci.yml" ]; then
-        DETECTED_TOOLS="$DETECTED_TOOLS golangci-lint"
-    fi
-fi
-
-# Rust
-if [ -f "$PROJECT_DIR/Cargo.toml" ]; then
-    DETECTED_TOOLS="$DETECTED_TOOLS cargo-test cargo-clippy cargo-fmt"
-fi
+for _gate_label in "${GATE_LABELS[@]}"; do
+    DETECTED_TOOLS="$DETECTED_TOOLS $_gate_label"
+done
 
 # Build verification context message
 cat << EOF
