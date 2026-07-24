@@ -275,5 +275,15 @@ and triggers unchanged). If your own agents preloaded `designing-apis` or `appli
 **What breaks:** nothing breaks outright — both cases now pause for an explicit confirmation (`ask`, not `deny`) instead of proceeding silently. Fully automated/unattended pipelines that do either will need to handle the prompt.
 
 **Action required:** confirm the prompt to proceed as before. The config-file gate closes a mechanical-backing gap in `/tailor`'s "proposes only, never silently writes" contract (`.claude/skills/tailor/SKILL.md`); the Bash scan closes a blind spot where a heredoc'd `.env` write bypassed the existing Write/Edit secret detection entirely. Neither is a complete guarantee — see `docs/hooks.md`'s Secret Detection section for the standing limitation and the Trivy CI backstop.
+### `stop-validator.sh` gains a correction-capture reminder
+Session end now checks `scratchpad/corrections.log` (written when a user correction contradicts
+standing rules/skills, per `core-directives.md`'s new Correction Capture convention). If the log is
+non-empty, `stop-validator.sh` prints a one-line reminder naming the pending count and pointing at
+`land-the-plane`'s new retro step — promote each entry to a rule/skill/hook/CI change, or file an
+issue, before ending the session. The hook only reads the log; it never blocks the session or edits
+the file itself.
+**Action required:** none. The log only exists if you (or an agent) are already following the
+Correction Capture convention; adopters who aren't will never see this reminder, and an absent or
+empty log stays exactly as silent as before.
 
 <!-- Future v3 migration notes appended here. -->

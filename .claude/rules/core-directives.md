@@ -68,3 +68,7 @@ Write atomic, descriptive commit messages. Each commit should represent one comp
 ### Artifacts, Scratchpad, Handoffs
 
 See Rules 4, 5, and 7 above.
+
+### Correction Capture
+
+When a user correction contradicts a current rule, skill, or standing instruction ("no, we don't do X here"), append one line to `scratchpad/corrections.log`: `YYYY-MM-DD | <correction, one line> | <surface it contradicts: rules/<file> | skill:<name> | none-yet>`. Log only contradictions of standing guidance — never ordinary task instructions. The log is ephemeral capture; `land-the-plane`'s retro step is what promotes an entry to a durable rule/skill/hook/CI change.

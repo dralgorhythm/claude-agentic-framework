@@ -71,6 +71,11 @@ git status   # MUST show "up to date with origin"
 - Release working state: drop stashes, remove temp files, release any
   locks, and keep `./scratchpad/` references out of anything you hand off —
   scratchpad is ephemeral and disposable, not a citable deliverable.
+- **Retro**: if `scratchpad/corrections.log` is non-empty, map each entry
+  to the strongest enforcement rung it can support (rule edit < skill edit
+  < hook < permissions.deny/CI — same discipline as `postmortem`'s
+  Prevention step), promote it via a small PR or filed issue, then remove
+  the processed lines. Never end a session by silently discarding the log.
 
 ## Failure Branches
 
