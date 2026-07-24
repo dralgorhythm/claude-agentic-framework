@@ -114,6 +114,7 @@ Link dependencies with `TaskUpdate` (addBlockedBy): Task 2 gets Task 1 added to 
 - Launch multiple explorers for broad searches
 - Use worker-architect for decisions, worker-builder for execution
 - Parallelize independent tasks (max 8 concurrent workers)
+- For large dispatch batches, declare a token/wave ceiling up front — see `swarm-coordination`'s Budget & Waves section
 - Keep worker prompts under 500 tokens for fast startup
 
 ## Constraints
