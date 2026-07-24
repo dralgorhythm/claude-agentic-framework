@@ -11,17 +11,17 @@ This file states requirements. It does not, by itself, enforce them. Enforcement
 3. **Hooks** (`.claude/hooks/*`) — deterministic guardrails, not a security boundary. This repo's hooks are **fail-open by design**: if `jq` is missing or input can't be parsed, the check is skipped and the tool call proceeds. See `docs/hooks.md` for the full security model.
 4. **`permissions.deny` + CI** — boundaries. `permissions.deny` in `settings.json` cannot be overridden by any allow rule at any scope. CI checks (`.github/workflows/`) run outside the agent's control and block merges on failure.
 
-Only the mechanically checkable items on this page have enforcement below step 1. The checklist states what must be true; it is the hooks, `permissions.deny` entries, and CI jobs cited in each line's parenthetical that actually verify it.
+Only the mechanically checkable items on this page have enforcement below rung 1. The checklist below tags every line with its actual rung (1–4, matching the ladder above) and names the hook, `permissions.deny` entry, or CI job that verifies it; a rung-1 tag means prose only — nothing here mechanically checks it.
 
 ## Security Checklist
 
-- [ ] No hardcoded secrets or credentials (enforced via `pre-tool-use-validator.sh` hook secret detection + CI secret-scan job, Trivy `fs --scanners secret`, blocking)
-- [ ] All user input is validated and sanitized (enforce via input validation middleware)
-- [ ] SQL queries use parameterized statements
-- [ ] Authentication and authorization are properly implemented
-- [ ] Sensitive data is encrypted at rest and in transit
-- [ ] Error messages don't expose internal details
-- [ ] Dependencies are up to date and vulnerability-free (enforce via automated dependency scanning)
+- [ ] No hardcoded secrets or credentials (rung 3+4 — enforced via `pre-tool-use-validator.sh` hook secret detection across Write/Edit content and Bash redirects/heredocs, plus CI secret-scan job, Trivy `fs --scanners secret,vuln`, blocking)
+- [ ] All user input is validated and sanitized (rung 1 — adopter-level: enforce in your application/CI; this framework cannot check it)
+- [ ] SQL queries use parameterized statements (rung 1 — adopter-level: enforce in your application/CI; this framework cannot check it)
+- [ ] Authentication and authorization are properly implemented (rung 1 — adopter-level: enforce in your application/CI; this framework cannot check it)
+- [ ] Sensitive data is encrypted at rest and in transit (rung 1 — adopter-level: enforce in your application/CI; this framework cannot check it)
+- [ ] Error messages don't expose internal details (rung 1 — adopter-level: enforce in your application/CI; this framework cannot check it)
+- [ ] Dependencies are up to date and vulnerability-free (rung 4 — enforced via this repo's own Trivy `fs --scanners secret,vuln` CI job, blocking (trivially green today: no dependency manifests exist in this repo); every stack pack ships a matching native audit gate — `pnpm audit --audit-level high` / `uvx pip-audit` / `govulncheck ./...` / `cargo audit` in `.claude/templates/stack-packs/*/ci-gates.yml` — reaching the same CI rung in an adopter's own repo once merged)
 
 ## Data Routing
 
