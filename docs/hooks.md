@@ -12,7 +12,7 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
 | `pre-commit-verification.sh` | PreToolUse (Bash) | Pre-commit quality checks |
 | `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
-| `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted and unpushed work |
+| `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted/unpushed work and unprocessed `scratchpad/corrections.log` entries |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
 | `post-edit-lint.sh` | PostToolUse | Auto-format after edits; surfaces only unfixable issues |
 | `branch-pr-discipline.sh` | PreToolUse (Bash) | Warn-only branch/PR hygiene checks |

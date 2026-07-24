@@ -90,6 +90,12 @@ Only loads when a file under src/api/ is read or edited.
 
 The framework intentionally ships no stack-specific frontend rule (React, Vue, etc.) — that choice belongs to the adopter, not the template. Add your own under `.claude/rules/` using `.claude/templates/rule.template.md` as the starting point.
 
+## Session Learning: Auto-Memory vs. Repo Rules
+
+Claude Code's own auto-memory is personal, per-user, and unreviewed — the right home for individual preferences and machine-specific quirks. Ride that platform feature; don't rebuild it here.
+
+Team-shared guidance is reviewed and enforced instead: `.claude/rules/`, `.claude/skills/`, and `.claude/hooks/` are read by every collaborator and checked in CI. A correction that should bind the whole team, not just your own sessions, gets logged via `core-directives.md`'s Correction Capture convention and promoted through `land-the-plane`'s retro step — it never lives only in memory.
+
 ## Artifact Templates
 
 Skills that produce planning artifacts bundle their templates inside the owning skill's `resources/` directory, so each skill stays self-contained (e.g. `.claude/skills/architecture/designing-systems/resources/adr.template.md`, `.claude/skills/product/planning-artifacts/resources/prd.template.md`). Three artifact types have no owning library skill; starter templates for those live in `.claude/templates/artifacts/`: `plan`, `design_spec`, `security_audit`. (The postmortem template moved into the `postmortem` skill's `resources/` when that skill was added.) Output naming for all artifact types is defined in CLAUDE.md's artifact table.

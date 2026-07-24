@@ -85,4 +85,11 @@ if [ -d "$PROJECT_DIR/.git" ]; then
     fi
 fi
 
+# Correction-capture reminder (O14): unresolved log entries must be promoted, not silently dropped
+CORRECTIONS_LOG="$PROJECT_DIR/scratchpad/corrections.log"
+if [ -s "$CORRECTIONS_LOG" ]; then
+    CORRECTIONS_COUNT=$(wc -l < "$CORRECTIONS_LOG" | tr -d ' ')
+    echo "[CORRECTIONS PENDING] $CORRECTIONS_COUNT correction(s) in scratchpad/corrections.log — run land-the-plane's retro step (promote or file an issue) before ending."
+fi
+
 exit 0
