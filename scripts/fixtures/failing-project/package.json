@@ -1,0 +1,9 @@
+{
+  "name": "failing-project-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dependency-free fixture for hook-behavior tests: a project whose test script always fails (no npm install needed) — exercises the pre-commit gate's red path.",
+  "scripts": {
+    "test": "node -e \"process.exit(1)\""
+  }
+}

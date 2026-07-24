@@ -18,6 +18,35 @@ jobs:
       - name: Run invariant checks
         run: ./scripts/check-invariants.sh
 
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Run shellcheck
+        # SC2319/SC2164 (scripts/check-invariants.sh) and SC1087 (scripts/init-framework.sh)
+        # are pre-existing findings out of scope for this change (no hook, no harness case
+        # protects them yet) — tracked for a future cleanup pass rather than fixed blind here.
+        # File list is filesystem-derived (find, not a hardcoded list) so new hooks/scripts/
+        # fixtures are covered automatically — see scripts/test-hooks.sh's own extension model.
+        run: |
+          # shellcheck disable=SC2046  # deliberate word-split: one file path per shellcheck arg
+          shellcheck -e SC2319,SC2164,SC1087 $(find .claude/hooks scripts -name '*.sh' -type f | sort)
+
+  hook-tests:
+    name: Hook behavior tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - name: Run hook behavior harness
+        run: ./scripts/test-hooks.sh
+
   secret-scan:
     name: Secret scan (Trivy)
     runs-on: ubuntu-latest
