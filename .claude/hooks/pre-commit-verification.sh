@@ -128,7 +128,13 @@ fi
 # Gates detected: run each one under its own timeout, from PROJECT_DIR,
 # logging to its own file. Fail-fast on the first red or timed-out gate —
 # the reason names exactly one gate, matching the plan's fixtures.
+# `timeout` is GNU coreutils: present on Linux/CI, absent on stock macOS
+# (Homebrew installs it as `gtimeout`). Without either, gates run unbounded
+# inside the hook's own settings.json ceiling — bounded worse, never broken.
 GATE_TIMEOUT="${CLAUDE_GATE_TIMEOUT_SECS:-120}"
+if command -v timeout >/dev/null 2>&1; then TIMEOUT_BIN="timeout"
+elif command -v gtimeout >/dev/null 2>&1; then TIMEOUT_BIN="gtimeout"
+else TIMEOUT_BIN=""; fi
 FAILED_LABEL=""
 FAILED_LOG=""
 TIMED_OUT_LABEL=""
@@ -137,7 +143,11 @@ for _gate_i in "${!GATE_LABELS[@]}"; do
     _gate_label="${GATE_LABELS[$_gate_i]}"
     _gate_cmd="${GATE_COMMANDS[$_gate_i]}"
     _gate_log="$STATE_DIR/gate-${_gate_label//\//_}.log"
-    ( cd "$PROJECT_DIR" && timeout "$GATE_TIMEOUT" bash -c "$_gate_cmd" </dev/null ) >"$_gate_log" 2>&1
+    if [ -n "$TIMEOUT_BIN" ]; then
+        ( cd "$PROJECT_DIR" && "$TIMEOUT_BIN" "$GATE_TIMEOUT" bash -c "$_gate_cmd" </dev/null ) >"$_gate_log" 2>&1
+    else
+        ( cd "$PROJECT_DIR" && bash -c "$_gate_cmd" </dev/null ) >"$_gate_log" 2>&1
+    fi
     _gate_rc=$?
     if [ "$_gate_rc" -eq 124 ]; then
         TIMED_OUT_LABEL="$_gate_label"
