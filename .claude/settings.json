@@ -336,6 +336,11 @@
           },
           {
             "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-tool-use-validator.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-commit-verification.sh",
             "timeout": 5
           },

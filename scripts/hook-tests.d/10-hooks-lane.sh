@@ -174,11 +174,16 @@ run_case \
   "stdout-contains:git push"
 
 # --- clean and pushed: silent (has a real upstream, ahead=0) ---------------
+# Own bare remote: sharing $u2_remote would silently reject this repo's push
+# (unrelated history, non-fast-forward), leaving no upstream and making the
+# case order-dependent on whichever fixture pushed first.
+u2_clean_remote=$(_fresh_dir)
+git init -q --bare "$u2_clean_remote" >/dev/null 2>&1
 u2_clean_repo=$(_fresh_dir)
 git -C "$u2_clean_repo" init -q >/dev/null 2>&1
 git -C "$u2_clean_repo" -c user.email=test@example.com -c user.name=test \
   commit -q --allow-empty -m init >/dev/null 2>&1
-git -C "$u2_clean_repo" remote add origin "$u2_remote" >/dev/null 2>&1
+git -C "$u2_clean_repo" remote add origin "$u2_clean_remote" >/dev/null 2>&1
 git -C "$u2_clean_repo" push -q -u origin HEAD >/dev/null 2>&1
 
 run_case \
