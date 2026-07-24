@@ -64,6 +64,8 @@ git status   # MUST show "up to date with origin"
   independently — never stack on another unit's branch); pass the body via
   a file (heredoc or temp file), never as an inline string — avoids
   quoting and escaping failures.
+- Fill `.github/PULL_REQUEST_TEMPLATE.md`'s Provenance fields (author/model,
+  gates run with results, pushed SHA) and Risk Tier before requesting review.
 - File remaining work as issues or task-list entries, each referencing the
   relevant artifact under `./artifacts/`.
 - Release working state: drop stashes, remove temp files, release any

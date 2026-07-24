@@ -26,6 +26,8 @@ Multi-perspective code review with root cause analysis and security focus.
 
 ## Review Workflow
 
+Route review depth by the PR template's Risk Tier field: **risk:high** → full multi-perspective review (all perspectives below); **risk:low** → lite pass, where **lite = single-perspective quality review; skip the security/performance/architecture panel**; **risk:medium** → use judgment, defaulting to full when unsure.
+
 1. **Gather** — Get diff and commit history for the branch
 2. **Analyze** — Launch parallel review workers for each perspective
 3. **Interrogate** — Apply adversarial questioning
