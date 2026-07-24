@@ -1,154 +1,169 @@
 # Plan: Framework Hardening — Selected Remediations (O1–O4, O6, O8, O9, O11–O13, O16, O18–O20)
 
-> Executes the selected subset of improvement options from `artifacts/research_ai_coding_frustrations.md` (Part 3), which serves as the requirements document for this plan — option IDs below refer to it. Grounded in a 5-worker exploration pass (hook internals, CI invariants, rules/skills/agents, stack packs + house formats, official platform docs). Date: 2026-07-24.
-> All units are **Two-Way Doors** (reversible config/docs/hook changes) except U13, which *is* an ADR. Trunk-based: every unit merges to `main` independently; sequencing notes are merge-order preferences, never stacked branches.
+> Executes the selected subset of improvement options from `artifacts/research_ai_coding_frustrations.md` (Part 3), which serves as the requirements document (PRD-substitute — it already carries the evidence and requirements weight; per core-directives Rule 6 this is a Medium-tier feature claiming plan-only ceremony on that basis). Option IDs refer to it.
+> **Rev 2, 2026-07-24** — amended after a 4-worker adversarial `/swarm-review` (correctness, completeness, process/packaging, platform verification). Material changes from Rev 1: new U15 hook-test harness (was the review's Critical finding); U5 split into 5a/5b/5c along its refactor/behavior/feature seams; U1 upgraded from "add fallback" to "fix matcher + fallback" (a live false-positive was reproduced empirically); evidence stamp now content-bound via `git write-tree`; hook-timeout budget corrected (the hook is registered at 5s today); Decision D1 records the one deliberate doctrine change; PR packaging replaces the wave sequencing; MIGRATION.md obligations added.
+> All units are **Two-Way Doors** except U13 (an ADR) and the D1 decision inside U5c (One-Way-Door-Medium, recorded below). Trunk-based: every PR merges to `main` independently; dependent PRs branch from `main` **after** their prerequisite lands — never stacked.
 
 ## Design Principles (applied throughout)
 
-- **SOLID** — Single responsibility: one hook = one concern; gate *detection* is extracted once and shared, gate *enforcement* stays in each consumer. Open/closed: checks and packs extend by adding files (new stack detection rows, new pack directories), not by editing enforcement flow. Interface segregation: each hook reads only the stdin fields it needs. Dependency inversion: enforcers depend on small contracts (evidence-stamp file, rules-hash footer, `paths:` frontmatter), not on other hooks' internals.
-- **KISS** — Prefer native platform features over invention: `TaskCompleted` hook event (verified in official docs), native `paths:`-scoped rules (verified: `.claude/rules/*.md` with `paths` frontmatter load only when matching files are accessed), GitHub PR templates, `permissions.deny` as the existing hard backstop. Pure-shell fallbacks only where a hard rule must survive a missing dependency. Every snippet stays small and commented so adopters can adapt it.
-- **DRY** — Derive lists from the filesystem, never hand-maintain them (gating check, budgets). Define shared conventions once (budget/waves in `swarm-coordination`; stack detection in one lib) and reference elsewhere. Fix the registry-drift class, not instances.
-- **Standard tools, right place** — git plumbing (`rev-list`, `status --porcelain`) for git state; `shasum` for freshness; `awk`/`wc` for budgets (matching existing check style); `shellcheck` as the hook lint gate; Trivy stays the secret scanner.
+- **SOLID** — Single responsibility: one hook = one concern; gate *detection* lives once in a lib, gate *enforcement* in each consumer. Open/closed: checks, packs, and harness cases extend by adding rows/files, not editing flow. Interface segregation: hooks read only the stdin fields they need. Dependency inversion: enforcers depend on small contracts (evidence stamp = timestamp + tree-hash, rules-hash footer, `paths:` frontmatter), not on other hooks' internals.
+- **KISS** — Native platform features over invention: `TaskCompleted` event (verified: blocks via exit 2 or `decision:"block"`), native `paths:`-scoped rules, GitHub PR templates, `permissions.deny` backstop. Pure-shell fallbacks only where a hard rule must survive a missing dependency — and reusing the repo's existing sed idiom for JSON-field extraction rather than inventing raw-blob matching.
+- **DRY** — Derive lists from the filesystem (gating check); define shared conventions once and reference (budget/waves in `swarm-coordination`; detection in `gate-lib.sh`; test cases in one harness table).
+- **Hooks are tested code, not config** — the review's systemic finding: every behavioral claim about a hook gets a harness case (U15), and shellcheck runs in CI. Self-attestation is what this plan exists to eliminate; it doesn't get to live in the plan's own infrastructure.
+- **Standard tools, right place** — git plumbing (`rev-parse`, `rev-list`, `write-tree`, `status --porcelain`); `shasum` for freshness; `awk`/`wc` matching existing check style; GitHub-native PR templates.
 
-## Enforcement-rung targets
+## Decision D1 — TaskCompleted gate ships default-on (One-Way-Door-Medium)
 
-Per `.claude/rules/security.md` Enforcement Ladder: each unit names the rung it moves a control **to**. Nothing here weakens an existing rung.
+`docs/hooks.md:166-168` currently states blanket doctrine: opt-in recipes "ship disabled unless a project deliberately opts in." U5c reverses this for exactly one recipe: the quality gate becomes default-registered. **Rationale**: the audit's highest-stakes finding was that the framework's only true completion gate ships off; a hardening release that leaves it off fails its own purpose. **Alternative considered**: keep opt-in but more prominent — rejected because opt-in guardrails demonstrably don't get adopted (the audit found the recipe undocumented-in-practice: present, disabled, invisible). **Reversal path**: single settings.json entry removal; escape hatch `CLAUDE_SKIP_GATE_HOOK=1` honored by **both** the commit gate and the task gate (parity — review F18). **Consequences**: adopters who re-pull get a newly blocking default → mandatory `MIGRATION.md` entry (see Cross-cutting); `docs/hooks.md`'s general preamble is rewritten so the remaining recipe (skill-activation hook) keeps the opt-in framing without self-contradiction. U5c's PR carries a short `artifacts/adr_default_quality_gate.md` capturing this decision in house format.
 
 ---
 
-## U1 — Visible hook degradation + jq-free main-push block (O3)
+## U15 — Hook-behavior test harness + shellcheck CI (new in Rev 2; review Critical F7/F8)
 
 **Scope**
-1. `session-start-loader.sh`: move the environment check *ahead* of the jq guard — if `jq` is absent, emit a loud context block (`[HOOK DEGRADATION] jq not found — secret detection, file locks, dangerous-command warnings, pre-commit gates, and the main-push hook block are ALL inactive. permissions.deny rules still hold. Install jq to restore.`) then exit 0. (SessionStart stdout is injected as context — the standard mechanism.)
-2. `pre-push-main-blocker.sh`: add a conservative no-jq fallback *before* the jq guard — if raw stdin contains a `git push` invocation and `main`/`master` (bounded substring match on the raw JSON), emit the existing static deny-JSON (needs no jq) with a reason noting the coarse match. jq path remains the precise fast path.
-3. `docs/hooks.md`: consolidate the currently piecemeal fail-open disclosure into one "Degradation visibility" subsection: what degrades together, what still holds (`permissions.deny`), how the warning surfaces.
+1. `scripts/test-hooks.sh` (~120 LOC): table-driven runner in the existing `report()`/PASS-FAIL idiom of `check-invariants.sh`. Each case: hook path, synthetic stdin JSON (heredoc), optional env/PATH override, expected outcome (deny/ask/allow/substring/exit code). Includes a no-`jq` PATH shim (temp dir of symlinks to everything except jq, ~12 lines).
+2. `scripts/fixtures/failing-project/` (minimal package.json + one deliberately failing test) and `scripts/fixtures/slow-gate/` (a gate script that sleeps past the per-gate timeout) — reused by U1/U5 ACs.
+3. CI: new `hook-tests` job running the harness + new `shellcheck` job (ubuntu runners ship shellcheck) in `framework-invariants.yml`. Fix the 3 pre-existing shellcheck findings (SC2034 ×2 `pre-commit-verification.sh:45,80`, SC2012 `session-start-loader.sh:35`) here so later units inherit a clean baseline.
+4. Seed cases covering current behavior of all five hooks this plan touches (characterization tests), so every later unit's AC is "add your cases to the table."
 
-**AC**: With `jq` removed from PATH (simulated), session start emits the degradation block, and a synthetic `git push origin main` PreToolUse payload is still denied by the fallback; with jq present, behavior is unchanged (current shellcheck-clean tests pass green); docs subsection lists the exact degraded set in one place. Rung: prose→hook (visibility), deny backstop documented.
+**AC**: `./scripts/test-hooks.sh` green locally and in CI on the untouched hooks; shellcheck job green (baseline findings fixed); no-jq shim proven by one case asserting current fail-open behavior; harness ≤ ~200 LOC total; CHANGELOG entry. **This PR lands first — every other hook/CI unit's AC cites harness cases.**
 
-## U2 — Stop-validator catches committed-but-unpushed work (O4)
+## U1 — Fix the push-block matcher; add jq-free branch-aware fallback; visible degradation (O3, upgraded)
 
-**Scope**
-1. `stop-validator.sh`: after the existing uncommitted check, add (a) upstream-ahead count via `git rev-list --count @{upstream}..HEAD` (missing upstream tolerated), (b) no-upstream case via `git rev-list --count HEAD --not --remotes` — warn only when >0.
-2. `docs/hooks.md` table row for stop-validator updated.
+**Scope** *(review upgraded this from "add fallback": the jq path has a live, empirically reproduced false-positive — branch names like `feature/main-cleanup` and `domain-master-list` match `\b(main|master)\b` and get denied)*
+1. `pre-push-main-blocker.sh` (both paths): extract the command via the repo's existing no-jq sed idiom (`branch-pr-discipline.sh:48` field-scoped extraction) — never raw-JSON substring matching; tighten branch detection to compare the actual trailing branch token for equality with `main`/`master` (not substring anywhere).
+2. No-jq fallback closes the *real* gap (`permissions.deny` already hard-blocks explicit `git push origin main` forms; the unique value is the implicit case): compute `CURRENT_BRANCH` via `git rev-parse --abbrev-ref HEAD` (needs no jq) and deny a bare/implicit `git push` while on main/master, emitting the existing static deny-JSON.
+3. `session-start-loader.sh`: jq check moved ahead of the guard; when absent, emit `[HOOK DEGRADATION]` context block naming the degraded set and noting `permissions.deny` still holds.
+4. `docs/hooks.md`: one "Degradation visibility" subsection consolidating the fail-open disclosure (prose precision per review: the deny backstop already covers explicit forms).
 
-**AC**: Ending a session with local commits ahead of upstream emits a reminder naming the count and the push command; clean-and-pushed state stays silent; branch with no upstream and unpushed commits warns with `git push -u` guidance; shellcheck clean. Rung: the "work isn't done until pushed" principle gains its missing hook half.
+**AC** (as harness cases): `git push origin feature/main-cleanup` → **allowed** (false positive fixed); explicit push to main → denied (jq present and absent); **bare `git push` with CURRENT_BRANCH=main → denied with jq absent**; jq-absent session start emits the degradation block; docs subsection lists the degraded set in one place; MIGRATION.md entry (new session-start output). Rung: hook, correctness-fixed + degradation visible.
 
-## U3 — Gating invariant derived from layout; kill the count drift (O2)
-
-**Scope**
-1. `scripts/check-invariants.sh` #9: replace the 10-name hardcoded loop with the layout rule the catalog already embodies — every **top-level** `.claude/skills/*/SKILL.md` must carry `disable-model-invocation: true`; every **nested** `.claude/skills/*/*/SKILL.md` must NOT (library skills stay auto-discoverable). Comment states the layout convention.
-2. `docs/customization.md:21`: replace "all ten of its shipped workflow skills" with count-free phrasing ("every top-level workflow skill — enforced by the `gating` invariant"). Document the layout convention (top-level = gated workflow, nested = ungated library) beside it. Historical docs (MIGRATION, CHANGELOG past entries) stay as records.
-
-**AC**: Temporarily removing the flag from `land-the-plane/SKILL.md` turns check #9 red locally (proving the former blind spot is closed); current tree passes green; inverse check red if a nested skill gains the flag; no numeric skill-count claims remain in present-tense docs (`grep -rn "ten workflow\|all 12\|all twelve" docs/ README.md` shows only historical/CI-derived text). Rung: CI (already), blind spot removed + inverse invariant added.
-
-## U4 — Hook-back the tailor no-silent-config-writes promise (O6)
+## U2 — Stop-validator catches unpushed work, remote-aware (O4, amended)
 
 **Scope**
-1. `pre-tool-use-validator.sh`: in the protected-file section, add an **ask**-tier pattern set for `.claude/settings.json`, `.claude/rules/*`, and root `CLAUDE.md` — reason text cites the propose-only contract (`tailor` proposals + human apply). Existing deny set (`.git/`, `.env`, `.mcp.json`) unchanged.
-2. `tailor/SKILL.md`: one line noting the promise is now hook-backed at ask tier. `docs/hooks.md` protected-files row updated. Honest limitation stated: the matcher covers Write/Edit tools; Bash-mediated writes remain review-territory.
+1. `stop-validator.sh`: guard first — if `git remote` is empty, skip (or emit a one-line "no remote configured" note; never the unpushed-count phrasing with wrong `git push -u` advice — review F11, empirically confirmed the naive form warns on every local-only repo). With a remote: upstream-ahead via `git rev-list --count @{upstream}..HEAD` (missing upstream tolerated) and no-upstream unpushed via `git rev-list --count HEAD --not --remotes`, warn only when >0.
+2. `docs/hooks.md` table row.
 
-**AC**: A Write to `.claude/rules/x.md` or `settings.json` triggers ask with the contract-citing reason; ordinary source writes unaffected; limitation documented. Rung: skill-prose → hook(ask).
+**AC** (harness cases): ahead>0 → reminder with count + push command; clean/pushed → silent; no-upstream-with-commits → `git push -u` guidance; **zero-remote repo → no unpushed warning**; CHANGELOG entry.
 
-## U5 — Evidence-based quality gates (O1) — the centerpiece
+## U3 — Gating invariant derived from layout; count drift removed (O2)
 
 **Scope**
-1. Extract the stack/gate detection block (currently `pre-commit-verification.sh:48–113`) into `.claude/hooks/gate-lib.sh` — one function returning detected lint/typecheck/test commands per stack (TS/Python/Go/Rust). Sourced by both consumers below (single owner, two users — the justified DRY).
-2. Rewrite `pre-commit-verification.sh` enforcement: on `git commit`, if fresh hook-written evidence exists (≤5 min), allow. Otherwise **run** the detected gates (bounded `timeout` per gate, logs to `.claude/hooks/.state/gate-*.log`): all green → hook writes the `commit-verified` stamp itself and allows; red → deny-JSON naming the failing gate + log path; timeout → **ask** with honest "gates exceeded budget, run manually" reason. Remove every instruction telling the *agent* to write the stamp — the stamp becomes hook-authored evidence only. Escape hatch: `CLAUDE_SKIP_GATE_HOOK=1` env (reason text discloses it was used).
-3. Promote the documented opt-in `TaskCompleted` recipe to a shipped, default-registered `task-quality-gate.sh` using the same `gate-lib.sh` detection (multi-stack, not npm-only), exit 2 on red per the verified event semantics; registered in `settings.json` with a 120s timeout.
-4. `docs/hooks.md`: recipe section becomes "shipped by default — how to disable"; degradation/fail-open notes updated (jq-absent → advisory-only path, visible via U1).
+1. `check-invariants.sh` #9 (in-place edit): every top-level `.claude/skills/*/SKILL.md` must carry `disable-model-invocation: true`; every nested one must NOT. Comment documents the layout convention and the acknowledged tradeoff: a future gated workflow skill must live top-level (flat hyphenated names are already the house idiom — review confirmed this forecloses nothing real).
+2. `docs/customization.md:21`: count-free phrasing + the layout convention documented.
 
-**AC**: In a fixture project with a deliberately failing test, `git commit` is denied with the failing gate named and a readable log path; after fixing, commit passes and the stamp file's writer is the hook (no agent instruction to write it remains — `grep -rn "commit-verified" .claude/` shows only hook code); TaskCompleted blocks a task claiming completion over red gates (docs include the manual test procedure); timeout path returns ask, not deny; with jq absent the hook degrades to today's advisory context; both new/changed hooks shellcheck-clean. Rung: prose+self-attestation → hook(deny) with hook-authored evidence.
+**AC**: flag removed from `land-the-plane` → red locally (blind spot provably closed); nested skill with flag → red; current tree green; no present-tense numeric gated-skill counts remain in docs; CHANGELOG entry.
+
+## U4 — Hook-back tailor's promise + close the Bash secret-write blind spot (O6, extended)
+
+**Scope**
+1. `pre-tool-use-validator.sh`: ask-tier patterns for `.claude/settings.json`, `.claude/rules/*`, root `CLAUDE.md`, reason citing the propose-only contract; **remove the now-contradicting comment at line 49** ("settings.json and rules/ are user-configurable" — review F14).
+2. Extend the six secret regexes to also scan `tool_input.command` when `TOOL_NAME == "Bash"` and the command contains a redirect/heredoc operator (`>`, `>>`, `<<`) — closing a blind spot the review found that neither the research audit nor Rev 1 named (heredoc'd `.env` writes currently bypass all secret detection).
+3. `tailor/SKILL.md` one line (hook-backed at ask tier); `docs/hooks.md` row; honest limitation note (Write/Edit matcher; the new Bash scan covers the redirect path pre-commit, Trivy CI remains the backstop).
+
+**AC** (harness cases): Write to `.claude/rules/x.md` → ask with contract reason; `Bash` heredoc writing an AWS-key-shaped string → ask; ordinary source writes unaffected; stale comment gone; MIGRATION.md entry (new ask prompts); CHANGELOG entry.
+
+## U5a — Gate detection lib: rewrite to invocable commands (O1 part 1 — pure structure)
+
+**Scope** *(review corrected the framing: today's block builds display labels, not commands — `VERIFICATION_COMMANDS` at line 45 is dead; this is a rewrite-to-commands, not a lift-and-shift)*
+1. New `.claude/hooks/gate-lib.sh`: one function emitting **invocable** lint/typecheck/test/build command strings per detected stack (TS/JS via detected package manager, Python, Go, Rust), plus a human label per gate. Delete the dead `VERIFICATION_COMMANDS` variable.
+2. `pre-commit-verification.sh` sources the lib for its existing advisory text — **zero behavior change** in this PR (Two Hats: structure only; harness characterization cases must pass unchanged).
+
+**AC**: harness cases confirm advisory output identical pre/post for all four stack fixtures; lib function returns runnable commands (smoke-executed against the failing-project fixture); shellcheck clean; CHANGELOG entry.
+
+## U5b — Commit gate: run, stamp content-bound evidence, block (O1 part 2 — behavior)
+
+**Scope**
+1. `pre-commit-verification.sh` enforcement rewrite: on `git commit` — trust cached evidence only if **fresh (≤5 min) AND `git write-tree` output matches** the stamped tree hash (review F8: time-only stamps ride post-edit changes; `write-tree` is the canonical index hash). Otherwise run detected gates (per-gate `timeout`, logs to `.state/gate-*.log`): green → hook writes stamp `{epoch, tree-hash}`; red → deny-JSON naming the failing gate + log path, **including the anti-test-deletion line** ("Do not delete or weaken tests to force a pass — fix the issue or ask the user" — preserves the sole existing O5 deterrent, review F2); gate timeout → ask with honest reason. `CLAUDE_SKIP_GATE_HOOK=1` escape hatch, disclosed in reason text.
+2. **`settings.json`: raise this hook's timeout from 5 → 300 seconds** (review F9: gates cannot run inside the current 5s registration; per-gate timeouts sized to sum <240s; the early non-commit exits keep ordinary Bash calls instant). Verified platform behavior: hook-timeout fail-open/closed is undocumented — therefore the hook must always return its own decision within budget, never lean on harness timeout semantics.
+3. Remove every instruction telling the agent to write the stamp; `docs/hooks.md` gate-behavior section.
+
+**AC** (harness cases): failing-project fixture → commit denied naming the gate + log path + test-deletion warning; fix → green → stamp written by hook with tree-hash; **edit a file after green stamp → immediate re-run despite fresh timestamp (tree-hash mismatch)**; slow-gate fixture → ask, not silent kill (proves the 300s/per-gate budget ordering); jq-absent → advisory fallback; `grep -rn commit-verified` shows hook-only writers; MIGRATION.md entry (commits newly blocking); CHANGELOG entry.
+
+## U5c — Task gate default-on + decision record (O1 part 3 — feature/doctrine)
+
+**Scope**
+1. `task-quality-gate.sh` (multi-stack via `gate-lib.sh`, exit 2 on red, honors `CLAUDE_SKIP_GATE_HOOK=1`), default-registered under `TaskCompleted` in `settings.json` (timeout 120).
+2. `artifacts/adr_default_quality_gate.md` — Decision D1 above in house ADR format.
+3. `docs/hooks.md`: recipe section → "shipped by default — how to disable"; **general opt-in preamble (166-168) rewritten** so it accurately describes only the remaining opt-in recipe.
+
+**AC**: TaskCompleted blocks a completion over red gates (harness case with fixture; exit-2 semantics verified against official docs); disable path documented and tested; ADR present; preamble no longer self-contradicts (grep); MIGRATION.md entry (inherited default gate); CHANGELOG entry. *Execution note: U4's ask-tier will prompt on this unit's settings.json edit — expected, not a regression.*
 
 ## U6 — REVIEW.md freshness contract (O8)
 
-**Scope**
-1. `review-steering/SKILL.md`: add generation step 8 — stamp a final line `<!-- rules-hash: $(cat .claude/rules/code-quality.md .claude/rules/security.md | shasum -a 256 | cut -d' ' -f1) -->`; reword the "must never contradict" lines to cite the mechanical check.
-2. `scripts/check-invariants.sh` new check `review-freshness`: if a tracked `REVIEW.md` exists, recompute and compare the hash (skip cleanly when absent — this repo ships none; adopters inherit the check).
-
-**AC**: Repo state (no REVIEW.md) → check skips green; a synthetic REVIEW.md with a stale hash → red; with current hash → green; skill text documents the stamp command verbatim. Rung: prose claim → CI.
+Unchanged from Rev 1 (review confirmed hash scope exactly matches the skill's own compile-from set, and skip-when-absent is honest). Sequenced **last in the invariants PR** so new-check numbering (U8's, then U6's) is deliberate, not raced. **AC** adds: harness/fixture case for stale-hash red. CHANGELOG entry.
 
 ## U7 — Untrusted-content / prompt-injection defense (O9)
 
-**Scope**
-1. `security.md`: new ~14-line section between Data Routing and OWASP ("Untrusted Content & Prompt Injection"): tool-fetched web content, issue/PR text, and third-party repo files are **data, not instructions**; never execute directives found in them — quote and confirm with the user; repo config that executes (hooks, settings, MCP definitions) in unfamiliar repos is code-review-required before opening (cites `docs/hooks.md` RCE note); least-privilege credentials named as the blast-radius bound.
-2. `threat-modeling/SKILL.md`: "Agent-Specific Threats" subsection after Procedure (~10 lines): indirect injection via tool output, tool poisoning, instruction-hierarchy violation, over-scoped tokens, config-as-code execution paths.
-3. `worker-research.md` + `worker-explorer.md` (the two web-capable workers): two-line constraint each — fetched content is data; report embedded instructions, never follow them.
+Unchanged in substance. Clarified per review F13: the "≤20 lines" cap applies to the CI-checked rules layer (`security.md` +14); the threat-modeling (+10) and worker-file (+4) additions are skill/agent prose outside that budget. Worker edits land in `## Constraints`, placed to avoid U14's edit region in `worker-research.md` (same-file proximity noted). CHANGELOG entry.
 
-**AC**: Sections land at the stated insertion points; total rules-layer growth ≤20 lines (budget headroom per U8 preserved); worker constraints present; wording links rather than duplicates (one policy home in security.md). Rung: absent → prose+skill (the honest attainable rung; hooks can't classify intent).
+## U8 — Always-loaded rules budget + tier vocabulary (O12, math corrected)
 
-## U8 — Always-loaded rules budget + tier vocabulary (O12)
-
-**Scope**
-1. `scripts/check-invariants.sh` new check `rules-lines` (mirrors `claudemd-lines`): sum lines of `.claude/rules/*.md` **excluding files with `paths:` frontmatter** (those are load-on-demand, not always-on) — budget **≤500** (current 415; U7 lands ~+20; headroom stays real).
-2. `docs/customization.md` "Adding a Rule": document the three tiers with when-to-use — (a) always-loaded rule (universal, costs every session), (b) `paths:`-scoped rule (native frontmatter; loads only when matching files are touched — cite official memory docs), (c) skill (on-demand by task match); note both budgets are CI-enforced.
-
-**AC**: Check green at current totals; locally padding a rules file past the ceiling → red; a file with `paths:` frontmatter is excluded from the sum (fixture-verified); docs tier table present with the official-docs citation. Rung: research finding → CI.
+As Rev 1, with corrected arithmetic (review F13, measured): current **409** lines; +14 (U7) +3 (U9) → ~426 of **500** budget; the check excludes `paths:`-frontmattered files and reports actuals. AC unchanged plus: budget figure in docs states it was measured at implementation time, not copied from this plan. CHANGELOG entry.
 
 ## U9 — Post-compaction re-orientation (O11)
 
-**Scope**
-1. `session-start-loader.sh`: branch on `SOURCE` — for `compact` (and `resume`), append a `[POST-COMPACTION RE-ORIENTATION]` block to the emitted context: check `TaskList` state; re-read the active plan artifact before continuing; re-read any file before editing it (cites Stale Context Check).
-2. `debugging-protocol.md` Stale Context Check: +3 lines — after compaction, re-orient at *plan* level (not just per-file); externalize the working plan to a file before long tasks; delegate bulk exploration to workers to keep the main context lean.
+Unchanged (review confirmed clean composition with U1: different file regions; SOURCE logic already jq-conditional). Same PR as U1, committed after it. **AC** via harness: `"source":"compact"` emits the block, `"startup"` doesn't. MIGRATION.md entry (new session-start output, shared with U1's). CHANGELOG entry.
 
-**AC**: Piping synthetic SessionStart JSON with `"source":"compact"` emits the block; `"startup"` does not; rules addition ≤8 lines; no duplication of swarm-doc content (one-line cross-reference). Rung: research artifact → hook(context)+prose. *Merge after U1 (same file); independently mergeable regardless.*
+## U10 — Orchestration cost circuit-breaker convention (O13, reframed)
 
-## U10 — Orchestration budget & wave convention (O13)
-
-**Scope**
-1. `operations/swarm-coordination/SKILL.md` (the shared library skill) gains the canonical "Budget & Waves" section: orchestrators declare a token/wave ceiling at dispatch; hitting it = stop, report spend + remaining work, ask to continue; wave counter kept in task metadata.
-2. The three orchestrator skills (`swarm-plan`, `swarm-execute`, `swarm-research`) each get one reference line (define once, reference thrice).
-3. `docs/examples/worker-budget-hook.sh`: opt-in illustrative PreToolUse(Task)+SubagentStop counter warning past 8 concurrent workers — follows the existing opt-in examples pattern; not default-wired.
-
-**AC**: Section exists once (grep shows single definition, three references); example hook executable + one README line; no default settings.json change. Rung: prose(scattered) → skill(canonical)+opt-in hook.
+As Rev 1 with two review fixes: (a) framing is **cost bound only** — it stops runaway spend after the fact; it does not detect step-repetition (drop that implication — review F21); (b) "wave counter in task metadata" replaced with an implementable convention: dispatched task titles carry a `[Wave N/M]` prefix (review F3 — no structured metadata convention exists in this repo's task tracking). CHANGELOG entry.
 
 ## U11 — PR template with provenance receipt (O16)
 
-**Scope**
-1. `.github/PULL_REQUEST_TEMPLATE.md` (standard single-template path): Summary / What changed / **Provenance** (author agent+model or human; gates run with results; pushed SHA) / **Risk tier** (`low|medium|high` with one-line blast-radius rationale) / Test plan.
-2. `land-the-plane/SKILL.md` PR step: fill the template's provenance fields (SHA-as-evidence already required — now it has a printed home). `swarm-review/SKILL.md`: one routing line — `risk:high` → full multi-perspective review; `low` → lite pass.
+As Rev 1 plus: `swarm-review/SKILL.md` defines the lite pass in one line — "lite = single-perspective quality review; skip the security/performance/architecture panel" (review F4: the term was undefined). CHANGELOG entry.
 
-**AC**: Template at the standard path with the five sections; field vocabulary matches land-the-plane exactly (no synonym drift); routing line present; total additions <60 lines. Rung: absent → repo convention (GitHub-native).
+## U12 — Dogfooded scoped rule via native `paths:` frontmatter (O18)
 
-## U12 — Scoped rules, dogfooded via native `paths:` frontmatter (O18)
+Unchanged. Lives in the **invariants PR** after U8 (same docs section — review moved it out of the conventions grab-bag). Its content becomes the natural home for the shell conventions U15/U1 establish (shellcheck, fail-open + visibility, sed extraction idiom, deny/ask contract). CHANGELOG entry.
 
-**Scope**
-1. Ship one real scoped rule as the worked example: `.claude/rules/hooks-conventions.md` with `paths: [".claude/hooks/**", "scripts/**"]` — shell conventions for this repo (bash + `set -u`, shellcheck before commit, fail-open pattern + visibility warning per U1, stdin-JSON parsing idiom, deny/ask output contract). Loads only when hook/script files are touched; excluded from U8's always-on budget by frontmatter.
-2. `docs/customization.md`: extend U8's tier table with this file as the linked worked example; note pack authors MAY use `paths:`-scoped rules for stack conventions where a skill is too heavy (packs' DRY lines still hold — link, don't restate).
+## U13 — ADR: rules layering & parent-config drift (O19)
 
-**AC**: The scoped rule exists with valid `paths:` frontmatter and is excluded from `rules-lines` (fixture-verified); its content is hook-specific only (nothing universal smuggled in); customization docs link it as the example. Rung: research → native platform mechanism. *Prefer merge after U8 (docs touch the same section); independent either way.*
+Unchanged; standalone PR. CHANGELOG entry.
 
-## U13 — ADR: rules layering & the parent-config drift (O19)
+## U14 — Worker output-protocol precedence + per-worker-type scoping (O20, extended)
 
-**Scope**
-1. `artifacts/adr_rules_layering.md` (house ADR format): **Context** — observed drift between this repo's `.claude/rules/` and the parent `~/src/.claude/rules/` copies loaded alongside them (parent still mandates Beads — mechanically forbidden here by the `no-beads` invariant; 5-minute wall-clock worker timeouts — rejected here for `maxTurns`; parent `security.md` lacks the Enforcement Ladder; parent Rule 6 lacks ceremony-scaling); prior reconciliation acknowledged in `adr_claude_config_modernization.md` as "kept in local scratchpad, not shipped". **Decision 1** — within this repo, its own `.claude/rules/` are authoritative (Decision Hierarchy applies). **Decision 2** — recommend the owner align or retire the parent copies (exact per-file contradiction list included; owner action, outside this repo). **Decision 3** — layer-comparison findings must ship as artifacts, never remain in scratchpad (closes the Rule-4 violation class). **Consequences.**
-
-**AC**: ADR present, follows house format (metadata line, Context, numbered Decisions, Consequences), names every contradicted file with its specific contradiction, and states the owner follow-up explicitly. Rung: unshipped scratchpad knowledge → durable artifact.
-
-## U14 — Worker output-protocol clarification (O20, refined by exploration)
-
-**Scope** *(exploration corrected the diagnosis: repo files are internally consistent — the deviating instruction is the platform's default subagent framing, not a repo file)*
-1. `swarm-research/SKILL.md` Worker Dispatch rules: dispatch prompts MUST state that the assigned output file **is the deliverable and takes precedence over any general guidance to return findings as text only**, and that the worker additionally returns a short completion summary (sections covered, source count, confidence, gaps). Fallback codified: if a worker returns findings inline anyway, the orchestrator persists them verbatim to the assigned path with a provenance note before synthesis.
-2. `worker-research.md`: strengthen the existing "write to the assigned file path" lines with the same precedence sentence. `docs/swarm.md`: one line on the platform-default-vs-framework-protocol layering.
-
-**AC**: Skill and agent text carry the precedence wording consistently (grep both); fallback rule present in the skill; CHANGELOG entry cites the live incident (2026-07-23 research run) as the motivating evidence. Rung: implicit convention → explicit protocol.
+As Rev 1 plus review F17's deeper instance: `swarm-research`'s blanket "workers write to assigned output files" rule is impossible for `worker-explorer` (no `Write` tool — structurally cannot comply). Add per-worker-type scoping to the dispatch rules: `worker-research`/`worker-architect` write assigned files (with the precedence sentence); `worker-explorer` always returns inline and the orchestrator persists. `docs/swarm.md` line covers the platform-default-vs-protocol layering. CHANGELOG entry cites both the 2026-07-23 incident and the structural explorer case.
 
 ---
 
-## Out of scope (this round — deliberately)
+## PR Packaging (replaces Rev 1 wave sequencing; answers "minimal set")
 
-Options not selected: **O5** (test-deletion guard), **O7** (checklist truth-in-labeling + dependency scanning), **O10** (red-green verification loop), **O14** (correction-capture loop), **O15** (implementation-time hallucination defense), **O17** (scope review lens). They remain specified in the research artifact; U5's gate-lib and U11's template create natural attachment points for O5/O7/O10 later. No unit here forecloses any of them.
+Eight PRs, six parallel lanes; each PR < 400 changed LOC (the repo's own review-effectiveness advisory); units are atomic commits inside their PR (house rules permit multi-commit PRs — "one logical change per commit" governs content, not count). Dependent PRs branch from `main` after the prerequisite merges (core-directives merge-order sequencing — no stacking).
+
+| PR | Units (commit order) | ~LOC | blockedBy | Why grouped |
+|---|---|---|---|---|
+| **PR0 harness** | U15 | ~200 | — | Everything else's ACs cite it |
+| **PR1 hooks** | U1 → U9 → U2 → U4 | ~180 | PR0 | Same files (`session-start-loader.sh`, `docs/hooks.md`); one review context |
+| **PR2 invariants** | U3 → U8 → U12 → U6 | ~170 | PR0 | `check-invariants.sh` + `docs/customization.md`; check-numbering sequenced deliberately |
+| **PR3 gates-extract** | U5a | ~175 | PR0 | Pure structure (Two Hats), zero behavior change |
+| **PR4 gates-enforce** | U5b | ~200 | PR3 | The behavior change, isolated and revertible |
+| **PR5 gates-default** | U5c (+ADR) | ~150 | PR3 (prefer after PR4) | The doctrine decision, separately reviewable |
+| **PR6 adr-layering** | U13 | ~120 | — | Standalone document |
+| **PR7 process-docs** | U7 → U10 → U11 → U14 | ~200 | — | Prose/conventions; `worker-research.md` U7/U14 proximity handled by commit order |
+
+Coupling handled inside PRs: `session-start-loader.sh` (U1/U9), `check-invariants.sh` numbering (U3/U8/U6), `docs/customization.md` (U8/U12), `worker-research.md` (U7/U14), `docs/hooks.md` content dependency (U1's subsection cited by U5b/U5c docs — cross-PR but append-only). `CHANGELOG.md` is the one all-PR shared file: append at subsection end, `git pull --rebase` immediately before opening each PR, don't queue >2-3 unmerged CHANGELOG edits.
 
 ## Cross-cutting constraints
 
-- Every unit updates `CHANGELOG.md` `[Unreleased]` per Keep-a-Changelog house convention (one line per change, artifact refs in backticks).
-- Every touched/added shell file passes `shellcheck` and `bash -n`; every unit leaves `scripts/check-invariants.sh` green (run locally before commit — U5 makes this self-enforcing).
-- Hook changes preserve the documented fail-open philosophy (`docs/hooks.md`) — U1 makes degradation *visible*, U5 keeps the jq-absent path advisory; `permissions.deny` remains the hard boundary.
-- Illustrative-first: every new mechanism ≤ ~120 lines, commented for adaptation, no new runtime dependencies beyond what ships today (`jq` optional as before).
+- Every unit: CHANGELOG `[Unreleased]` entry (append-at-end discipline) + harness cases for any behavioral claim in its AC.
+- **MIGRATION.md entries required** for the adopter-visible behavior changes: U1/U9 (new session-start context), U4 (new ask prompts), U5b (commits newly blocking), U5c (inherited default task gate) — following the existing "Who is affected / What breaks / Action required" pattern.
+- Shell: `shellcheck` + `bash -n` clean (CI-enforced from PR0 on; 3 pre-existing findings fixed in PR0); `scripts/check-invariants.sh` green before every commit.
+- Fail-open philosophy preserved and *visible* (U1); `permissions.deny` remains the hard boundary; the only doctrine change is D1, recorded in its own ADR.
+- Illustrative-first: every new mechanism ≤ ~120 lines, commented for adaptation; no new runtime dependencies (`jq` stays optional).
 
-## Risks
+## Out of scope (deliberate, with honesty notes from review)
 
-- **Gate runtime on commit (U5)**: slow suites could make committing painful → per-gate `timeout`, ask-not-deny on timeout, evidence cache (5 min), documented env escape hatch. If an adopter's tests exceed budget, behavior degrades to today's advisory — never worse than status quo.
-- **Fallback push-block false positives (U1)**: coarse substring match may deny an unusual command mentioning `main` → deny reason explains the coarse path and the rewording workaround; jq path (precise) is the norm.
-- **`paths:` frontmatter version sensitivity (U12)**: on older Claude Code versions the scoped rule may load always → harmless (content is valid guidance); budget check keys on frontmatter presence, not runtime behavior; official-docs citation recorded for future re-verification.
-- **Budget ceilings mis-tuned (U8)**: constants (500 lines) are single-line tunables; the check reports actuals so drift is visible before it binds.
-- **Same-file merge friction (U1/U9; U8/U12)**: handled by merge-order preference noted per unit; every unit still lands green on `main` alone.
+- **O5, O7, O10, O14, O15, O17** remain unselected. Specifics the review insists be named rather than implied:
+  - `security.md:24`'s "automated dependency scanning" claim **remains false after this round** (O7 territory); its truth-in-labeling half was separable but not selected — do not mistake it for closed.
+  - **O14 (correction capture)** was the research's most time-urgent deferred item ("before memory of this research fades") while U12/O18 pulls forward its lowest-urgency one — this inversion follows the option selection as given; flagged so O14 is the first addition next round, accepting that its value decays.
+  - U13 documents and recommends; the parent-layer contradiction itself stays live until the owner acts outside this repo.
+  - U5b's deny text preserves the existing anti-test-deletion prose, but mechanical test-deletion detection remains O5, unselected.
+
+## Risks (expanded per review)
+
+- **Gate runtime (U5b)**: bounded by per-gate timeouts summing <240s inside the raised 300s hook budget; timeout → ask; escape hatch; jq-absent → advisory. Slow-gate fixture exists specifically to catch budget-ordering regressions.
+- **Doctrine change (D1/U5c)**: adopters inherit a blocking default — mitigated by ADR + MIGRATION entry + one-line disable + shared escape hatch.
+- **Push-block matching**: trailing-token equality fixes the reproduced false-positive class; the no-jq fallback remains coarser than the jq path by design, with the deny reason explaining rewording.
+- **Coupling surface**: five clusters named in Packaging (Rev 1 named two); the structurally risky pair (check-numbering U8/U6; docs content dependency U1↔U5b/c) have explicit ordering.
+- **`paths:` version sensitivity (U12)** and **budget tuning (U8)**: unchanged from Rev 1 — harmless degradation, single-line tunables, actuals reported by the checks.
