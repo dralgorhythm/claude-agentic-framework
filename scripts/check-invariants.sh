@@ -231,6 +231,21 @@ fi
 n=$(awk 'END{print NR}' CLAUDE.md | tr -d ' ')
 report claudemd-lines "$([ "${n:-9999}" -le 200 ]; echo $?)" "CLAUDE.md is $n lines (budget 200)"
 
+# 22. rules-lines: the always-loaded rules layer (.claude/rules/*.md) must stay within
+#     budget. Excludes any file whose frontmatter carries a `paths:` key — those are
+#     load-on-demand (scoped to matching file paths, see docs/customization.md's "Adding
+#     a Rule"), not part of the every-session cost this budget is guarding. :(glob) keeps
+#     this to files directly under .claude/rules/ (see check 9's comment on why plain `*`
+#     isn't enough — no nested rules exist today, but the intent is top-level-only).
+rules_total=0
+while IFS= read -r f; do
+  scoped=$(awk '/^---$/{c++;next} c==1 && /^paths:/{print;exit}' "$f")
+  [ -n "$scoped" ] && continue
+  n=$(wc -l < "$f" | tr -d ' ')
+  rules_total=$((rules_total + n))
+done < <(git ls-files ':(glob).claude/rules/*.md')
+report rules-lines "$([ "$rules_total" -le 500 ]; echo $?)" "always-loaded rules total ${rules_total} lines (budget 500; paths:-scoped files excluded)"
+
 echo ""
 [ "$FAIL" -eq 0 ] && echo "ALL CHECKS GREEN" || echo "INVARIANT FAILURES PRESENT"
 exit "$FAIL"
