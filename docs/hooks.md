@@ -200,7 +200,8 @@ See `.claude/rules/security.md` for the full ladder and rationale. In short: not
 
 - Secret detection & file-lock coordination (`pre-tool-use-validator.sh`)
 - Dangerous-command warnings (`dangerous-command-guard.sh`)
-- Pre-commit verification reminders (`pre-commit-verification.sh`)
+- Commit quality gate (`pre-commit-verification.sh`) — commits are not gate-blocked without `jq`
+- Task-completion quality gate (`task-quality-gate.sh`)
 
 `pre-push-main-blocker.sh`'s branch-block is **not** on that list: its command extraction is a jq-free sed idiom, so it keeps enforcing with or without `jq`. And `permissions.deny` is unaffected either way — it's enforced at the permission layer, independent of hooks or `jq` entirely. Install `jq` to restore the degraded set above.
 
