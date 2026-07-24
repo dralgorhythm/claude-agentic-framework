@@ -258,4 +258,14 @@ skill carrying all three templates byte-identical — update any references to t
 and triggers unchanged). If your own agents preloaded `designing-apis` or `application-security` via
 `skills:` frontmatter, drop those entries — CI's `preload-ungated` check fails on unknown names.
 
+## v4.0.x → next release
+
+### Session start now surfaces hook-degradation context
+
+**Who is affected:** anyone whose environment is missing `jq`. Everyone else sees no change.
+
+**What breaks:** nothing — this is new, additive `SessionStart` output, not a behavior change to any tool call.
+
+**Action required:** none. If you see a `[HOOK DEGRADATION]` block at session start, it means `jq` isn't on `PATH` in that environment; install `jq` to restore full hook coverage. `permissions.deny` enforcement is unaffected either way — it never depended on hooks or `jq`.
+
 <!-- Future v3 migration notes appended here. -->

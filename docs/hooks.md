@@ -158,6 +158,16 @@ prose rules (advisory) < skills (on-demand advisory) < hooks (deterministic guar
 
 See `.claude/rules/security.md` for the full ladder and rationale. In short: nothing below `permissions.deny` and CI is guaranteed to run, and hooks specifically are guaranteed to skip rather than block when they can't parse their input.
 
+### Degradation visibility
+
+"Fails open" used to also mean "fails silently." `session-start-loader.sh` now checks for `jq` before anything else and, when it's absent, prints a `[HOOK DEGRADATION]` block at session start naming exactly what's degraded instead of just skipping quietly:
+
+- Secret detection & file-lock coordination (`pre-tool-use-validator.sh`)
+- Dangerous-command warnings (`dangerous-command-guard.sh`)
+- Pre-commit verification reminders (`pre-commit-verification.sh`)
+
+`pre-push-main-blocker.sh`'s branch-block is **not** on that list: its command extraction is a jq-free sed idiom, so it keeps enforcing with or without `jq`. And `permissions.deny` is unaffected either way — it's enforced at the permission layer, independent of hooks or `jq` entirely. Install `jq` to restore the degraded set above.
+
 **How to disable a hook:**
 
 - Remove its entry from `.claude/settings.json` (`hooks` section) to disable it for everyone who pulls that config.
