@@ -64,17 +64,25 @@ path_without_jq() {
 #   $4 env_override  optional "KEY=VAL KEY2=VAL2" pairs (env(1) syntax), or ""
 #                    to inherit the harness's own environment unchanged
 #   $5 expectation   one of:
-#                      deny-json            permissionDecision:"deny" present
-#                      ask-json             permissionDecision:"ask" present
-#                      exit0-silent         exit 0 AND empty stdout
-#                      stdout-empty         empty stdout (exit code ignored)
-#                      stdout-contains:SUB  stdout contains literal SUB
+#                      deny-json                  permissionDecision:"deny" present (stdout)
+#                      ask-json                   permissionDecision:"ask" present (stdout)
+#                      exit0-silent               exit 0 AND empty stdout
+#                      stdout-empty               empty stdout (exit code ignored)
+#                      stdout-contains:SUB        stdout contains literal SUB
+#                      exit2-stderr-contains:SUB  exit 2 AND stderr contains literal SUB
+#                      exit0-stderr-contains:SUB  exit 0 AND stderr contains literal SUB
+#                    The last two exist for TaskCompleted-style hooks (unit U5c), whose
+#                    documented contract is an exit code plus a stderr message rather than
+#                    the PreToolUse JSON contract the first two forms check.
 run_case() {
   local name="$1" hook="$2" stdin_json="$3" env_override="$4" expectation="$5"
-  local out rc ok=1 reason=""
+  local out err rc ok=1 reason="" errfile
+  errfile=$(mktemp "${TMPDIR:-/tmp}/hook-test-stderr.XXXXXX")
   # shellcheck disable=SC2086  # deliberate word-split: "KEY=VAL ..." pairs for env(1), or empty
-  out=$(printf '%s' "$stdin_json" | env $env_override "$BASH_BIN" "$hook" 2>/dev/null)
+  out=$(printf '%s' "$stdin_json" | env $env_override "$BASH_BIN" "$hook" 2>"$errfile")
   rc=$?
+  err=$(cat "$errfile" 2>/dev/null)
+  rm -f "$errfile"
   case "$expectation" in
     deny-json)
       printf '%s' "$out" | grep -qE '"permissionDecision"[[:space:]]*:[[:space:]]*"deny"' && ok=0 ;;
@@ -86,10 +94,14 @@ run_case() {
       [ -z "$out" ] && ok=0 ;;
     stdout-contains:*)
       printf '%s' "$out" | grep -qF -- "${expectation#stdout-contains:}" && ok=0 ;;
+    exit2-stderr-contains:*)
+      [ "$rc" -eq 2 ] && printf '%s' "$err" | grep -qF -- "${expectation#exit2-stderr-contains:}" && ok=0 ;;
+    exit0-stderr-contains:*)
+      [ "$rc" -eq 0 ] && printf '%s' "$err" | grep -qF -- "${expectation#exit0-stderr-contains:}" && ok=0 ;;
     *)
       reason="unrecognized expectation '$expectation'" ;;
   esac
-  reason="${reason:-exit=$rc output=$(printf '%s' "$out" | tr '\n' ' ' | cut -c1-200)}"
+  reason="${reason:-exit=$rc output=$(printf '%s' "$out" | tr '\n' ' ' | cut -c1-200) stderr=$(printf '%s' "$err" | tr '\n' ' ' | cut -c1-200)}"
   report "$name" "$ok" "$reason"
 }
 

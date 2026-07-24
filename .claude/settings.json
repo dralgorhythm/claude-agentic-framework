@@ -395,6 +395,17 @@
           }
         ]
       }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/task-quality-gate.sh",
+            "timeout": 120
+          }
+        ]
+      }
     ]
   }
 }

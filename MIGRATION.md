@@ -306,4 +306,22 @@ empty log stays exactly as silent as before.
 - If you don't want this hook running gates at all, remove its entry from `.claude/settings.json`'s `hooks.PreToolUse` (`Bash` matcher) — see `docs/hooks.md`'s "How to disable a hook."
 - If `jq` is unavailable in your environment, this hook's behavior is unchanged from before this release (silent no-op; no gates run, no advisory shown).
 
+### A `TaskCompleted` quality gate is now registered by default
+
+**Who is affected:** anyone using the framework's default `.claude/settings.json` — the `TaskCompleted` hook is a new entry, not something you had to opt into. Same detectable-stack scope as the commit gate above: a `package.json` with a `test`/`lint`/`typecheck`/`biome` script, a `pyproject.toml` with `pytest`/`ruff`/`mypy`, a `go.mod`, or a `Cargo.toml`. Projects with none of these see no behavior change.
+
+**What breaks:** `.claude/hooks/task-quality-gate.sh` — previously documented in `docs/hooks.md` as an opt-in recipe you had to wire in yourself — now ships registered under `hooks.TaskCompleted` in `.claude/settings.json`. When a task completes, it runs the same detected gates the commit hook runs (`.claude/hooks/gate-lib.sh`) and:
+
+- A failing gate blocks the task completion (exit code 2), naming the gate and its log (`.claude/hooks/.state/taskgate-<label>.log`), plus the same reminder never to delete or weaken a test to force a pass.
+- A gate that exceeds its budget (`${CLAUDE_GATE_TIMEOUT_SECS:-90}` seconds, default lower than the commit gate's 120s since this hook's own registration is 120s total vs. 300s) does **not** block — it allows the completion and prints an honest stderr note that nothing was verified either way.
+- No detectable stack, or `jq` unavailable, means silent allow — identical to having no hook registered at all.
+
+This is a deliberate doctrine change, not an oversight — see `artifacts/adr_default_quality_gate.md` for the full reasoning (the audit's flagship finding: the framework's only true completion-time gate shipped disabled, and opt-in guardrails demonstrably don't get adopted).
+
+**Action required:**
+
+- If a gate legitimately takes longer than the 90s default, set `CLAUDE_GATE_TIMEOUT_SECS` (seconds) in your environment.
+- To skip gate enforcement for one task completion, set `CLAUDE_SKIP_GATE_HOOK=1` — the same escape hatch the commit gate honors (one variable disables both).
+- If you don't want this hook running at all, remove the `TaskCompleted` entry from `.claude/settings.json`'s `hooks` block — see `docs/hooks.md`'s "How to disable a hook."
+
 <!-- Future migration notes appended here. -->

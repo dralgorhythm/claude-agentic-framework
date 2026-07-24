@@ -11,6 +11,7 @@ Hooks run automatically at key points in Claude Code's lifecycle.
 | `dangerous-command-guard.sh` | PreToolUse (Bash) | Guard against dangerous shell commands (force push, rm -rf, etc.) |
 | `pre-push-main-blocker.sh` | PreToolUse (Bash) | Block direct pushes to main/master branch |
 | `pre-commit-verification.sh` | PreToolUse (Bash) | Runs detected quality gates before `git commit`; blocks on failure, asks on timeout |
+| `task-quality-gate.sh` | TaskCompleted | Runs the same detected quality gates at task-completion time; blocks (exit 2) on failure, non-blocking on timeout |
 | `post-tool-use-tracker.sh` | PostToolUse | Track file changes |
 | `stop-validator.sh` | Stop | Release file locks, cleanup session state, warn about uncommitted/unpushed work and unprocessed `scratchpad/corrections.log` entries |
 | `subagent-stop-validator.sh` | SubagentStop | Log swarm worker completion |
@@ -70,6 +71,17 @@ Runs the project's detected quality gates before every `git commit` and blocks t
 On stock macOS, GNU `timeout` is absent — the hook falls back to `gtimeout` (Homebrew coreutils) or, failing both, runs gates unbounded within its own settings.json timeout ceiling; install coreutils to restore per-gate bounding.
 - **Escape hatch**: `CLAUDE_SKIP_GATE_HOOK=1` allows the commit unconditionally; the skip is always disclosed in the hook's own `additionalContext`, never silent.
 - **jq-absent**: identical to every other hook in this repo — silent exit 0, no gates run, no advisory shown (the repo's fail-open convention, see Security model below). Broader jq-availability degradation visibility is a session-level concern (`session-start-loader.sh`), not something this specific hook re-announces per commit.
+
+### Quality Gates (task-quality-gate.sh)
+
+Runs the same detected gates as the commit-time hook above, but at `TaskCompleted` — a second, independent checkpoint, not a replacement (unit U5c of `artifacts/plan_framework_hardening.md`; decision record: `artifacts/adr_default_quality_gate.md`). This is the one hook in this repo's suite that **ships registered by default** — see the ADR for why:
+
+- **Detection**: the same `.claude/hooks/gate-lib.sh` (unit U5a) the commit gate uses. No gates detected → silent allow; nothing to run or say.
+- **On failure**: blocks the task completion via exit code 2 — the platform's documented `TaskCompleted` blocking mechanism — naming the failing gate and its log (`.claude/hooks/.state/taskgate-<label>.log`, a separate log namespace from the commit gate's `gate-<label>.log`), plus the same fixed reminder never to delete or weaken a test to force a pass.
+- **On timeout**: each gate runs under `${CLAUDE_GATE_TIMEOUT_SECS:-90}` seconds (the same env var the commit gate honors; the default is lower here because this hook's own `settings.json` registration is 120s total, tighter than the commit gate's 300s). Unlike the commit gate's `ask`, a timeout here is **non-blocking**: a task completion should not hard-fail on slowness alone, so the hook allows (exit 0) and prints an honest stderr note that nothing was verified either way.
+- **Escape hatch**: `CLAUDE_SKIP_GATE_HOOK=1` — the exact same variable the commit gate honors (parity by design), disclosed on stderr, never silent.
+- **Disable it**: remove the `TaskCompleted` entry from `.claude/settings.json`'s `hooks` block (one JSON array entry) — see "How to disable a hook" below.
+- **jq-absent**: silent exit 0, same fail-open convention as every other hook in this repo.
 
 ### Push Blocking (pre-push-main-blocker.sh)
 
@@ -199,37 +211,9 @@ See `.claude/rules/security.md` for the full ladder and rationale. In short: not
 
 ## Opt-in recipes
 
-These recipes are **not enabled by default**. They are documented here as copy-paste starting points, consistent with this repo's fail-soft hook doctrine: hooks in this repo ship disabled unless a project deliberately opts in. Wiring one in is a per-project choice, not something this framework turns on for you.
+These recipes are **not enabled by default** — narrower guardrails whose cost/benefit is genuinely project-specific, so wiring one in is a per-project choice, not something this framework turns on for you. (The `TaskCompleted` quality-gate hook used to be documented here as an opt-in recipe; it now ships registered by default instead, because the evidence showed opt-in guardrails don't get adopted — see the "Quality Gates (task-quality-gate.sh)" subsection above and `artifacts/adr_default_quality_gate.md` for the full decision.) What remains genuinely opt-in: the forced-eval skill-activation hook below, and `docs/examples/worker-budget-hook.sh` (a concurrent-worker-budget warning documented in `docs/examples/README.md`).
 
-### (a) `TaskCompleted` quality-gate hook
-
-Blocks task completion until quality gates (tests, lint, types, build) pass. Exit code 2 is what makes this blocking rather than advisory — see "Only exit code 2 blocks an action" above.
-
-```bash
-#!/bin/bash
-# .claude/hooks/task-quality-gate.sh
-input=$(cat)
-
-if ! npm test --silent >./scratchpad/gate-test.log 2>&1; then
-  echo "Quality gate failed: tests. See ./scratchpad/gate-test.log" >&2
-  exit 2
-fi
-
-if ! npm run lint --silent >./scratchpad/gate-lint.log 2>&1; then
-  echo "Quality gate failed: lint. See ./scratchpad/gate-lint.log" >&2
-  exit 2
-fi
-
-echo '{"continue": true}'
-```
-
-Install (add to `.claude/settings.json`):
-
-```json
-{"hooks": {"TaskCompleted": [{"hooks": [{"type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/task-quality-gate.sh", "timeout": 120}]}]}}
-```
-
-### (b) Forced-eval skill-activation hook
+### Forced-eval skill-activation hook
 
 Before proceeding on a matching prompt, requires the agent to state explicit YES/NO reasoning about whether a skill applies, rather than relying on native discovery alone.
 
